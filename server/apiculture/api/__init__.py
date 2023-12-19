@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from uuid import UUID
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from apiculture.models.core import Base
 from apiculture.database import SessionLocal, engine
@@ -14,6 +14,18 @@ from apiculture.dal.query import (
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Dependency
@@ -30,6 +42,27 @@ async def root(db: Session = Depends(get_db)):
     return {
         "message": f"Добре дошли в Пчелина. Разполагате с {get_apiaries_count(db)} пчелина и {get_all_hives_count(db)} кошера."
     }
+
+
+@app.post("/login/")
+async def login():
+    # raise HTTPException(status_code=400, detail="Password or username is incorrect!")
+    return {
+        "message": "OK",
+        "status": 200,
+        "user": {
+            "id": 1,
+            "first_name": "alexander",
+            "last_name": "stefanov",
+            "email": "stefanov.alexandre@gmail.com",
+        },
+    }
+
+
+@app.post("/logout/")
+async def logout():
+    # raise HTTPException(status_code=400, detail="Password or username is incorrect!")
+    return {"message": "OK", "status": 200}
 
 
 @app.get("/apiaries/", response_model=list[schemas.Apiary])

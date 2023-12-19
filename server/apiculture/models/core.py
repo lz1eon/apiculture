@@ -19,8 +19,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     first_name: Mapped[str] = mapped_column(String(255))
     last_name: Mapped[str] = mapped_column(String(255))
-    username: Mapped[str] = mapped_column(String(255))
     email: Mapped[str]
+    password: Mapped[str]
 
 
 class Apiary(Base):
