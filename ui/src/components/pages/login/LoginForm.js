@@ -109,13 +109,13 @@ const LoginForm = () => {
                 </p> */}
                 <form onSubmit={handleSubmit}>
                     <div className={'my-3'}>
-                        <label className={'text-sm mb-1 inline-block'}>Потребителско име</label>
+                        <label className={'text-sm mb-1 inline-block'}>Имейл</label>
                         <input
                             type="text"
                             className={
                                 'p-2 rounded-lg w-full border-2 focus:border-primary hover:border-gray-400 outline-none dark:bg-gray-700'
                             }
-                            placeholder={'Потребителско име'}
+                            placeholder={'Имейл'}
                             name={'username'}
                             onChange={handleChange}
                             autoComplete={'off'}

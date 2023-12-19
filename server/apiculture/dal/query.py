@@ -1,11 +1,14 @@
 from uuid import UUID
 from sqlalchemy.orm import Session
-from apiculture.models.core import Apiary, Hive
+from apiculture.models.core import User, Apiary, Hive
 
 PAGE_SIZE = 100
 
+def get_user(db: Session, user_id: int):
+    return db.query(User).filter(User.id == user_id).first()
 
-def get_apiary(db: Session, apiary_id: UUID):
+
+def get_apiary(db: Session, apiary_id: int):
     return db.query(Apiary).filter(Apiary.id == apiary_id).first()
 
 
@@ -17,7 +20,7 @@ def get_apiaries_count(db: Session):
     return db.query(Apiary).count()
 
 
-def get_hive(db: Session, hive_id: UUID):
+def get_hive(db: Session, hive_id: int):
     return db.query(Hive).filter(Hive.id == hive_id).first()
 
 

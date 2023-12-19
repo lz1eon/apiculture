@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { PrivateRoute } from './use-cases';
+import { RequireLogin } from './components/RequireLogin';
 import {
   Home, Login, NotFound, AboutPage, ContactsPage, ApiaryList, HiveList,
   ApiaryDetail 
@@ -17,40 +17,22 @@ function App() {
       <BrowserRouter basename={''}>
           <Header/>
           <Routes>
-            <Route
-                path={'/'}
-                element={
-                    <Home />
-                }
-            />                
-            <Route
-                path={'/apiaries'}
-                element={
-                  <PrivateRoute>
-                    <ApiaryList />
-                  </PrivateRoute>
-                }
-            />
-            <Route
-                path={'/apiaries/:id'}
-                element={
-                  <PrivateRoute>
-                    <ApiaryDetail/>
-                  </PrivateRoute>
-                }
-            />                
-            <Route
-                path={'/hives'}
-                element={
-                  <PrivateRoute>
-                    <HiveList />
-                  </PrivateRoute>
-                }
-            />
+            <Route path={'/'} element={<Home />}/>        
             <Route path={'/login'} element={<Login />}/>
             <Route path={'/about'} element={<AboutPage />}/>
             <Route path={'/contacts'} element={<ContactsPage />}/>
-            <Route path="*" element={<NotFound />} />
+
+            // Paths that require login
+            <Route path="*" element={
+              <RequireLogin>
+                <Routes>
+                  <Route path={'/apiaries'} element={<ApiaryList />}/>
+                  <Route path={'/apiaries/:id'} element={<ApiaryDetail/>}/>                
+                  <Route path={'/hives'} element={<HiveList />}/>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </RequireLogin>
+            } />                                  
           </Routes>
           <Footer/>
       </BrowserRouter>

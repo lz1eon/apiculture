@@ -15,9 +15,9 @@ export const Login = () => {
       }>
 
       <Typography variant="h2" component="h2">Пчелинът</Typography>
+      <LoginForm />
       <img src={logo} className="App-logo" alt="logo" />
     
-      <LoginForm />
     </div>
   )
 }

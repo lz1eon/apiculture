@@ -1,6 +1,8 @@
-from apiculture.models.core import Apiary, Hive
+from passlib.context import CryptContext
+from apiculture.models.core import User, Apiary, Hive
 from apiculture.models.enum import ApiaryTypes, HiveTypes, HiveModels
 from apiculture.database import SessionLocal
+
 
 def create_sample_apiaries(db):
     apiaries = [
@@ -42,6 +44,19 @@ def create_sample_data(db):
     create_sample_apiaries(db)
     create_sample_hives(db)
 
+
+def create_user(email, password, first_name="", last_name=""):
+    db = SessionLocal()
+
+    # Hash user password
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    hashed_password = pwd_context.hash(password)
+
+    # Save user to Database
+    user = User(email=email, password=hashed_password, first_name=first_name, last_name=last_name)
+    db.add(user)
+    db.commit()
+    print(f"User {email} created.")
 
 if __name__ == "__main__":
     db = SessionLocal()
