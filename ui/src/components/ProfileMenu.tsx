@@ -10,7 +10,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../hooks/useAuth';
 import { User } from '../models/user';
-import Client from '../api';
+import client from '../api';
 
 
 export default function ProfileMenu() {
@@ -27,7 +27,6 @@ export default function ProfileMenu() {
   const { user, logoutUser } = useAuth();
 
   const logout = () => {
-    const client = new Client();
     client.logout()
       .then(() => {
         logoutUser();

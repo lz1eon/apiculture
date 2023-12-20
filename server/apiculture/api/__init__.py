@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_auth_middleware import AuthMiddleware
@@ -11,14 +11,15 @@ from apiculture.api import schemas
 from apiculture.api.auth import (
     authenticate_user,
     create_access_token,
-    verify_authorization_header, register_user,
+    verify_authorization_header,
+    register_user,
 )
 from apiculture.api.schemas import UserSchema, UserCreateSchema
-from apiculture.dal.query import get_apiaries, get_hives
+from apiculture.dal.query import get_apiaries, get_hives, get_apiary
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 
 Base.metadata.create_all(bind=engine)
@@ -41,16 +42,22 @@ app.add_middleware(
 
 
 @app.get("/apiaries/", response_model=list[schemas.ApiarySchema])
-async def apiaries(db: Session = Depends(get_db)):
-    return get_apiaries(db)
+async def apiaries(request: Request, db: Session = Depends(get_db)):
+    return get_apiaries(db, request.user)
+
+
+@app.get("/apiaries/{apiary_id}/", response_model=schemas.ApiarySchema)
+async def apiary(apiary_id, request: Request, db: Session = Depends(get_db)):
+    return get_apiary(db, request.user, apiary_id)
 
 
 @app.get("/apiaries/{apiary_id}/hives/", response_model=list[schemas.HiveSchema])
-async def hives(apiary_id: int, db: Session = Depends(get_db)):
-    return get_hives(db, apiary_id=apiary_id)
+async def hives(request: Request, apiary_id: int, db: Session = Depends(get_db)):
+    return get_hives(db, request.user, apiary_id=apiary_id)
 
 
 # Authentication Paths #
+
 
 @app.post("/register/")
 async def register(user_data: UserCreateSchema):
@@ -61,7 +68,12 @@ async def register(user_data: UserCreateSchema):
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
-    user_data = UserSchema(id=user.id, email=user.email, first_name=user.first_name, last_name=user.last_name)
+    user_data = UserSchema(
+        id=user.id,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+    )
     return {"access_token": access_token, "token_type": "bearer", "user": user_data}
 
 
@@ -87,7 +99,12 @@ async def login_for_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
 
-    user_data = UserSchema(id=user.id, email=user.email, first_name=user.first_name, last_name=user.last_name)
+    user_data = UserSchema(
+        id=user.id,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+    )
     return {"access_token": access_token, "token_type": "bearer", "user": user_data}
 
 

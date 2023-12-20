@@ -1,9 +1,9 @@
 import datetime
 import uuid
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -25,9 +25,11 @@ class Apiary(Base):
     __tablename__ = "apiary"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     number: Mapped[str]
     name: Mapped[str]
     type: Mapped[Optional[int]]
+    hives: Mapped[Optional[List["Hive"]]] = relationship()
 
 
 class Hive(Base):

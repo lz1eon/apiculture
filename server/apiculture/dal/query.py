@@ -15,12 +15,13 @@ def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
 
 
-def get_apiary(db: Session, apiary_id: int):
-    return db.query(Apiary).filter(Apiary.id == apiary_id).first()
+def get_apiary(db: Session, user, apiary_id: int):
+    # TODO: use Joins to get all hives for all apiaries at once
+    return db.query(Apiary).filter(Apiary.id == apiary_id).filter(Apiary.owner_id == user.id).first()
 
 
-def get_apiaries(db: Session, skip: int = 0, limit: int = PAGE_SIZE):
-    return db.query(Apiary).offset(skip).limit(limit).all()
+def get_apiaries(db: Session, user, skip: int = 0, limit: int = PAGE_SIZE):
+    return db.query(Apiary).filter(Apiary.owner_id == user.id).offset(skip).limit(limit).all()
 
 
 def get_apiaries_count(db: Session):
@@ -32,7 +33,7 @@ def get_hive(db: Session, hive_id: int):
 
 
 def get_hives(
-    db: Session, apiary_id: int = None, skip: int = 0, limit: int = PAGE_SIZE
+    db: Session, user, apiary_id: int = None, skip: int = 0, limit: int = PAGE_SIZE
 ):
     if not apiary_id:
         hives = db.query(Hive).offset(skip).limit(limit).all()

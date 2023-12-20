@@ -5,7 +5,12 @@ from apiculture.models.core import Apiary, Hive, User
 
 
 def create_user(db: Session, user: schemas.UserCreateSchema):
-    db_user = User(email=user.email, password=user.password, first_name=user.first_name, last_name=user.last_name)
+    db_user = User(
+        email=user.email,
+        password=user.password,
+        first_name=user.first_name,
+        last_name=user.last_name,
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

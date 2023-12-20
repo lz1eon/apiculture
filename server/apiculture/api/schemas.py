@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 
 from pydantic import BaseModel
 
@@ -14,6 +15,7 @@ class UserCreateSchema(BaseModel):
     """
     Used on user registration.
     """
+
     password: str
     email: str
     first_name: str
@@ -34,25 +36,6 @@ class TokenDataSchema(BaseModel):
     username: str | None = None
 
 
-class ApiaryBaseSchema(BaseModel):
-    name: str
-    number: str
-    type: int | None = None
-
-
-class ApiaryCreateSchema(ApiaryBaseSchema):
-    pass
-
-
-class ApiarySchema(ApiaryBaseSchema):
-    id: int
-    created_datetime: datetime.datetime | None = None
-    updated_datetime: datetime.datetime | None = None
-
-    class Config:
-        orm_mode = True
-
-
 class HiveBaseSchema(BaseModel):
     number: str
     apiary_id: int
@@ -67,6 +50,26 @@ class HiveCreateSchema(HiveBaseSchema):
 
 class HiveSchema(HiveBaseSchema):
     id: int
+    created_datetime: datetime.datetime | None = None
+    updated_datetime: datetime.datetime | None = None
+
+    class Config:
+        orm_mode = True
+
+
+class ApiaryBaseSchema(BaseModel):
+    name: str
+    number: str
+    type: int | None = None
+
+
+class ApiaryCreateSchema(ApiaryBaseSchema):
+    pass
+
+
+class ApiarySchema(ApiaryBaseSchema):
+    id: int
+    hives: List[HiveSchema] = []
     created_datetime: datetime.datetime | None = None
     updated_datetime: datetime.datetime | None = None
 

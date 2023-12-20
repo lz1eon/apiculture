@@ -3,7 +3,7 @@ import { Navigate, Link } from 'react-router-dom';
 import {Modal} from '../../common';
 import Button from '@mui/material/Button';
 import { useAuth } from '../../../hooks/useAuth';
-import Client from '../../../api';
+import client from '../../../api';
 
 const LoginForm = () => {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -35,7 +35,6 @@ const LoginForm = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         
-        const client = new Client();
         client.login(inputs)
             .then((response) => {
                 if (response.data.access_token !== '' && response.data.access_token !== undefined) {                    

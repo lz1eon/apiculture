@@ -101,8 +101,8 @@ def verify_authorization_header(headers) -> Tuple[List[str], User]:
         headers={"WWW-Authenticate": "Bearer"},
     )
     # try:
-        # Extract token from header
-    scheme, _, token = headers['authorization'].partition(" ")
+    # Extract token from header
+    scheme, _, token = headers["authorization"].partition(" ")
     if scheme.lower() != "bearer":
         raise credentials_exception
 

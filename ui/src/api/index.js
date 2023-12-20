@@ -15,7 +15,7 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-
+// TODO: logout the user automatically when 400 Signatures has expired is received
 class Client {
     register(data) {
         // axios is used on purpose so no Authorization header is added to the request        
@@ -33,7 +33,15 @@ class Client {
     logout() {
         return api.post('/logout/');
     }
+
+    getApiaries() {
+        return api.get('/apiaries/');
+    }
+
+    getApiary(id) {
+        return api.get(`/apiaries/${id}/`);
+    }
 };
 
-
-export default Client;
+const client = new Client();
+export default client;
