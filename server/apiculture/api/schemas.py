@@ -3,17 +3,48 @@ import datetime
 from pydantic import BaseModel
 
 
-class ApiaryBase(BaseModel):
+class UserSchema(BaseModel):
+    id: int
+    email: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+
+
+class UserCreateSchema(BaseModel):
+    """
+    Used on user registration.
+    """
+    password: str
+    email: str
+    first_name: str
+    last_name: str
+
+
+class UserInDBSchema(UserSchema):
+    hashed_password: str
+
+
+class TokenUserSchema(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserSchema
+
+
+class TokenDataSchema(BaseModel):
+    username: str | None = None
+
+
+class ApiaryBaseSchema(BaseModel):
     name: str
     number: str
     type: int | None = None
 
 
-class ApiaryCreate(ApiaryBase):
+class ApiaryCreateSchema(ApiaryBaseSchema):
     pass
 
 
-class Apiary(ApiaryBase):
+class ApiarySchema(ApiaryBaseSchema):
     id: int
     created_datetime: datetime.datetime | None = None
     updated_datetime: datetime.datetime | None = None
@@ -22,7 +53,7 @@ class Apiary(ApiaryBase):
         orm_mode = True
 
 
-class HiveBase(BaseModel):
+class HiveBaseSchema(BaseModel):
     number: str
     apiary_id: int
     model: int | None = None
@@ -30,11 +61,11 @@ class HiveBase(BaseModel):
     status: str | None = None
 
 
-class HiveCreate(HiveBase):
+class HiveCreateSchema(HiveBaseSchema):
     pass
 
 
-class Hive(HiveBase):
+class HiveSchema(HiveBaseSchema):
     id: int
     created_datetime: datetime.datetime | None = None
     updated_datetime: datetime.datetime | None = None

@@ -377,6 +377,27 @@ typing-extensions = ">=4.8.0"
 all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.5)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "fastapi-auth-middleware"
+version = "1.0.2"
+description = "Lightweight auth middleware for FastAPI that just works. Fits most auth workflows with only a few lines of code. "
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "fastapi_auth_middleware-1.0.2-py3-none-any.whl", hash = "sha256:c96a9a15dcd22c3801dadb8b45f7a73070f2edabd52e0846bdfe7bcbfaae8fe7"},
+    {file = "fastapi_auth_middleware-1.0.2.tar.gz", hash = "sha256:e1eea9cfced9edd5dc433ee71499260a5a562cc2c258aa459b1dbb761c4120cd"},
+]
+
+[package.dependencies]
+anyio = ">=3.5.0"
+fastapi = ">=0.73.0"
+idna = ">=3.3"
+pydantic = ">=1.9.0"
+python-jose = ">=3.3.0"
+sniffio = ">=1.2.0"
+starlette = ">=0.17.1"
+typing_extensions = ">=4.0.1"
+
+[[package]]
 name = "greenlet"
 version = "3.0.2"
 description = "Lightweight in-process concurrent programming"
@@ -1273,4 +1294,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "399ed09a7288674b4a64d36034c419c03828cf70fb33bbb50316b02ce22dc63b"
+content-hash = "c6b7cd852fdb8b6e530feb82aee60fb4c45ea7c6c7d7c8e4498ad2d22f860cd7"

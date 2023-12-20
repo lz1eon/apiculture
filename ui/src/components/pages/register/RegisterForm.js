@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import { useAuth } from '../../../hooks/useAuth';
 import Client from '../../../api';
 
-const LoginForm = () => {
+const RegisterForm = () => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [inputs, setInputs] = useState({
         username: '',
@@ -36,7 +36,7 @@ const LoginForm = () => {
         event.preventDefault();
         
         const client = new Client();
-        client.login(inputs)
+        client.register(inputs)
             .then((response) => {
                 if (response.data.access_token !== '' && response.data.access_token !== undefined) {                    
                     const user = response.data.user;
@@ -46,6 +46,7 @@ const LoginForm = () => {
                 }
             })
             .catch((error) => {
+                console.log(error);
                 setLoggedIn(false);
                 setStatus({
                     type: 'danger',
@@ -82,16 +83,42 @@ const LoginForm = () => {
                         'font-thin text-3xl text-center mb-6 flex items-end justify-center items-center'
                     }>
                     <span className={'font-bold pr-2 mr-2 border-gray-500 text-4xl'}>
-                        Вход
+                        Създаване на акаунт
                     </span>
                 </h1>
                 <p className={'text-center text-sm mb-8 text-gray-800'}>
-                    Не сте регистриран?{' '}
-                    <Link className={'font-bold hover:text-black'} to={'/register'}>
-                        Регистрирай се
+                    Ако вече имате акаунт {' '}
+                    <Link className={'font-bold hover:text-black'} to={'/login'}>
+                        влезте
                     </Link>
                 </p>
                 <form onSubmit={handleSubmit}>
+                    <div className={'my-3'}>
+                        <label className={'text-sm mb-1 inline-block'}>Име</label>
+                        <input
+                            type="text"
+                            className={
+                                'p-2 rounded-lg w-full border-2 focus:border-primary hover:border-gray-400 outline-none dark:bg-gray-700'
+                            }
+                            placeholder={'Име'}
+                            name={'first_name'}
+                            onChange={handleChange}
+                            autoComplete={'off'}
+                        />
+                    </div>
+                    <div className={'my-3'}>
+                        <label className={'text-sm mb-1 inline-block'}>Фамилия</label>
+                        <input
+                            type="text"
+                            className={
+                                'p-2 rounded-lg w-full border-2 focus:border-primary hover:border-gray-400 outline-none dark:bg-gray-700'
+                            }
+                            placeholder={'Фамилия'}
+                            name={'last_name'}
+                            onChange={handleChange}
+                            autoComplete={'off'}
+                        />
+                    </div>
                     <div className={'my-3'}>
                         <label className={'text-sm mb-1 inline-block'}>Имейл</label>
                         <input
@@ -100,7 +127,7 @@ const LoginForm = () => {
                                 'p-2 rounded-lg w-full border-2 focus:border-primary hover:border-gray-400 outline-none dark:bg-gray-700'
                             }
                             placeholder={'Имейл'}
-                            name={'username'}
+                            name={'email'}
                             onChange={handleChange}
                             autoComplete={'off'}
                         />
@@ -117,14 +144,9 @@ const LoginForm = () => {
                             onChange={handleChange}
                         />
                     </div>
-                    <p className={'text-center text-sm mb-8 text-gray-800'}>
-                        <Link className={'font-bold hover:text-black'} to={'/forgotten-password'}>
-                            Забравена парола?
-                        </Link>
-                    </p>                    
                     <div className={'flex justify-end mt-6'}>
                         <Button type={'submit'} className={'py-3 btn-primary'} variant='contained'>
-                            Влез
+                            Създай акаунт
                         </Button>
                     </div>
                 </form>
@@ -141,4 +163,4 @@ const LoginForm = () => {
 };
 
 
-export default LoginForm;
+export default RegisterForm;

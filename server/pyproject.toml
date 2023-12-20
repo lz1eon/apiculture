@@ -15,6 +15,7 @@ sqlalchemy = "^2.0.23"
 python-multipart = "^0.0.6"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+fastapi-auth-middleware = "^1.0.2"
 
 
 [tool.poetry.group.dev.dependencies]

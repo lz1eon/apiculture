@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { RequireLogin } from './components/RequireLogin';
 import {
-  Home, Login, NotFound, AboutPage, ContactsPage, ApiaryList, HiveList,
+  Home, Login, Register, NotFound, About, Contacts, ApiaryList, HiveList,
   ApiaryDetail 
 } from "./components/pages";
 import { Header, Footer } from './components/template';
@@ -19,8 +19,9 @@ function App() {
           <Routes>
             <Route path={'/'} element={<Home />}/>        
             <Route path={'/login'} element={<Login />}/>
-            <Route path={'/about'} element={<AboutPage />}/>
-            <Route path={'/contacts'} element={<ContactsPage />}/>
+            <Route path={'/register'} element={<Register />}/>
+            <Route path={'/about'} element={<About />}/>
+            <Route path={'/contacts'} element={<Contacts />}/>
 
             // Paths that require login
             <Route path="*" element={

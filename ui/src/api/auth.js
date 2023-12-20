@@ -1,10 +1,9 @@
-const api_base = process.env.REACT_APP_API_BASE;
+import client from "."
 
 export function login() {
-    fetch(`${api_base}/login/`, {
-        method: 'post',
+    client.post(`/login/`, {
         body: JSON.stringify(inputs),
     })
         .then((res) => res.json())
-        .then((result) => {}
+        .then((result) => {})
 }

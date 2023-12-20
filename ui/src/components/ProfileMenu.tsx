@@ -10,6 +10,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../hooks/useAuth';
 import { User } from '../models/user';
+import Client from '../api';
 
 
 export default function ProfileMenu() {
@@ -23,17 +24,13 @@ export default function ProfileMenu() {
   };
 
   const navigateTo = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logoutUser } = useAuth();
 
-  const logoutUser = () => {
-    let api_base = process.env.REACT_APP_API_BASE;
-
-    fetch(`${api_base}/logout/`, {
-      method: 'post',
-      body: '',
-    })
+  const logout = () => {
+    const client = new Client();
+    client.logout()
       .then(() => {
-        logout();
+        logoutUser();
         navigateTo('/')
       });
   }

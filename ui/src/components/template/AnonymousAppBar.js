@@ -20,7 +20,9 @@ export const AnonymousAppBar = () => {
             </Button>
             <Button variant="h6" component={Link} to="/contacts">
               Свържи се с нас
-            </Button>          
+            </Button>
+            <div style={{display: 'inline', marginRight: '5px'}}>|</div>          
+            <Button component={Link} to="/register" color="inherit">Регистрация</Button>            
             <Button component={Link} to="/login" color="inherit">Вход</Button>
           </div>
         </Toolbar>

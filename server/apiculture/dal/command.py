@@ -1,9 +1,18 @@
 from sqlalchemy.orm import Session
+
 from apiculture.api import schemas
-from apiculture.models.core import Apiary, Hive
+from apiculture.models.core import Apiary, Hive, User
 
 
-def create_apiary(db: Session, apiary: schemas.ApiaryCreate):
+def create_user(db: Session, user: schemas.UserCreateSchema):
+    db_user = User(email=user.email, password=user.password, first_name=user.first_name, last_name=user.last_name)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+def create_apiary(db: Session, apiary: schemas.ApiaryCreateSchema):
     db_apiary = Apiary(number=apiary.number, name=apiary.name, type=apiary.type)
     db.add(db_apiary)
     db.commit()
@@ -11,7 +20,7 @@ def create_apiary(db: Session, apiary: schemas.ApiaryCreate):
     return db_apiary
 
 
-def create_hive(db: Session, hive: schemas.HiveCreate):
+def create_hive(db: Session, hive: schemas.HiveCreateSchema):
     db_hive = Hive(
         number=hive.number,
         apiary_id=hive.apiary_id,

@@ -4,7 +4,6 @@ from sqlalchemy.orm import sessionmaker
 
 from apiculture.config import settings
 
-
 url = URL.create(
     drivername="postgresql",
     username=settings.DATABASE_USER,
@@ -15,3 +14,12 @@ url = URL.create(
 engine = create_engine(url, echo=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_db():
+    db = SessionLocal()
+    return db
+    # try:
+    #     yield db
+    # finally:
+    #     db.close()

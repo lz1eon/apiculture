@@ -1,75 +1,82 @@
 from datetime import datetime, timedelta
-from typing import Annotated
+from typing import List, Tuple
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from jose import jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel
-from apiculture.config import settings
 
+from apiculture.api.schemas import TokenDataSchema
+from apiculture.config import settings
+from apiculture.dal.command import create_user
+from apiculture.dal.query import get_user_by_email
+from apiculture.database import get_db
+from apiculture.models import User
 
 ALGORITHM = "HS256"
 
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-class UserSchema(BaseModel):
-    username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
-
-
-class UserInDBSchema(UserSchema):
-    hashed_password: str
-
-
-class TokenSchema(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenDataSchema(BaseModel):
-    username: str | None = None
 
 
 def get_user(username: str):
-    if username in fake_users_db:
-        user_dict = fake_users_db[username]
-        return UserInDBSchema(**user_dict)
+    # TODO: implement caching mechanism
+    db = get_db()
+    return get_user_by_email(db, username)
 
 
 def verify_password(plain_password, hashed_password):
+    """
+    Compare plain password against a hashed password.
+
+    :param plain_password:
+    :param hashed_password:
+    :return:
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password):
+    """
+    Hash the password.
+
+    :param password:
+    :return:
+    """
     return pwd_context.hash(password)
 
 
 def authenticate_user(username: str, password: str):
+    """
+    Verify user's username (email) and password to log him in.
+
+    :param username: the email actually
+    :param password:
+    :return:
+    """
     user = get_user(username)
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password):
         return False
     return user
 
 
+def register_user(user_data):
+    # send verification email
+    user_data.password = get_password_hash(user_data.password)
+    return create_user(get_db(), user_data)
+
+
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    """
+    Create an access token to return to successfully logged user.
+
+    :param data:
+    :param expires_delta:
+    :return: encoded JWT
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -80,30 +87,38 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-# Dependency
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+def verify_authorization_header(headers) -> Tuple[List[str], User]:
+    """
+    Verify that the token in Authorization header is valid.
+    Used by AuthMiddleware.
+
+    :param headers: http connection headers
+    :return: scopes and user object
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenDataSchema(username=username)
-    except JWTError:
+    # try:
+        # Extract token from header
+    scheme, _, token = headers['authorization'].partition(" ")
+    if scheme.lower() != "bearer":
         raise credentials_exception
+
+    # Decode token to get username
+    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+    username: str = payload.get("sub")
+    if username is None:
+        raise credentials_exception
+    token_data = TokenDataSchema(username=username)
+    # except JWTError:
+    #     raise credentials_exception
+
+    # Try getting user from database (or cache)
     user = get_user(username=token_data.username)
     if user is None:
         raise credentials_exception
-    return user
 
-
-async def get_current_active_user(
-    current_user: Annotated[UserSchema, Depends(get_current_user)]
-):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+    scopes = []
+    return scopes, user

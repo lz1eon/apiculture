@@ -3,7 +3,7 @@ import { List, ListItem, Paper } from '@mui/material';
 import logo from '../home/beekeeper.jpg';
 import '../home/home.css';
 
-export const AboutPage = () => {
+export const About = () => {
     return (
         <div className={"flex flex-col min-h-screen items-center justify-center dark:bg-gray-800 dark:text-white"}>        
             <Typography variant="h3" component="h2">За Пчелинът</Typography>
