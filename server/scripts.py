@@ -28,20 +28,28 @@ def create_sample_hives(db, user):
     apiary_3 = apiaries[2]
 
     hives = [
-        Hive(number="0001", apiary_id=apiary_1.id),
-        Hive(number="0002", apiary_id=apiary_1.id),
-        Hive(number="0003", apiary_id=apiary_1.id, type=HiveTypes.NUCLEUS_COLONY.value),
+        Hive(number="001", apiary_id=apiary_1.id, x=10, y=10),
+        Hive(number="002", apiary_id=apiary_1.id, model=HiveModels.FARAR.value, x=20, y=20),
+        Hive(number="003", apiary_id=apiary_1.id, model=HiveModels.OTHER.value, x=10, y=30),
+        Hive(number="004", apiary_id=apiary_1.id, type=HiveTypes.NUCLEUS_COLONY.value, x=20, y=10),
+        Hive(number="005", apiary_id=apiary_1.id, x=40, y=20),
+        Hive(number="006", apiary_id=apiary_1.id, model=HiveModels.OTHER.value, x=20, y=30),
+        Hive(number="007", apiary_id=apiary_1.id, x=50, y=10),
+        Hive(number="008", apiary_id=apiary_1.id, model=HiveModels.LANGSTROTH.value, x=50, y=30),
+        Hive(number="009", apiary_id=apiary_1.id, x=60, y=20),
         Hive(
-            number="0004",
+            number="010",
             apiary_id=apiary_1.id,
-            type=HiveTypes.SWARD.value,
-            model=HiveModels.OTHER.value,
+            type=HiveTypes.SWARM.value,
+            model=HiveModels.LANGSTROTH.value,
+            x=70,
+            y=20
         ),
-        Hive(number="0001", apiary_id=apiary_2.id, model=HiveModels.FARAR.value),
-        Hive(number="0002", apiary_id=apiary_2.id),
-        Hive(number="0003", apiary_id=apiary_2.id),
-        Hive(number="0001", apiary_id=apiary_3.id),
-        Hive(number="0002", apiary_id=apiary_3.id),
+        Hive(number="001", apiary_id=apiary_2.id, model=HiveModels.FARAR.value, x=10, y=10),
+        Hive(number="0002", apiary_id=apiary_2.id, x=40, y=10),
+        Hive(number="003", apiary_id=apiary_2.id, x=10, y=20),
+        Hive(number="001", apiary_id=apiary_3.id, x=10, y=10),
+        Hive(number="002", apiary_id=apiary_3.id, x=20, y=10),
     ]
 
     db.add_all(hives)
@@ -75,8 +83,9 @@ def create_user(email, password, first_name="", last_name=""):
 
 if __name__ == "__main__":
     db = SessionLocal()
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     create_user("stefanov.alexandre@gmail.com", "alex", "Александър", "Стефанов")
-    create_user("viki@gmail.com", "viki", "Виктор", "Стефанов")
+    # create_user("viki@gmail.com", "viki", "Виктор", "Стефанов")
     user = db.query(User).filter(User.email == "stefanov.alexandre@gmail.com").first()
     create_sample_data(db, user)

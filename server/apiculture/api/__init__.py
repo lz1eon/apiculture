@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, status, Request
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_auth_middleware import AuthMiddleware
@@ -11,11 +11,12 @@ from apiculture.api import schemas
 from apiculture.api.auth import (
     authenticate_user,
     create_access_token,
-    verify_authorization_header,
+    handle_auth_error,
     register_user,
+    verify_authorization_header,
 )
-from apiculture.api.schemas import UserSchema, UserCreateSchema
-from apiculture.dal.query import get_apiaries, get_hives, get_apiary
+from apiculture.api.schemas import UserCreateSchema, UserSchema
+from apiculture.dal.query import get_apiaries, get_apiary, get_hives
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
 
@@ -29,6 +30,7 @@ app = FastAPI()
 app.add_middleware(
     AuthMiddleware,
     verify_header=verify_authorization_header,
+    auth_error_handler=handle_auth_error,
     excluded_urls=["/register/", "/login/"],
 )
 

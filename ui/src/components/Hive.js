@@ -19,6 +19,10 @@ export const Hive = ({hive}) => {
           </Typography>
           <Typography variant="body2">
             {hive.status}
+            <br/>
+            x: {hive.x}
+            <br/>
+            y: {hive.y}
           </Typography>
         </CardContent>
         <CardActions>

@@ -11,9 +11,9 @@ export const ApiaryList = () => {
 
     useEffect(() => {
         client.getApiaries()
-        .then((response) => {
+          .then((response) => {
             setApiaries(response.data);
-        });
+          });
     }, []);
   
 

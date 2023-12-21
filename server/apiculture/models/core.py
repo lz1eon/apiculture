@@ -1,9 +1,12 @@
 import datetime
 import uuid
-from typing import Optional, List
+from dataclasses import dataclass
+from typing import List, Optional
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+from apiculture.models.enum import HiveModels, HiveTypes, ApiaryTypes
 
 
 class Base(DeclarativeBase):
@@ -28,7 +31,8 @@ class Apiary(Base):
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     number: Mapped[str]
     name: Mapped[str]
-    type: Mapped[Optional[int]]
+    type: Mapped[Optional[int]] = mapped_column(
+        default=ApiaryTypes.IMMOBILE.value)
     hives: Mapped[Optional[List["Hive"]]] = relationship()
 
 
@@ -38,9 +42,13 @@ class Hive(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     number: Mapped[str]
     apiary_id: Mapped[int] = mapped_column(ForeignKey("apiary.id"))
-    model: Mapped[Optional[int]]
-    type: Mapped[Optional[int]]
+    model: Mapped[Optional[int]] = mapped_column(
+        default=HiveModels.DADAN_BLAT.value)
+    type: Mapped[Optional[int]] = mapped_column(
+        default=HiveTypes.BEE_FAMILY.value)
     status: Mapped[Optional[str]]
+    x: Mapped[Optional[int]] = mapped_column(default=0)
+    y: Mapped[Optional[int]] = mapped_column(default=0)
 
     class Meta:
         unique_together = ("apiary_id", "number")

@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 from typing import List, Tuple
 
 from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
+from jose import ExpiredSignatureError, JWTError, jwt
 from passlib.context import CryptContext
 
 from apiculture.api.schemas import TokenDataSchema
@@ -22,7 +23,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_user(username: str):
     # TODO: implement caching mechanism
-    db = get_db()
+    db = next(get_db())
     return get_user_by_email(db, username)
 
 
@@ -87,6 +88,19 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
+def handle_auth_error(request, auth_error):
+    """
+    Handle any error that occurred during verifying user access token.
+
+    :param request:
+    :param auth_error: starlette.AuthenticationError that occurred
+    :return:
+    """
+    return JSONResponse(
+        {"error": "Token expired or invalid"}, status_code=status.HTTP_401_UNAUTHORIZED
+    )
+
+
 def verify_authorization_header(headers) -> Tuple[List[str], User]:
     """
     Verify that the token in Authorization header is valid.
@@ -100,20 +114,20 @@ def verify_authorization_header(headers) -> Tuple[List[str], User]:
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    # try:
-    # Extract token from header
-    scheme, _, token = headers["authorization"].partition(" ")
-    if scheme.lower() != "bearer":
-        raise credentials_exception
+    try:
+        # Extract token from header
+        scheme, _, token = headers["authorization"].partition(" ")
+        if scheme.lower() != "bearer":
+            raise credentials_exception
 
-    # Decode token to get username
-    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-    username: str = payload.get("sub")
-    if username is None:
+        # Decode token to get username
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenDataSchema(username=username)
+    except JWTError:
         raise credentials_exception
-    token_data = TokenDataSchema(username=username)
-    # except JWTError:
-    #     raise credentials_exception
 
     # Try getting user from database (or cache)
     user = get_user(username=token_data.username)

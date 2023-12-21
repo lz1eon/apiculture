@@ -26,9 +26,9 @@ function App() {
             // Paths that require login
             <Route path="*" element={
               <RequireLogin>
-                <Routes>
-                  <Route path={'/apiaries'} element={<ApiaryList />}/>
+                <Routes>                  
                   <Route path={'/apiaries/:id'} element={<ApiaryDetail/>}/>                
+                  <Route path={'/apiaries'} element={<ApiaryList />}/>
                   <Route path={'/hives'} element={<HiveList />}/>
                   <Route path="*" element={<NotFound />} />
                 </Routes>

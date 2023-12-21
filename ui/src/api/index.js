@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE;
 const api = axios.create();
 
@@ -15,7 +16,15 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// TODO: logout the user automatically when 400 Signatures has expired is received
+// Log the user out when status 401 is received for whatever reason
+// api.interceptors.response.use(
+//     (response) => {return response;},
+//     (error) => {
+//         console.log('errrrr')
+//     }
+// );
+
+
 class Client {
     register(data) {
         // axios is used on purpose so no Authorization header is added to the request        
@@ -41,6 +50,55 @@ class Client {
     getApiary(id) {
         return api.get(`/apiaries/${id}/`);
     }
+
+    // get(url, config) {
+    //     return api.get(url, config)
+    //                 .catch(error => {
+    //                     if (error.response.status == 401) {
+    //                       console.log('User should be logged out')
+    //                     } else {
+    //                       console.log(error);
+    //                     }                    
+    //                     return Promise.resolve(error);
+    //                 });
+    // }
+
+    // post(url, data, config) {
+    //     return api.post(url, data, config)
+    //                 .catch(error => {
+    //                     if (error.response.status == 401) {
+    //                       console.log('User should be logged out')
+    //                     } else {
+    //                       console.log(error);
+    //                     }                    
+    //                     return Promise.reject(error);
+    //                 });
+
+    // }
+
+    // put(url, data, config) {
+    //     return api.put(url, data, config)
+    //                 .catch(error => {
+    //                     if (error.response.status == 401) {
+    //                       console.log('User should be logged out')
+    //                     } else {
+    //                       console.log(error);
+    //                     }               
+    //                     return Promise.reject(error);     
+    //                 });       
+    // }
+
+    // delete(url, data, config) {
+    //     return api.delete(url, data, config)
+    //                 .catch(error => {
+    //                     if (error.response.status == 401) {
+    //                       console.log('User should be logged out')
+    //                     } else {
+    //                       console.log(error);
+    //                     }     
+    //                     return Promise.reject(error);               
+    //                 });     
+    // }
 };
 
 const client = new Client();

@@ -8,18 +8,18 @@ class CommonEnum(Enum):
 
 
 class ApiaryTypes(CommonEnum):
-    IMMOBILE = 1
-    MOBILE = 2
+    IMMOBILE = 0
+    MOBILE = 1
 
 
 class HiveModels(CommonEnum):
-    OTHER = 1
-    DADAN_BLAT = 2
-    FARAR = 3
-    LANGSTROTH = 4
+    OTHER = 0
+    DADAN_BLAT = 1
+    FARAR = 2
+    LANGSTROTH = 3
 
 
 class HiveTypes(CommonEnum):
-    BEE_FAMILY = 1
-    NUCLEUS_COLONY = 2
-    SWARD = 3
+    BEE_FAMILY = 0
+    NUCLEUS_COLONY = 1
+    SWARM = 2

@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlalchemy.orm import Session
 
 from apiculture.models.core import Apiary, Hive, User
@@ -17,11 +15,22 @@ def get_user_by_email(db: Session, email: str):
 
 def get_apiary(db: Session, user, apiary_id: int):
     # TODO: use Joins to get all hives for all apiaries at once
-    return db.query(Apiary).filter(Apiary.id == apiary_id).filter(Apiary.owner_id == user.id).first()
+    return (
+        db.query(Apiary)
+        .filter(Apiary.id == apiary_id)
+        .filter(Apiary.owner_id == user.id)
+        .first()
+    )
 
 
 def get_apiaries(db: Session, user, skip: int = 0, limit: int = PAGE_SIZE):
-    return db.query(Apiary).filter(Apiary.owner_id == user.id).offset(skip).limit(limit).all()
+    return (
+        db.query(Apiary)
+        .filter(Apiary.owner_id == user.id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def get_apiaries_count(db: Session):

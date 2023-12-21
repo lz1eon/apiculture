@@ -50,6 +50,8 @@ class HiveCreateSchema(HiveBaseSchema):
 
 class HiveSchema(HiveBaseSchema):
     id: int
+    x: int = 0
+    y: int = 0
     created_datetime: datetime.datetime | None = None
     updated_datetime: datetime.datetime | None = None
 
