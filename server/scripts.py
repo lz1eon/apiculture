@@ -46,7 +46,7 @@ def create_sample_hives(db, user):
             y=20
         ),
         Hive(number="001", apiary_id=apiary_2.id, model=HiveModels.FARAR.value, x=10, y=10),
-        Hive(number="0002", apiary_id=apiary_2.id, x=40, y=10),
+        Hive(number="002", apiary_id=apiary_2.id, x=40, y=10),
         Hive(number="003", apiary_id=apiary_2.id, x=10, y=20),
         Hive(number="001", apiary_id=apiary_3.id, x=10, y=10),
         Hive(number="002", apiary_id=apiary_3.id, x=20, y=10),

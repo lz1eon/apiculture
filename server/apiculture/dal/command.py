@@ -1,6 +1,8 @@
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from apiculture.api import schemas
+from apiculture.database import engine
 from apiculture.models.core import Apiary, Hive, User
 
 
@@ -37,3 +39,16 @@ def create_hive(db: Session, hive: schemas.HiveCreateSchema):
     db.commit()
     db.refresh(db_hive)
     return db_hive
+
+
+def update_hive(
+    db: Session, user, hive_id, hive_update: schemas.HiveUpdateSchema
+):
+    stmt = (update(Hive)
+            .where(Hive.id == hive_id)
+            .where(Apiary.id == Hive.apiary_id)
+            .where(Apiary.owner_id == user.id)
+            .values(**hive_update.model_dump(exclude_none=True))
+            )
+    db.execute(stmt)
+    db.commit()

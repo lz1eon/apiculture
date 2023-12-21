@@ -1,21 +1,18 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_auth_middleware import AuthMiddleware
 from sqlalchemy.orm import Session
 
 from apiculture.api import schemas
-from apiculture.api.auth import (
-    authenticate_user,
-    create_access_token,
-    handle_auth_error,
-    register_user,
-    verify_authorization_header,
-)
+from apiculture.api.auth import (authenticate_user, create_access_token,
+                                 handle_auth_error, register_user,
+                                 verify_authorization_header)
 from apiculture.api.schemas import UserCreateSchema, UserSchema
+from apiculture.dal.command import update_hive
 from apiculture.dal.query import get_apiaries, get_apiary, get_hives
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
@@ -56,6 +53,16 @@ async def apiary(apiary_id, request: Request, db: Session = Depends(get_db)):
 @app.get("/apiaries/{apiary_id}/hives/", response_model=list[schemas.HiveSchema])
 async def hives(request: Request, apiary_id: int, db: Session = Depends(get_db)):
     return get_hives(db, request.user, apiary_id=apiary_id)
+
+
+@app.put("/apiaries/{apiary_id}/hives/{hive_id}/")
+async def hive_update(
+    request: Request,
+    hive_id: int,
+    hive_data: schemas.HiveUpdateSchema,
+    db: Session = Depends(get_db),
+):
+    return update_hive(db, request.user, hive_id, hive_data)
 
 
 # Authentication Paths #

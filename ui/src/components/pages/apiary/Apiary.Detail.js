@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import client from '../../../api';
 import { Hive } from '../../Hive';
-import { Markers } from '../../map/Markers';
+import { ApiaryPlan } from '../../map/ApiaryPlan';
 
 export const ApiaryDetail = () => {
   const params = useParams();
@@ -25,7 +25,7 @@ export const ApiaryDetail = () => {
     <div className={"flex flex-col min-h-screen items-center justify-center dark:bg-gray-800 dark:text-white"}>
       <Typography variant="h2" component="h2">Пчелин {apiary.name} ({apiary.number}) {apiary.type}</Typography>
       
-      {apiary ? <Markers hives={apiary.hives}/> : ''}      
+      {apiary ? <ApiaryPlan hives={apiary.hives}/> : ''}      
 
       {/* <ImageList  cols={3} rowHeight={165}>
           {apiary.hives?.map((hive) => (                    

@@ -1,7 +1,7 @@
 import datetime
-from typing import List
+from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UserSchema(BaseModel):
@@ -48,10 +48,19 @@ class HiveCreateSchema(HiveBaseSchema):
     pass
 
 
+class HiveUpdateSchema(BaseModel):
+    number: Optional[str] = None
+    model: Optional[int] = None
+    type: Optional[int] = None
+    status: Optional[str] = None
+    x: Optional[float] = 0.0
+    y: Optional[float] = 0.0
+
+
 class HiveSchema(HiveBaseSchema):
     id: int
-    x: int = 0
-    y: int = 0
+    x: float = 0.0
+    y: float = 0.0
     created_datetime: datetime.datetime | None = None
     updated_datetime: datetime.datetime | None = None
 
