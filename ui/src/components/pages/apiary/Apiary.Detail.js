@@ -23,17 +23,9 @@ export const ApiaryDetail = () => {
 
   return (        
     <div className={"flex flex-col min-h-screen items-center justify-center dark:bg-gray-800 dark:text-white"}>
-      <Typography variant="h2" component="h2">Пчелин {apiary.name} ({apiary.number}) {apiary.type}</Typography>
+      <Typography variant="h3" component="h3">Пчелин {apiary.name} ({apiary.number}) {apiary.type}</Typography>
       
       {apiary ? <ApiaryPlan hives={apiary.hives}/> : ''}      
-
-      {/* <ImageList  cols={3} rowHeight={165}>
-          {apiary.hives?.map((hive) => (                    
-              <ImageListItem key={hive.id}>                        
-                <Hive key={hive.id} hive={hive}/>
-              </ImageListItem>                    
-          ))}
-      </ImageList> */}
 
     </div>
   )

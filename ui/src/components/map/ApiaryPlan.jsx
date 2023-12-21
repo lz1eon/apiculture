@@ -1,6 +1,8 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { Modal } from '../common';
 import * as d3 from 'd3';
 import client from "../../api";
+import { Hive } from "../Hive";
 import hiveOther from './images/hive_other.svg';
 import hiveDadanBlat from './images/hive_dadan_blat.svg';
 import hiveFarar from './images/hive_farar.svg';
@@ -10,10 +12,16 @@ const typeToImage = [hiveOther, hiveDadanBlat, hiveFarar, hiveLangstroth];
 
 export const ApiaryPlan = ({hives}) => {
   const ref = useRef()
+  const [ openHive, setOpenHive ] = useState();
+  const [isOpen, setIsOpen] = useState(false);
+  const [modal, setModal] = useState({
+    title: '',
+    content: '',
+    buttons: ['Submit'],    
+  });
 
   useEffect(() => {
     const svgElement = d3.select(ref.current);
-    console.log('hahaha')
     let dx = 0;
     let dy = 0;
 
@@ -39,11 +47,33 @@ export const ApiaryPlan = ({hives}) => {
         client.updateHiveCoordinates(id, apiary_id, x, y);
       })
     )
+
+      svgElement.selectAll('svg')
+      .on('click', function() {
+        console.log(this + 'has been clicked')
+        const hiveId = Number(d3.select(this).attr('id'));
+        const selectedHive = hives.find(hive => hive.id == hiveId);
+        setIsOpen(true);
+        setOpenHive(selectedHive);
+        setModal({
+          title: `Кошер ${selectedHive.number}`,
+          // content: 
+        })
+      })
   }, [hives]);
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
 
   return (
     <>
-      BEFORE
+      СХЕМА
+      
+      <Modal modal={modal} closeModal={closeModal} isOpen={isOpen}>
+          <Hive hive={openHive}/>
+      </Modal>
+
       <svg viewBox="0 0 100 50" style={{border: '1px solid black'}} ref={ref}>
         {hives?.map((hive, i) => (
           <svg id={hive.id} apiary_id={hive.apiary_id} key={i} x={hive.x} y={hive.y}>            

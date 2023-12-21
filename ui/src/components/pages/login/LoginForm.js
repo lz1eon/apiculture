@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import {Modal} from '../../common';
+import { Modal } from '../../common';
 import Button from '@mui/material/Button';
 import { useAuth } from '../../../hooks/useAuth';
 import client from '../../../api';

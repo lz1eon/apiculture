@@ -26,7 +26,7 @@ export const Hive = ({hive}) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small">Подбробно</Button>
+          <Button size="small">Редактирай</Button>
         </CardActions>
       </Card>
     );
