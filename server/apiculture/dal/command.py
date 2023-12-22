@@ -44,6 +44,16 @@ def create_hive(db: Session, hive: schemas.HiveCreateSchema):
 def update_hive(
     db: Session, user, hive_id, hive_update: schemas.HiveUpdateSchema
 ):
+    """
+    Partially (or fully) update a hive. Make sure the hive is from an apiary of the
+    current user and not another.
+
+    :param db:
+    :param user:
+    :param hive_id:
+    :param hive_update: Data with the fields to be updated.
+    :return:
+    """
     stmt = (update(Hive)
             .where(Hive.id == hive_id)
             .where(Apiary.id == Hive.apiary_id)

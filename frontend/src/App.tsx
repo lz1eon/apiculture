@@ -40,12 +40,13 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-// import { Login } from './pages/login/Login';
 import { About } from './pages/about/About';
 import { Contacts } from './pages/contacts/Contacts';
 import ApiPageHeader from './pages/ApiPageHeader';
 import Login from './pages/login/Login';
-// import Register from '.pages/register/Register';
+import Register from './pages/register/Register';
+import { Pricing } from './pages/pricing/Pricing';
+import Home from './pages/home/Home';
 
 
 setupIonicReact({
@@ -57,36 +58,24 @@ setupIonicReact({
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-      <IonTabs>
+      {/* <IonTabs> */}
         <IonRouterOutlet>
           <IonPage>
             <ApiPageHeader />
             <IonContent>
-              <Route exact path="/about">
-                <About />
-              </Route>
-              <Route path="/contacts">
-                <Contacts />
-              </Route>
-              <Route exact path="/login">
-                <Login />
-              </Route>
-              {/* <Route exact path="/register">
-                <Register />
-              </Route> */}
-              <Route exact path="/tab1">
-                <Tab1 />
-              </Route>
-              <Route exact path="/tab2">
-                <Tab2 />
-              </Route>
-              <Route exact path="/tab3">
-                <Tab3 />
-              </Route>
+              <Route exact path="/"><Home/></Route>
+              <Route exact path="/pricing"><Pricing/></Route>
+              <Route exact path="/about"><About/></Route>
+              <Route exact path="/contacts"><Contacts/></Route>
+              <Route exact path="/login"><Login/></Route>
+              <Route exact path="/register"><Register/></Route>
+              <Route exact path="/tab1"><Tab1/></Route>
+              <Route exact path="/tab2"><Tab2/></Route>
+              <Route exact path="/tab3"><Tab3/></Route>
             </IonContent>  
           </IonPage>            
         </IonRouterOutlet>
-        <IonTabBar slot="bottom">
+        {/* <IonTabBar slot="bottom">
           <IonTabButton tab="tab1" href="/tab1">
             <IonIcon aria-hidden="true" icon={triangle} />
             <IonLabel>Tab 1</IonLabel>
@@ -100,7 +89,7 @@ const App: React.FC = () => (
             <IonLabel>Tab 3</IonLabel>
           </IonTabButton>
         </IonTabBar>
-      </IonTabs>
+      </IonTabs> */}
     </IonReactRouter>
   </IonApp>
 );

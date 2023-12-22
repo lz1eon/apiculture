@@ -15,11 +15,12 @@ import {
     IonGrid,
     IonRow,
     IonText,
+    InputCustomEvent
   } from '@ionic/react';
 import { OverlayEventDetail } from '@ionic/core/components';
 
 import { useAuth } from '../../hooks/useAuth';
-import client from '../../api';
+// import client from '../../api';
 import Navigate from '../../components/Navigate';
 
 
@@ -29,13 +30,8 @@ const LoginForm = () => {
         username: '',
         password: '',
     });
-    const [status, setStatus] = useState({
-        type: '',
-        message: '',
-        error: '',
-    });
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: InputCustomEvent) => {
         setInputs({
             ...inputs,
             [event.target.name]: event.target.value,
@@ -47,17 +43,17 @@ const LoginForm = () => {
         event.preventDefault();
 
         // client.login(inputs)
-        //     .then((response) => {
-        //         if (response.data.access_token !== '' && response.data.access_token !== undefined) {
-        //             const user = response.data.user;
-        //             user.authToken = response.data.access_token;
-        //             setLoggedIn(true);
-        //             loginUser(user);
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         setLoggedIn(false);
-        //     });
+        //   .then((response) => {
+        //     if (response.data.access_token !== '' && response.data.access_token !== undefined) {
+        //       const user = response.data.user;
+        //       user.authToken = response.data.access_token;
+        //       setLoggedIn(true);
+        //       loginUser(user);
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     setLoggedIn(false);
+        //   });
     };
 
     const modal = useRef<HTMLIonModalElement>(null);
@@ -89,7 +85,7 @@ const LoginForm = () => {
                   <form className='ion-padding' onSubmit={handleSubmit}>
                     <IonItem>
                       <IonLabel position="floating">Имейл</IonLabel>
-                      <IonInput />
+                      <IonInput type="email" onIonInput={handleChange} />
                     </IonItem>
                     <IonItem>
                       <IonLabel position="floating">Парола</IonLabel>

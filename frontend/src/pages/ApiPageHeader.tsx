@@ -1,10 +1,20 @@
-import { IonHeader, IonToolbar, IonTitle, IonButton, IonButtons } from "@ionic/react";
+import { IonHeader, IonToolbar, IonTitle, IonButton, IonButtons, IonIcon } from "@ionic/react";
+import { person } from "ionicons/icons";
+import logo from '../assets/images/logo.png';
 
 const ApiPageHeader = () => {
   return (
     <IonHeader>
       <IonToolbar>
-        <IonTitle>Пчелинът</IonTitle>
+        <IonButtons slot="start">
+          <IonButton disabled>
+            <img src={logo}></img>
+          </IonButton>
+          <IonButton size="large" fill="clear" routerLink="/">Пчелинът</IonButton>
+        </IonButtons>
+        {/* <IonButtons slot="end">
+          <IonButton routerLink="/pricing">Цена</IonButton>
+        </IonButtons>         */}
         <IonButtons slot="end">
           <IonButton routerLink="/about">За Пчелинът</IonButton>
         </IonButtons>        

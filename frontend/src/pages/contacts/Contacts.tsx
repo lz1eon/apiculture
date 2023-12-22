@@ -1,4 +1,4 @@
-import { IonGrid, IonLabel, IonRow } from "@ionic/react"
+import { IonCol, IonGrid, IonLabel, IonRow, IonText } from "@ionic/react"
 import MainContainer from "../../components/MainContainer"
 
 
@@ -6,11 +6,13 @@ export const Contacts = () => {
   return (
     <MainContainer>
       <IonGrid>
-        <IonRow>                        
-         <IonLabel>За връзка с нас</IonLabel>
-        </IonRow>   
-        <IonRow>   
-          <IonLabel>Пишете ни на stefanov.alexandre@gmail.com</IonLabel>
+        <IonRow>
+          <IonCol></IonCol>
+          <IonCol>
+            <IonText><h3>За връзка с нас</h3></IonText>
+            <IonLabel>Пишете ни на <a href="mailto:stefanov.alexandre@gmail.com">stefanov.alexandre@gmail.com</a></IonLabel>
+          </IonCol>
+          <IonCol></IonCol>                        
         </IonRow>
       </IonGrid>
     </MainContainer>
