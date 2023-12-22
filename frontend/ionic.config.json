@@ -1,0 +1,7 @@
+{
+  "name": "apiculture",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
