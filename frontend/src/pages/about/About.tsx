@@ -1,5 +1,5 @@
 import { IonList, IonItem, IonCol, IonGrid, IonRow, IonText } from "@ionic/react"
-import MainContainer from "../../components/MainContainer"
+import { MainContainer } from '../../components';
 
 export const About = () => {
   return (

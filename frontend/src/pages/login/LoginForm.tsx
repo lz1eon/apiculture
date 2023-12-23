@@ -20,8 +20,8 @@ import {
 import { OverlayEventDetail } from '@ionic/core/components';
 
 import { useAuth } from '../../hooks/useAuth';
-// import client from '../../api';
-import Navigate from '../../components/Navigate';
+import client from '../../api';
+import { Redirect } from 'react-router-dom';
 
 
 const LoginForm = () => {
@@ -32,6 +32,7 @@ const LoginForm = () => {
     });
 
     const handleChange = (event: InputCustomEvent) => {
+        console.log(event.target.name, event.target.value);
         setInputs({
             ...inputs,
             [event.target.name]: event.target.value,
@@ -41,19 +42,19 @@ const LoginForm = () => {
     const { loginUser } = useAuth();
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-
-        // client.login(inputs)
-        //   .then((response) => {
-        //     if (response.data.access_token !== '' && response.data.access_token !== undefined) {
-        //       const user = response.data.user;
-        //       user.authToken = response.data.access_token;
-        //       setLoggedIn(true);
-        //       loginUser(user);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     setLoggedIn(false);
-        //   });
+        console.log(inputs);
+        client.login(inputs)
+          .then((response) => {
+            if (response.data.access_token !== '' && response.data.access_token !== undefined) {
+              const user = response.data.user;
+              user.authToken = response.data.access_token;
+              setLoggedIn(true);
+              loginUser(user);
+            }
+          })
+          .catch((error) => {
+            setLoggedIn(false);
+          });
     };
 
     const modal = useRef<HTMLIonModalElement>(null);
@@ -74,7 +75,7 @@ const LoginForm = () => {
     }
 
     return loggedIn ? (
-        <Navigate to={'/apiaries'} />
+        <Redirect to='/apiaries' />
     ) : (
         <>
             <IonGrid>
@@ -85,11 +86,11 @@ const LoginForm = () => {
                   <form className='ion-padding' onSubmit={handleSubmit}>
                     <IonItem>
                       <IonLabel position="floating">Имейл</IonLabel>
-                      <IonInput type="email" onIonInput={handleChange} />
+                      <IonInput type="email" name="username" onIonInput={handleChange} />
                     </IonItem>
                     <IonItem>
                       <IonLabel position="floating">Парола</IonLabel>
-                      <IonInput type="password" />
+                      <IonInput type="password" name="password" onIonInput={handleChange} />
                     </IonItem>
                     <IonButton className="ion-margin-top" type="submit" expand="block">
                         Влез

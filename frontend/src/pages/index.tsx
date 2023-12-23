@@ -1,0 +1,9 @@
+export { Home } from './home/Home';
+export { About } from './about/About';
+export { Contacts } from './contacts/Contacts';
+export { Pricing } from './pricing/Pricing';
+export { Login } from './login/Login';
+export { Register } from './register/Register';
+export { NotFound } from './NotFound';
+export { ApiaryList } from './apiary/ApiaryList';
+export { ApiaryDetail } from './apiary/ApiaryDetail';

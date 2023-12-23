@@ -1,5 +1,5 @@
 import { IonCol, IonGrid, IonLabel, IonRow, IonText } from "@ionic/react"
-import MainContainer from "../../components/MainContainer"
+import { MainContainer } from '../../components';
 
 
 export const Contacts = () => {

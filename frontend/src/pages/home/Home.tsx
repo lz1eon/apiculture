@@ -1,9 +1,9 @@
-import MainContainer from '../../components/MainContainer';
+import { MainContainer } from '../../components';
 import { IonText, IonButton, IonGrid, IonRow, IonCol } from '@ionic/react';
 import mainImage from '../../assets/images/bee.jpg';
 import './home.css';
 
-const Home = () => {
+export const Home = () => {
   return (  
     <MainContainer>
       <IonGrid>
@@ -25,6 +25,4 @@ const Home = () => {
       </IonGrid>      
     </MainContainer>
   )
-}
-
-export default Home;
+};

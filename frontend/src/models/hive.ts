@@ -1,12 +1,12 @@
-export interface Hive {
+export type Hive = {
     id: string;
     apiary_id: string;
     number: string;
-    model?: string;
-    type?: string;
-    status?: string;    
-    x?: number;
-    y?: number;
+    model: 0;
+    type: 0;
+    status: '';    
+    x: 0;
+    y: 0;
 }
 
 export const HiveModels = {

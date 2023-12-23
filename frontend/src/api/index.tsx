@@ -1,7 +1,8 @@
 import axios from "axios";
 import { Hive } from "../models/hive";
 
-axios.defaults.baseURL = process.env.REACT_APP_API_BASE;
+// axios.defaults.baseURL = import.meta.env.VITE_API_BASE;
+axios.defaults.baseURL = "http://localhost:8000";
 const api = axios.create();
 
 // Add Authorization header on every request
@@ -50,7 +51,7 @@ class Client {
         return api.get('/apiaries/');
     }
 
-    getApiary(id: number) {
+    getApiary(id: string) {
         return api.get(`/apiaries/${id}/`);
     }
 

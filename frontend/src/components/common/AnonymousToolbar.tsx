@@ -1,17 +1,10 @@
-import { IonHeader, IonToolbar, IonTitle, IonButton, IonButtons, IonIcon } from "@ionic/react";
-import { person } from "ionicons/icons";
-import logo from '../assets/images/logo.png';
+import { IonToolbar, IonButton, IonButtons } from "@ionic/react";
+import PageHeaderTitle from "./ToolbarTitle";
 
-const ApiPageHeader = () => {
+const AnonymousToolbar = () => {
   return (
-    <IonHeader>
       <IonToolbar>
-        <IonButtons slot="start">
-          <IonButton disabled>
-            <img src={logo}></img>
-          </IonButton>
-          <IonButton size="large" fill="clear" routerLink="/">Пчелинът</IonButton>
-        </IonButtons>
+        <PageHeaderTitle />
         {/* <IonButtons slot="end">
           <IonButton routerLink="/pricing">Цена</IonButton>
         </IonButtons>         */}
@@ -27,10 +20,8 @@ const ApiPageHeader = () => {
         <IonButtons slot="end">
           <IonButton routerLink="/login">Вход</IonButton>
         </IonButtons>
-
       </IonToolbar>
-    </IonHeader>
   )
 }
 
-export default ApiPageHeader;
+export default AnonymousToolbar;

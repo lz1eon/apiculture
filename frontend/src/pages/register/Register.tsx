@@ -1,17 +1,15 @@
-import Navigate from '../../components/Navigate';
+import { Redirect } from 'react-router-dom';
 import RegisterForm from './RegisterForm';
 import { useAuth } from '../../hooks/useAuth';
-import MainContainer from '../../components/MainContainer';
+import { MainContainer } from '../../components';
 
 
-const Register = () => {
+export const Register = () => {
   const { user } = useAuth();
   
-  return user ? <Navigate to={'/apiaries'}/> : (
+  return user ? <Redirect to={'/apiaries'}/> : (
     <MainContainer>
       <RegisterForm />
     </MainContainer>
   )
-}
-
-export default Register;
+};

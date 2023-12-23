@@ -1,16 +1,14 @@
 import React from 'react';
-import './ExploreContainer.css';
+// import './ExploreContainer.css';
 
 type Props = {
   children: React.ReactNode
 }
 
-const MainContainer = ({ children }: Props) => {
+export const MainContainer = ({ children }: Props) => {
   return (
     <div className="container">
       {children}
     </div>
   );
 };
-
-export default MainContainer;
