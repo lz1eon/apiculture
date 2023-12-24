@@ -1,5 +1,5 @@
 import React from 'react';
-// import './ExploreContainer.css';
+import './MainContainer.css';
 
 type Props = {
   children: React.ReactNode
