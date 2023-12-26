@@ -58,7 +58,6 @@ export const Histogram = ({ width, height, data, thresholds, computedBins, setCo
     const yAxisGenerator = d3.axisLeft(yScale);
     svgElement.append("g").call(yAxisGenerator);
 
-    console.log('histogram effect', buckets)
     setComputedBins(buckets);
   }, [xScale, yScale, boundsHeight, thresholds]);
 

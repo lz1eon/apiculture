@@ -1,19 +1,30 @@
-import { IonCol, IonGrid, IonInput, IonRow, IonText, IonButton, InputCustomEvent, RangeCustomEvent, IonRange } from '@ionic/react';
+import { IonCol, IonGrid, IonInput, IonRow, IonText, IonButton, InputCustomEvent, RangeCustomEvent, IonRange, IonChip, IonIcon, IonLabel } from '@ionic/react';
+import { close } from 'ionicons/icons';
 import { Histogram } from '../../components';
 import Page from '../Page';
 import data from '../../components/charts/apiaries';
 import { useEffect, useState } from 'react';
 import './charts.css';
 
+type PriceModel = {
+  name: string;
+  thresholds: number[];
+  prices: number[];
+  parts: number[];
+}
+
 export const Charts = () => {
   const [thresholds, setThresholds] = useState([50, 100, 200, 300]);
   const [computedBins, setComputedBins] = useState([{ length: 0 }, { length: 0 }, { length: 0 }, { length: 0 }, { length: 0 }]);
   const [inputs, setInputs] = useState({ thresholds: '' });
-  const zeros_array: Number[] = computedBins.map((e, i) => 0);
+  const zeros_array: number[] = computedBins.map((e, i) => 0);
   const [prices, setPrices] = useState(zeros_array);
-  const tens_array: Number[] = computedBins.map((e, i) => 10);
+  const tens_array: number[] = computedBins.map((e, i) => 10);
   const [parts, setParts] = useState(tens_array);
   const [totalIncome, setTotalIncome] = useState(0);
+  const [totalPeople, setTotalPeople] = useState(0);
+  const [modelName, setModelName] = useState('');
+  const [savedModels, setSavedModels] = useState<PriceModel[]>([]);
 
 
   const formatNumber = (value: number) =>
@@ -24,6 +35,40 @@ export const Charts = () => {
       ...inputs,
       [event.target.name]: event.target.value
     });
+  }
+
+  const handleModelNameChange = (event: InputCustomEvent) => {
+    setModelName(String(event.target.value));
+  }
+
+  const saveCurrentModel = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const model: PriceModel = {
+      name: modelName,
+      thresholds: thresholds,
+      prices: prices,
+      parts: parts
+    };
+
+    const models = [...savedModels];
+    models.push(model)
+    setSavedModels(models);
+
+    event.target.reset();
+  }
+
+  const loadModel = (model: PriceModel) => {
+    setThresholds(model.thresholds);
+    setPrices(model.prices);
+    setParts(model.parts)
+  }
+
+  const removeModel = (model: PriceModel) => {
+    let models = [...savedModels];
+    models = models.filter((m, i) => m.name !== model.name);
+
+    setSavedModels(models);
   }
 
   const handlePriceChange = (event: InputCustomEvent) => {
@@ -39,10 +84,6 @@ export const Charts = () => {
     newParts[index] = Number(event.detail.value);
     setParts(newParts);
   }
-
-  const updateThresholds = (event: React.FormEvent) => {
-    event.preventDefault();
-  };
 
   const recalulateHistogram = (event: React.FormEvent) => {
     event.preventDefault();
@@ -63,19 +104,16 @@ export const Charts = () => {
   }
 
   useEffect(() => {
-    console.log('effect', computedBins.length > 0)
     if (computedBins.length > 0) {
-      console.log(computedBins);
-      const intermediate =
-        computedBins.map((bin, i) => { console.log(bin.length, parts[i], prices[i]); return bin.length * (parts[i] / 10) * prices[i] });
-      console.log('intermediate: ' + intermediate);
-      const value = intermediate.reduce((sum, v) => sum + v);
+      const value = computedBins
+        .map((bin, i) => bin.length * (parts[i] / 10) * prices[i])
+        .reduce((sum, v) => sum + v);
+      setTotalIncome(value)
 
-
-      console.log('value: ' + value);
-      setTotalIncome(
-        value
-      )
+      const people = computedBins
+        .map((bin, i) => bin.length * (parts[i] / 10))
+        .reduce((sum, v) => sum + v);
+      setTotalPeople(people)
     }
   }, [computedBins, prices, parts]);
 
@@ -86,6 +124,44 @@ export const Charts = () => {
           <IonCol></IonCol>
           <IonCol><IonText><h1>Ценови модел</h1></IonText></IonCol>
           <IonCol></IonCol>
+        </IonRow>
+        <IonRow>
+          <IonCol>
+            <form onSubmit={saveCurrentModel}>
+              <IonGrid>
+                <IonRow>
+                  <IonCol>                    
+                      {savedModels.map((model, i) => {
+                        return (
+                          <IonChip key={i} onClick={() => loadModel(model)}>
+                            <IonLabel>{model.name}</IonLabel>
+                            <IonIcon icon={close} onClick={() => removeModel(model)}></IonIcon>
+                          </IonChip>
+                        )
+                      })}                    
+                  </IonCol>                  
+                  <IonCol size='auto'>
+                    <div style={{ width: '200px' }}>
+                      <IonButton size="small" type="submit">Запази модела</IonButton>
+                    </div>
+                  </IonCol>
+                  <IonCol size="auto">
+                    <div style={{ width: '200px' }}>
+                      <IonInput
+                        className='input'
+                        required={true}
+                        type="text"
+                        name="modelName"
+                        label="Име на модела"
+                        labelPlacement='stacked'
+                        onIonChange={handleModelNameChange}
+                      />
+                    </div>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </form> 
+          </IonCol>
         </IonRow>
         <IonRow>
           <IonCol>
@@ -112,8 +188,17 @@ export const Charts = () => {
                         label='Групиране'
                         labelPlacement='stacked'
                         onIonInput={handleChange} />
-                      <IonButton type="submit" onClick={recalulateHistogram}>Обнови групите</IonButton>
+                      <IonButton size="small" type="submit" onClick={recalulateHistogram}>Обнови групите</IonButton>
                     </div>
+                  </IonCol>
+                  <IonCol>
+                    <IonInput
+                      className='input'
+                      type="text"
+                      value={Math.round(totalPeople)}
+                      readonly={true}
+                      label='Общо хора'
+                      labelPlacement='floating' />
                   </IonCol>
                   <IonCol>
                     <IonInput
@@ -191,6 +276,26 @@ export const Charts = () => {
                           </IonRow>
                         )
                       })}
+                      <IonRow style={{ float: 'right' }}>
+                        <IonCol>
+                          <IonInput
+                            className='input'
+                            type="text"
+                            value={Math.round(totalPeople)}
+                            readonly={true}
+                            label='Общо хора'
+                            labelPlacement='floating' />
+                        </IonCol>
+                        <IonCol>
+                          <IonInput
+                            className='input money'
+                            type="text"
+                            value={formatNumber(Math.round(totalIncome))}
+                            readonly={true}
+                            label='Общо приходи'
+                            labelPlacement='floating' />
+                        </IonCol>
+                      </IonRow>
                     </IonGrid>
                   </IonCol>
                 </IonRow>
