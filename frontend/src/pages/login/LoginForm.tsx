@@ -9,7 +9,6 @@ import {
     IonTitle,
     IonItem,
     IonInput,
-    IonCheckbox,
     IonLabel,
     IonCol,
     IonGrid,
@@ -29,20 +28,19 @@ const LoginForm = () => {
     const [inputs, setInputs] = useState({
         username: '',
         password: '',
-    });
+    });    
 
     const handleChange = (event: InputCustomEvent) => {
-        console.log(event.target.name, event.target.value);
         setInputs({
             ...inputs,
             [event.target.name]: event.target.value,
         });
     };
 
+
     const { loginUser } = useAuth();
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        console.log(inputs);
         client.login(inputs)
           .then((response) => {
             if (response.data.access_token !== '' && response.data.access_token !== undefined) {
@@ -86,11 +84,11 @@ const LoginForm = () => {
                   <form className='ion-padding' onSubmit={handleSubmit}>
                     <IonItem>
                       <IonLabel position="floating">Имейл</IonLabel>
-                      <IonInput type="email" name="username" onIonInput={handleChange} />
+                      <IonInput name="username" required autocomplete="username" onIonInput={handleChange} />
                     </IonItem>
                     <IonItem>
                       <IonLabel position="floating">Парола</IonLabel>
-                      <IonInput type="password" name="password" onIonInput={handleChange} />
+                      <IonInput type="password" name="password" required autocomplete="current-password" onIonInput={handleChange} />
                     </IonItem>
                     <IonButton className="ion-margin-top" type="submit" expand="block">
                         Влез
@@ -130,7 +128,6 @@ const LoginForm = () => {
                 </IonItem>
             </IonContent>
             </IonModal>
-
         </>
     );
 };

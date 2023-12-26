@@ -27,7 +27,11 @@ api.interceptors.request.use(
 //         console.log('errrrr')
 //     }
 // );
-
+type UpdateHiveProps = {
+    id: number
+    apiary_id: number
+    rest: any
+}
 
 class Client {
     register(data: Object) {
@@ -53,6 +57,12 @@ class Client {
 
     getApiary(id: string) {
         return api.get(`/apiaries/${id}/`);
+    }
+
+    // updateHive(id: number, apiary_id: number, type: number, model: number, status: number) {
+    updateHive(id: number, apiary_id: string, rest: any) {        
+        console.log(rest);
+        return api.put(`/apiaries/${apiary_id}/hives/${id}/`, rest);
     }
 
     updateHiveCoordinates(id: number, apiary_id: number, x: number, y: number) {

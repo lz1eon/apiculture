@@ -1,10 +1,10 @@
 import { IonCol, IonGrid, IonLabel, IonRow, IonText } from "@ionic/react"
-import { MainContainer } from '../../components';
+import Page from '../Page';
 
 
 export const Contacts = () => {
   return (
-    <MainContainer>
+    <Page>
       <IonGrid>
         <IonRow>
           <IonCol></IonCol>
@@ -15,7 +15,7 @@ export const Contacts = () => {
           <IonCol></IonCol>                        
         </IonRow>
       </IonGrid>
-    </MainContainer>
+    </Page>
 
   )
 }

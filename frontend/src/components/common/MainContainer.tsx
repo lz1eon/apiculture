@@ -1,11 +1,11 @@
 import React from 'react';
 import './MainContainer.css';
 
-type Props = {
+type MainContainerProps = {
   children: React.ReactNode
 }
 
-export const MainContainer = ({ children }: Props) => {
+export const MainContainer = ({ children }: MainContainerProps) => {
   return (
     <div className="container">
       {children}

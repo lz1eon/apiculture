@@ -1,14 +1,14 @@
 import LoginForm from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
 import { Redirect } from 'react-router-dom';
-import { MainContainer } from '../../components';
+import Page from '../Page';
 
 export const Login = () => {
   const { user } = useAuth(); 
   
   return user ? <Redirect to='/apiaries' /> : (
-    <MainContainer>
+    <Page>
       <LoginForm />
-    </MainContainer>
+    </Page>
   )
 }

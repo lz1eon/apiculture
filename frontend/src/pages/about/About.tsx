@@ -1,9 +1,9 @@
 import { IonList, IonItem, IonCol, IonGrid, IonRow, IonText } from "@ionic/react"
-import { MainContainer } from '../../components';
+import Page from '../Page';
 
 export const About = () => {
   return (
-    <MainContainer>       
+    <Page>       
       <IonGrid>
         <IonRow>
           <IonCol></IonCol>
@@ -18,6 +18,6 @@ export const About = () => {
           <IonCol></IonCol>
         </IonRow>
       </IonGrid>
-    </MainContainer>
+    </Page>
   )
 }

@@ -1,9 +1,9 @@
-import { IonText } from '@ionic/react';
+import { IonCol, IonGrid, IonRow, IonText } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import client from '../../api';
 
-import { MainContainer } from '../../components/common/MainContainer';
+import Page from '../Page';
 import { ApiaryPlan } from './plan/ApiaryPlan';
 
 export const ApiaryDetail = () => {
@@ -17,14 +17,16 @@ export const ApiaryDetail = () => {
       });
   }, []);
 
-
   return (
-    <MainContainer>
-      <IonText style={{ marginTop: '10px', marginBottom: '20px' }}>
-        {apiary.name}  {apiary.type == 1 ? 'Подвижен' : ''}
-      </IonText>
-
-      <ApiaryPlan apiary={apiary} />
-    </MainContainer>
+    <Page>
+      <IonGrid>
+        <IonRow>
+          <IonCol><h1><IonText>{apiary.name}</IonText></h1></IonCol>
+        </IonRow>
+        <IonRow>
+          <IonCol><ApiaryPlan apiary={apiary} /></IonCol>
+        </IonRow>
+      </IonGrid>      
+    </Page>
   )
 }

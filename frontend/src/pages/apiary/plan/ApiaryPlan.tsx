@@ -1,12 +1,13 @@
 import * as d3 from 'd3';
 import { useEffect, useRef, useState } from "react";
+import { HiveForm } from '../../../components/hive/HiveForm';
 import client from "../../../api";
-import { ModalDialog, HiveComponent } from '../../../components';
+import { ModalDialog } from '../../../components';
+import { Apiary, Hive } from '../../../models';
 import hiveDadanBlat from './images/hive_dadan_blat.svg';
 import hiveFarar from './images/hive_farar.svg';
 import hiveLangstroth from './images/hive_langstroth.svg';
 import hiveOther from './images/hive_other.svg';
-import { Apiary, Hive } from '../../../models';
 
 const typeToImage = [hiveOther, hiveDadanBlat, hiveFarar, hiveLangstroth];
 
@@ -61,9 +62,10 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   return (
     <>
       СХЕМА
-      { showModal && 
-        <ModalDialog onClose={() => setShowModal(false)}>
-          {selectedHive? <HiveComponent hive={selectedHive}/> : ''}
+      { showModal && selectedHive && 
+        <ModalDialog title={`Кошер ${selectedHive.number}`} onClose={() => setShowModal(false)}>
+          {/* {selectedHive? <HiveComponent hive={selectedHive}/> : ''} */}
+          {selectedHive? <HiveForm hive={selectedHive}/> : ''}
         </ModalDialog>
       }
 

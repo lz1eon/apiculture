@@ -1,4 +1,4 @@
-import { IonCard, IonCardContent, IonText, IonButton } from "@ionic/react";
+import { IonCard, IonCardContent, IonText, IonCardHeader, IonCardTitle, IonCardSubtitle } from "@ionic/react";
 import { Apiary } from '../../models';
 
 type ApiaryComponentProps = {
@@ -7,24 +7,18 @@ type ApiaryComponentProps = {
 
 export const ApiaryComponent = ({apiary}: ApiaryComponentProps) => {
     return (
-        <IonCard>
-        <IonCardContent>
-          <IonText color="text.secondary">
-            {apiary.number}
-          </IonText>
-          <IonText>
-            {apiary.name}
-          </IonText>
-          <IonText color="text.secondary">
-            {apiary.hives.length} кошера
-          </IonText>
-          <IonText>
-            Предстоящи задачи: 4
-            <br/>
-            Последна проверка: 08.09.20023
-          </IonText>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>{apiary.name}</IonCardTitle>
+          <IonCardSubtitle>{apiary.number}</IonCardSubtitle>
+          <IonText style={{ marginTop: '10px', marginBottom: '20px' }}>
+            {apiary.type == '1' ? 'Подвижен' : ''}
+          </IonText>          
+        </IonCardHeader>
+        <IonCardContent>          
+          <p><IonText color="text.secondary">{apiary.hives.length} кошера</IonText></p>          
+          <p><IonText>Последна проверка: 08.09.20023</IonText></p>
         </IonCardContent>
-        <IonButton size="small">Подбробно</IonButton>
       </IonCard>
     );
 }

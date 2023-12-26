@@ -1,11 +1,11 @@
-import { MainContainer } from '../../components';
+import Page from '../Page';
 import { IonText, IonButton, IonGrid, IonRow, IonCol } from '@ionic/react';
 import mainImage from '../../assets/images/bee.jpg';
 import './home.css';
 
 export const Home = () => {
   return (  
-    <MainContainer>
+    <Page>
       <IonGrid>
         <IonRow>
           <IonCol></IonCol>
@@ -23,6 +23,6 @@ export const Home = () => {
           <IonCol></IonCol>
         </IonRow>
       </IonGrid>      
-    </MainContainer>
+    </Page>
   )
 };
