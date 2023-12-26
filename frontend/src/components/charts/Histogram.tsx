@@ -1,5 +1,6 @@
 import * as d3 from "d3"; // we will need d3.js
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import './charts.css';
 
 const MARGIN = { top: 30, right: 30, bottom: 40, left: 50 };
 const BUCKET_NUMBER = 70;
@@ -44,7 +45,7 @@ export const Histogram = ({ width, height, data }: HistogramProps) => {
   // Render the X axis using d3.js, not react
   useEffect(() => {
     const svgElement = d3.select(axesRef.current);
-    // svgElement.selectAll("*").remove();
+    svgElement.selectAll("*").remove();
 
     const xAxisGenerator = d3.axisBottom(xScale);
     svgElement
@@ -54,46 +55,30 @@ export const Histogram = ({ width, height, data }: HistogramProps) => {
 
     const yAxisGenerator = d3.axisLeft(yScale);
     svgElement.append("g").call(yAxisGenerator);
-
-    // debugger;
-
-    svgElement.select('g').selectAll("rect")
-      .each((d) => { console.log(d); return d; })
-      // .data([{name: 'alex', value: 'rich'}, {name: 'viki', value: 'richer'},])
-      .enter().append("text")
-      .attr("class", "barstext")
-      .attr("x", function (d) { return xScale(d.name); })
-      .attr("y", function (d) { return yScale(d.value); })
-      .text((d) => {console.log(d); return d.name;})    
   }, [xScale, yScale, boundsHeight]);
 
 
   const allRects = buckets.map((bucket, i) => {
     return (
-      <rect
-        key={i}
-        fill="#69b3a2"
-        x={xScale(bucket.x0) + BUCKET_PADDING / 2}
-        width={xScale(bucket.x1) - xScale(bucket.x0) - BUCKET_PADDING}
-        y={yScale(bucket.length)}
-        height={boundsHeight - yScale(bucket.length)}
-      />
+      <Fragment key={i}> 
+       <text 
+          className="small" 
+          x={xScale(bucket.x0) + 20}
+          y={yScale(bucket.length) - 5}
+        >
+          {bucket.length}
+        </text>
+        <rect
+          fill="#69b3a2"
+          x={xScale(bucket.x0) + BUCKET_PADDING / 2}
+          width={xScale(bucket.x1) - xScale(bucket.x0) - BUCKET_PADDING}
+          y={yScale(bucket.length)}
+          height={boundsHeight - yScale(bucket.length)}
+        />
+      </Fragment>
     );
   });
 
-  const addBarLabels = () => {
-    d3.select('svg').selectAll("rect")
-      .data((d) => { console.log(d); return d; })
-      .enter().append("text")
-      .attr("class", "barstext")
-      .attr("x", function (d) { return xScale(d.name); })
-      .attr("y", function (d) { return yScale(d.value); })
-      .text((d) => {console.log(d); return d.name;})
-  }
-
-  // useLayoutEffect(() => {
-  //   addBarLabels();
-  // }, []);
   // const onMouseOut = function(d, i) {
   //   d3.select(this).attr('style', 'fill: steelblue;');
   //   d3.select("#toptext").text(`Metropolitan Areas: ${0}`);
