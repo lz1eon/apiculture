@@ -44,12 +44,10 @@ export const HiveForm = ({ hive }: HiveFormProps) => {
   return (
     <form className='ion-padding' onSubmit={handleSubmit}>
       <IonItem>
-        <IonLabel position="floating">Номер</IonLabel>
-        <IonInput name="number" value={hive.number} onIonInput={handleChange} disabled={true} />
+        <IonInput name="number" label="Номер" value={hive.number} onIonInput={handleChange} disabled={true} />
       </IonItem>
       <IonItem>
-        <IonLabel position="floating">Пчелин</IonLabel>
-        <IonInput name="apiary_id" value={hive.apiary_id} disabled={true} />
+        <IonInput name="apiary_id" label="Пчелин" value={hive.apiary_id} disabled={true} />
       </IonItem>
 
       <IonItem>
@@ -70,8 +68,7 @@ export const HiveForm = ({ hive }: HiveFormProps) => {
         />
       </IonItem>
       <IonItem>
-        <IonLabel position="floating">Сила</IonLabel>
-        <IonInput name="status" onIonInput={handleChange} disabled={mode !== 'edit'} />
+        <IonInput name="status" label='Сила' aria-label='Сила' onIonInput={handleChange} disabled={mode !== 'edit'} />
       </IonItem>
       {mode === 'view' &&
         <IonButton className="ion-margin-top" onClick={setModeEdit}>

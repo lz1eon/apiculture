@@ -21,10 +21,13 @@ import { OverlayEventDetail } from '@ionic/core/components';
 import { useAuth } from '../../hooks/useAuth';
 import client from '../../api';
 import { Redirect } from 'react-router-dom';
+import { ModalDialog } from '../../components';
 
 
 const LoginForm = () => {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [inputs, setInputs] = useState({
         username: '',
         password: '',
@@ -51,6 +54,7 @@ const LoginForm = () => {
             }
           })
           .catch((error) => {
+            setErrorMessage(error);
             setLoggedIn(false);
           });
     };
@@ -76,6 +80,10 @@ const LoginForm = () => {
         <Redirect to='/apiaries' />
     ) : (
         <>
+            <ModalDialog title={'Грешка'} isOpen={showModal} onClose={() => {() => setShowModal(false)}}>
+              {errorMessage}
+            </ModalDialog>
+            
             <IonGrid>
               <IonRow>
                 <IonCol></IonCol>
@@ -83,12 +91,12 @@ const LoginForm = () => {
                   <IonText><h1>Вход</h1></IonText>                  
                   <form className='ion-padding' onSubmit={handleSubmit}>
                     <IonItem>
-                      <IonLabel position="floating">Имейл</IonLabel>
-                      <IonInput name="username" required autocomplete="username" onIonInput={handleChange} />
+                      {/* <IonLabel position="floating">Имейл</IonLabel> */}
+                      <IonInput name="username" label="Имейл" required autocomplete="username" onIonInput={handleChange} />
                     </IonItem>
                     <IonItem>
-                      <IonLabel position="floating">Парола</IonLabel>
-                      <IonInput type="password" name="password" required autocomplete="current-password" onIonInput={handleChange} />
+                      {/* <IonLabel position="floating">Парола</IonLabel> */}
+                      <IonInput type="password" name="password" label="Парола" required autocomplete="current-password" onIonInput={handleChange} />
                     </IonItem>
                     <IonButton className="ion-margin-top" type="submit" expand="block">
                         Влез
@@ -100,34 +108,6 @@ const LoginForm = () => {
                 <IonCol></IonCol>
               </IonRow>
             </IonGrid>
-
-
-            <IonModal ref={modal} trigger="open-modal" onWillDismiss={(ev) => onWillDismiss(ev)}>
-            <IonHeader>
-                <IonToolbar>
-                <IonButtons slot="start">
-                    <IonButton onClick={() => modal.current?.dismiss()}>Cancel</IonButton>
-                </IonButtons>
-                <IonTitle>Welcome</IonTitle>
-                <IonButtons slot="end">
-                    <IonButton strong={true} onClick={() => confirm()}>
-                    Confirm
-                    </IonButton>
-                </IonButtons>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-                <IonItem>
-                <IonInput
-                    label="Enter your name"
-                    labelPlacement="stacked"
-                    ref={input}
-                    type="text"
-                    placeholder="Your name"
-                />
-                </IonItem>
-            </IonContent>
-            </IonModal>
         </>
     );
 };

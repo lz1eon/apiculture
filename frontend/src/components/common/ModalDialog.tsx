@@ -3,12 +3,13 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonModal } from
 
 interface ModalDialogProps {
   onClose: () => void;
+  isOpen: boolean;
   title: string;
   children: React.ReactNode;
 }
 
-export const ModalDialog: React.FC<ModalDialogProps> = ({ onClose, title, children }) => (
-  <IonModal isOpen={true}>
+export const ModalDialog: React.FC<ModalDialogProps> = ({ onClose, isOpen, title, children }) => (
+  <IonModal isOpen={isOpen}>
     <IonHeader>
       <IonToolbar>
         <IonTitle>{title}</IonTitle>

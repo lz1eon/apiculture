@@ -63,7 +63,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     <>
       СХЕМА
       { showModal && selectedHive && 
-        <ModalDialog title={`Кошер ${selectedHive.number}`} onClose={() => setShowModal(false)}>
+        <ModalDialog isOpen={showModal} title={`Кошер ${selectedHive.number}`} onClose={() => setShowModal(false)}>
           {/* {selectedHive? <HiveComponent hive={selectedHive}/> : ''} */}
           {selectedHive? <HiveForm hive={selectedHive}/> : ''}
         </ModalDialog>
