@@ -64,10 +64,10 @@ def authenticate_user(username: str, password: str):
     return user
 
 
-def register_user(user_data):
+def register_user(user_data, db):
     # send verification email
     user_data.password = get_password_hash(user_data.password)
-    return create_user(get_db(), user_data)
+    return create_user(db, user_data)
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):

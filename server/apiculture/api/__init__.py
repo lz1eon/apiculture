@@ -33,7 +33,7 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:8100"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -69,8 +69,8 @@ async def hive_update(
 
 
 @app.post("/register/")
-async def register(user_data: UserCreateSchema):
-    user = register_user(user_data)
+async def register(user_data: UserCreateSchema, db: Session = Depends(get_db)):
+    user = register_user(user_data, db)
 
     # TODO: Temporarily log the user in without email validation
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

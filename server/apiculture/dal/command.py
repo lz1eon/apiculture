@@ -58,7 +58,7 @@ def update_hive(
             .where(Hive.id == hive_id)
             .where(Apiary.id == Hive.apiary_id)
             .where(Apiary.owner_id == user.id)
-            .values(**hive_update.model_dump(exclude_none=True))
+            .values(**hive_update.model_dump(exclude_none=True, exclude_unset=True))
             )
     db.execute(stmt)
     db.commit()
