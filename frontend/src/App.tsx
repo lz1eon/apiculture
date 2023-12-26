@@ -27,6 +27,7 @@ import '@ionic/react/css/text-transformation.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './theme/main.css';
 
 import {
   About,

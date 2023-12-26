@@ -10,9 +10,12 @@ type HistogramProps = {
   width: number;
   height: number;
   data: number[];
+  thresholds: number[];
+  computedBins: any[];
+  setComputedBins: (bins: any) => void;
 };
 
-export const Histogram = ({ width, height, data }: HistogramProps) => {
+export const Histogram = ({ width, height, data, thresholds, computedBins, setComputedBins }: HistogramProps) => {
   const axesRef = useRef(null);
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
@@ -21,26 +24,25 @@ export const Histogram = ({ width, height, data }: HistogramProps) => {
     const max = Math.max(...data);
     return d3
       .scaleLinear()
-      .domain([1, 700])
-      .range([10, boundsWidth]);
-  }, [data, width]);
+      .domain([1, 650])
+      .range([1, boundsWidth]);
+  }, [data, width, thresholds]);
 
   const buckets = useMemo(() => {
     const bucketGenerator = d3
       .bin()
       .value((d) => d)
       .domain(xScale.domain())
-      // .thresholds(xScale.ticks(BUCKET_NUMBER));
-      .thresholds([1, 6, 51, 101, 201, 301, 701])
+      .thresholds(thresholds)
     return bucketGenerator(data);
-  }, [xScale]);
+  }, [xScale, thresholds]);
 
   // console.log(bucket[0], xScale.domain());
 
   const yScale = useMemo(() => {
     const max = Math.max(...buckets.map((bucket) => bucket?.length));
     return d3.scaleLinear().range([boundsHeight, 0]).domain([0, max]).nice();
-  }, [data, height]);
+  }, [data, height, thresholds]);
 
   // Render the X axis using d3.js, not react
   useEffect(() => {
@@ -55,7 +57,10 @@ export const Histogram = ({ width, height, data }: HistogramProps) => {
 
     const yAxisGenerator = d3.axisLeft(yScale);
     svgElement.append("g").call(yAxisGenerator);
-  }, [xScale, yScale, boundsHeight]);
+
+    console.log('histogram effect', buckets)
+    setComputedBins(buckets);
+  }, [xScale, yScale, boundsHeight, thresholds]);
 
 
   const allRects = buckets.map((bucket, i) => {
