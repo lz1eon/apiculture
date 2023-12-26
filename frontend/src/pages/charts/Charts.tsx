@@ -11,6 +11,7 @@ type PriceModel = {
   thresholds: number[];
   prices: number[];
   parts: number[];
+  totalIncome: number;
 }
 
 export const Charts = () => {
@@ -48,7 +49,8 @@ export const Charts = () => {
       name: modelName,
       thresholds: thresholds,
       prices: prices,
-      parts: parts
+      parts: parts,
+      totalIncome: totalIncome
     };
 
     const models = [...savedModels];
@@ -108,7 +110,7 @@ export const Charts = () => {
       const value = computedBins
         .map((bin, i) => bin.length * (parts[i] / 10) * prices[i])
         .reduce((sum, v) => sum + v);
-      setTotalIncome(value)
+      setTotalIncome(Math.round(value));
 
       const people = computedBins
         .map((bin, i) => bin.length * (parts[i] / 10))
@@ -134,7 +136,11 @@ export const Charts = () => {
                       {savedModels.map((model, i) => {
                         return (
                           <IonChip key={i} onClick={() => loadModel(model)}>
-                            <IonLabel>{model.name}</IonLabel>
+                            <IonLabel>
+                              {model.name} 
+                              <br/>
+                              <IonText style={{color: 'green'}}>{formatNumber(model.totalIncome)}</IonText>
+                            </IonLabel>
                             <IonIcon icon={close} onClick={() => removeModel(model)}></IonIcon>
                           </IonChip>
                         )
