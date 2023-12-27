@@ -15,12 +15,6 @@ const UserToolbar = () => {
         <IonButtons slot="start">
           <IonButton routerLink="/apiaries">Пчелини</IonButton>
         </IonButtons>        
-        <IonButtons slot="start">
-          <IonButton routerLink="/hives">Кошери</IonButton>
-        </IonButtons>        
-        <IonButtons slot="start">
-          <IonButton routerLink="/mothers">Майки</IonButton>
-        </IonButtons>
         <IonButtons slot="end">
           <IonButton routerLink="/charts">Графики</IonButton>
         </IonButtons>

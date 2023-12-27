@@ -7,7 +7,7 @@ import {
   setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -36,6 +36,7 @@ import {
   Contacts,
   Home,
   Login,
+  NotFound,
   Pricing,
   Register
 } from './pages';
@@ -64,23 +65,26 @@ const App: React.FC = () => {
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       <GeneralInfoContext.Provider value={{ apiaries, setApiaries }}>
-        <IonApp>
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route exact path="/" component={Home} />
-              <Route exact path="/pricing" component={Pricing} />
-              <Route exact path="/about" component={About} />
-              <Route exact path="/contacts" component={Contacts} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/register" component={Register} />
+            <IonReactRouter>
+              <IonRouterOutlet animated={false}>
+                <IonApp>
+                  <Header />
+                  <IonContent>
+                    <Route exact path="/" render={() => user ? <Redirect to='/apiaries' /> : <Home />} />
+                    <Route exact path="/pricing" component={Pricing} />
+                    <Route exact path="/about" component={About} />
+                    <Route exact path="/contacts" component={Contacts} />
+                    <Route exact path="/login" component={Login} />
+                    {/* <Route exact path="/register" component={Register} /> */}
 
-              <Route exact path="/apiaries/:id/" component={ApiaryDetail} />
-              <Route exact path="/apiaries" component={ApiaryList} />
-              <Route exact path="/charts" component={Charts} />
-              {/* <Route exact path="*" component={NotFound} /> */}
-            </IonRouterOutlet>
-          </IonReactRouter>
-        </IonApp>
+                    <PrivateRoute exact path="/apiaries/:id" component={ApiaryDetail} />
+                    <PrivateRoute exact path="/apiaries" component={ApiaryList} />
+                    <PrivateRoute exact path="/charts" component={Charts} />
+                    {/* <Route component={NotFound} /> */}
+                  </IonContent>
+                </IonApp>
+              </IonRouterOutlet>
+            </IonReactRouter>
       </GeneralInfoContext.Provider>
     </AuthContext.Provider>
   )

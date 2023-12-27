@@ -1,9 +1,9 @@
-import { IonCol, IonGrid, IonInput, IonRow, IonText, IonButton, InputCustomEvent, RangeCustomEvent, IonRange, IonChip, IonIcon, IonLabel } from '@ionic/react';
+import { IonCol, IonGrid, IonInput, IonRow, IonText, IonButton, InputCustomEvent, RangeCustomEvent, IonRange, IonChip, IonIcon, IonLabel, IonCardContent, IonCard } from '@ionic/react';
 import { close } from 'ionicons/icons';
 import { Histogram } from '../../components';
 import Page from '../Page';
 import data from '../../components/charts/apiaries';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './charts.css';
 
 type PriceModel = {
@@ -15,7 +15,7 @@ type PriceModel = {
 }
 
 export const Charts = () => {
-  const [thresholds, setThresholds] = useState([50, 100, 200, 300]);
+  const [thresholds, setThresholds] = useState([10, 20, 50, 100, 200, 300]);
   const [computedBins, setComputedBins] = useState([{ length: 0 }, { length: 0 }, { length: 0 }, { length: 0 }, { length: 0 }]);
   const [inputs, setInputs] = useState({ thresholds: '' });
   const zeros_array: number[] = computedBins.map((e, i) => 0);
@@ -26,10 +26,10 @@ export const Charts = () => {
   const [totalPeople, setTotalPeople] = useState(0);
   const [modelName, setModelName] = useState('');
   const [savedModels, setSavedModels] = useState<PriceModel[]>([]);
+  const thresholdsRef = useRef();
 
-
-  const formatNumber = (value: number) =>
-    value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' лв.';
+  const formatNumber = (value: number, suffix: string = 'лв.') =>
+    value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ' + suffix;
 
   const handleChange = (event: InputCustomEvent) => {
     setInputs({
@@ -56,21 +56,34 @@ export const Charts = () => {
     const models = [...savedModels];
     models.push(model)
     setSavedModels(models);
+    localStorage.setItem('savedModels', JSON.stringify(models));
 
     event.target.reset();
   }
 
   const loadModel = (model: PriceModel) => {
-    setThresholds(model.thresholds);
     setPrices(model.prices);
     setParts(model.parts)
+
+    setThresholds(model.thresholds);
+    thresholdsRef.current.value = model.thresholds;
   }
+
+  useEffect(()=> {
+    // Get savedModels on page load
+    const models = localStorage.getItem('savedModels');
+    if (models) {
+      setSavedModels(JSON.parse(models));
+    }
+    thresholdsRef.current.value = thresholds;
+  }, []);
 
   const removeModel = (model: PriceModel) => {
     let models = [...savedModels];
     models = models.filter((m, i) => m.name !== model.name);
 
     setSavedModels(models);
+    localStorage.setItem('savedModels', JSON.stringify(models));
   }
 
   const handlePriceChange = (event: InputCustomEvent) => {
@@ -90,17 +103,14 @@ export const Charts = () => {
   const recalulateHistogram = (event: React.FormEvent) => {
     event.preventDefault();
     const inputThresholds = inputs.thresholds.split(',').map((t: string) => Number(t));
-    console.log(inputThresholds);
 
     const initialPrices = (inputThresholds.map(() => 0))
     initialPrices.push(0) // for the last implicit bin
     setPrices(initialPrices);
-    console.log(initialPrices, prices);
 
     const initialParts = (inputThresholds.map(() => 10))
     initialParts.push(10) // for the last implicit bin
     setParts(initialParts);
-    console.log(initialParts, parts);
 
     setThresholds(inputThresholds);
   }
@@ -123,15 +133,13 @@ export const Charts = () => {
     <Page>
       <IonGrid>
         <IonRow>
-          <IonCol></IonCol>
-          <IonCol><IonText><h1>Ценови модел</h1></IonText></IonCol>
-          <IonCol></IonCol>
-        </IonRow>
-        <IonRow>
           <IonCol>
             <form onSubmit={saveCurrentModel}>
-              <IonGrid>
+              <IonCard>
+                <IonCardContent>
+                <IonGrid>
                 <IonRow>
+                  <IonCol size='auto'><IonText><h1>Ценови модел</h1></IonText></IonCol>
                   <IonCol>                    
                       {savedModels.map((model, i) => {
                         return (
@@ -160,12 +168,14 @@ export const Charts = () => {
                         name="modelName"
                         label="Име на модела"
                         labelPlacement='stacked'
-                        onIonChange={handleModelNameChange}
+                        onIonInput={handleModelNameChange}
                       />
                     </div>
                   </IonCol>
                 </IonRow>
               </IonGrid>
+                </IonCardContent>
+              </IonCard>
             </form> 
           </IonCol>
         </IonRow>
@@ -187,8 +197,8 @@ export const Charts = () => {
                   <IonCol size="auto">
                     <div style={{ width: '200px' }}>
                       <IonInput
+                        ref={thresholdsRef}
                         className='input'
-                        placeholder='50, 100, 200, 300'
                         type="text"
                         name="thresholds"
                         label='Групиране'
@@ -201,7 +211,7 @@ export const Charts = () => {
                     <IonInput
                       className='input'
                       type="text"
-                      value={Math.round(totalPeople)}
+                      value={formatNumber(Math.round(totalPeople), ' ')}
                       readonly={true}
                       label='Общо хора'
                       labelPlacement='floating' />
@@ -287,7 +297,7 @@ export const Charts = () => {
                           <IonInput
                             className='input'
                             type="text"
-                            value={Math.round(totalPeople)}
+                            value={formatNumber(Math.round(totalPeople), ' ')}
                             readonly={true}
                             label='Общо хора'
                             labelPlacement='floating' />

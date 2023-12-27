@@ -4,6 +4,7 @@ import client from '../../api';
 import Page from '../Page';
 import { ApiaryComponent } from '../../components/apiary/ApiaryComponent';
 import { useGeneralInfo } from '../../hooks/useGeneralInfo';
+import { Link } from 'react-router-dom';
 
 export const ApiaryList = () => {
   const {apiaries, setApiaries} = useGeneralInfo();
@@ -22,9 +23,10 @@ export const ApiaryList = () => {
         <IonRow>
         {apiaries.map((apiary) => (                    
           <IonCol key={apiary.id}>                        
-            <a href={`/apiaries/${apiary.id}`}>
+            <Link to={`/apiaries/${apiary.id}`}>
+            {/* <Link to='/apiaries/1'> */}
               <ApiaryComponent key={apiary.id} apiary={apiary}/>
-            </a>
+            </Link>
           </IonCol>                    
         ))}
         </IonRow>
