@@ -28,23 +28,40 @@ const LoginForm = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
-  const [inputs, setInputs] = useState({
-    username: '',
-    password: '',
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isTouched, setIsTouched] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState<boolean>();
+  const [isValidPassword, setIsValidPassword] = useState<boolean>();
+  const { loginUser } = useAuth();
 
-  const handleChange = (event: InputCustomEvent) => {
-    setInputs({
-      ...inputs,
-      [event.target.name]: event.target.value,
-    });
+  const validateEmail = (email: string) => {
+    return email.match(
+      /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+    );
   };
 
+  const handleChangeEmail = (event: InputCustomEvent) => {
+    const value = String(event.target.value || '');
+    setEmail(value);
+    
+    setIsValidEmail(undefined);
+    if (value === '') setIsValidEmail(false);
+    if (validateEmail(value) === null) setIsValidEmail(false);
+  }
 
-  const { loginUser } = useAuth();
+  const handleChangePassword = (event: InputCustomEvent) => {
+    const value = String(event.target.value || '');
+    setPassword(value);
+
+    setIsValidPassword(undefined);
+    if (value === '') setIsValidPassword(false);
+  }
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    client.login(inputs)
+
+    client.login({ username: email, password: password })
       .then((response) => {
         if (response.data.access_token !== '' && response.data.access_token !== undefined) {
           const user = response.data.user;
@@ -92,22 +109,29 @@ const LoginForm = () => {
             <form className='ion-padding' onSubmit={handleSubmit}>
               <IonItem>
                 <IonInput
-                  name="username"
+                  // className={`${isValidEmail && 'ion-valid'} ${isValidEmail === false && 'ion-invalid'} ${isTouched && 'ion-touched'}`}
+                  name="email"
+                  type="text"
                   label="Имейл"
                   labelPlacement='stacked'
                   autocomplete="username"
-                  onIonInput={handleChange}
+                  // errorText='Имейлът не е валиден'
+                  onIonInput={handleChangeEmail}
+                  onIonBlur={() => setIsTouched(true)}
                   required
                 />
               </IonItem>
               <IonItem>
                 <IonInput
+                  // className={`${isValidPassword && 'ion-valid'} ${isValidPassword === false && 'ion-invalid'} ${isTouched && 'ion-touched'}`}
                   name="password"
                   type="password"
                   label="Парола"
                   labelPlacement='stacked'
                   autocomplete="current-password"
-                  onIonInput={handleChange}
+                  // errorText='Не е въведена парола'
+                  onIonInput={handleChangePassword}
+                  onIonBlur={() => setIsTouched(true)}
                   required
                 />
               </IonItem>
