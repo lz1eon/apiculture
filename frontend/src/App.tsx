@@ -55,7 +55,8 @@ import { Charts } from './pages/charts/Charts';
 setupIonicReact({
   rippleEffect: false,
   mode: 'md',
-  animated: !isPlatform('mobileweb'),
+  // animated: !isPlatform('mobileweb'),
+  animated: false,
 });
 
 const App: React.FC = () => {
