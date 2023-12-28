@@ -10,8 +10,8 @@ const DOMAIN_UPPER_LIMIT = 650;
 
 type Bin = {
   length: number;
-  x0?: number;
-  x1?: number;
+  x0: number;
+  x1: number;
 }
 
 type Group = {
@@ -34,7 +34,7 @@ function emptyGroup(): Group{
 }
 
 function emptyBin(): Bin{
-  return {length: 0};
+  return {length: 0, x0: 0, x1: 0};
 }
 
 function calcTotalIncome(model: PriceModel): number{
@@ -60,6 +60,7 @@ function copyModel(model: PriceModel): PriceModel {
 }
 
 const formatNumber = (value: number, suffix: string = 'лв.') => {
+  value = Math.round(value);
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ' + suffix;
 }
 
@@ -117,9 +118,10 @@ export const Charts = () => {
     bins.forEach((bin, i) => {
       const group = updatedModel.groups[i];
       if (group) {
-        newGroup = {name: bin.x1, count: bin.length, part: group.part, price: group.price};
+        newGroup = {name: String(bin.x1), count: bin.length, part: group.part, price: group.price};
       } else {
         newGroup = emptyGroup();
+        newGroup.name = String(bin.x1)
         newGroup.count = bin.length;
       }
       newGroups.push(newGroup)
@@ -199,7 +201,7 @@ export const Charts = () => {
     setCurrentModel(newModel);
     
     // trigger histogram recalculation
-    setThresholds(currentModel.thresholds);
+    setThresholds([...newModel.thresholds]);
   }
 
   const loadModel = (model: PriceModel) => {   
@@ -304,7 +306,7 @@ export const Charts = () => {
                     <IonInput
                       className='input'
                       type="text"
-                      value={formatNumber(Math.round(currentModel.totalPeople), ' ')}
+                      value={formatNumber(currentModel.totalPeople, ' ')}
                       readonly={true}
                       label='Общо пчелини'
                       labelPlacement='floating' />
@@ -313,7 +315,7 @@ export const Charts = () => {
                     <IonInput
                       className='input money'
                       type="text"
-                      value={formatNumber(Math.round(currentModel.totalIncome))}
+                      value={formatNumber(currentModel.totalIncome)}
                       readonly={true}
                       label='Общо приходи'
                       labelPlacement='floating' />
@@ -347,7 +349,7 @@ export const Charts = () => {
                                   className='input'
                                   type="number"
                                   name={`apiary-count-${group.name}`}
-                                  value={Number.parseInt(group.count * (group.part / 10))}
+                                  value={group.count * (group.part / 10)}
                                   label='Пчелини'
                                   labelPlacement='stacked'
                                   disabled={true}
@@ -375,7 +377,7 @@ export const Charts = () => {
                                   className='input money'
                                   type="text"
                                   name={`income-${group.name}`}
-                                  value={formatNumber(Math.round(group.count * (group.part / 10) * group.price))}
+                                  value={formatNumber(group.count * (group.part / 10) * group.price)}
                                   label={`Приходи`}
                                   labelPlacement='stacked'
                                   readonly={true}
@@ -390,7 +392,7 @@ export const Charts = () => {
                           <IonInput
                             className='input'
                             type="text"
-                            value={formatNumber(Math.round(currentModel.totalPeople), ' ')}
+                            value={formatNumber(currentModel.totalPeople, ' ')}
                             readonly={true}
                             label='Общо пчелини'
                             labelPlacement='floating' />
@@ -399,7 +401,7 @@ export const Charts = () => {
                           <IonInput
                             className='input money'
                             type="text"
-                            value={formatNumber(Math.round(currentModel.totalIncome))}
+                            value={formatNumber(currentModel.totalIncome)}
                             readonly={true}
                             label='Общо приходи'
                             labelPlacement='floating' />
