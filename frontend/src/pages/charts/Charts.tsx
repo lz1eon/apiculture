@@ -6,157 +6,251 @@ import data from '../../components/charts/apiaries';
 import { useEffect, useRef, useState } from 'react';
 import './charts.css';
 
+const DOMAIN_UPPER_LIMIT = 650;
+
+type Bin = {
+  length: number;
+  x0?: number;
+  x1?: number;
+}
+
+type Group = {
+  name: string;
+  count: number;
+  part: number;
+  price: number;
+}
+
 type PriceModel = {
   name: string;
   thresholds: number[];
-  prices: number[];
-  parts: number[];
+  groups: Group[];
   totalIncome: number;
+  totalPeople: number;
 }
 
+function emptyGroup(): Group{
+  return {name: '', count: 0, part: 10, price: 0};
+}
+
+function emptyBin(): Bin{
+  return {length: 0};
+}
+
+function calcTotalIncome(model: PriceModel): number{
+  let sum = 0;
+  model.groups.forEach((g) => {sum += (g.count * (g.part / 10)  * g.price)});
+  return sum;
+}
+
+function calcTotalPeople(model: PriceModel): number{
+  let sum = 0;
+  model.groups.forEach((g) => {sum += (g.count * (g.part / 10))});
+  return sum;
+}
+
+function copyModel(model: PriceModel): PriceModel {
+  return {
+    name: model.name,
+    thresholds: [...model.thresholds],
+    groups: model.groups.map((g) => {return {name: g.name, count: g.count, part: g.part, price: g.price}}),
+    totalIncome: model.totalIncome,
+    totalPeople: model.totalPeople
+  };
+}
+
+const formatNumber = (value: number, suffix: string = 'лв.') => {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ' + suffix;
+}
+
+
 export const Charts = () => {
-  const [thresholds, setThresholds] = useState([10, 20, 50, 100, 200, 300]);
-  const [computedBins, setComputedBins] = useState([{ length: 0 }, { length: 0 }, { length: 0 }, { length: 0 }, { length: 0 }]);
+  const [currentModelName, setCurrentModelName] = useState('');
+
+  // Controls the recalculation of the histogram
+  const initialThresholds = [10, 20, 50, 100, 200, 300]
+  const [thresholds, setThresholds] = useState(initialThresholds) 
   const [inputs, setInputs] = useState({ thresholds: '' });
-  const zeros_array: number[] = computedBins.map((e, i) => 0);
-  const [prices, setPrices] = useState(zeros_array);
-  const tens_array: number[] = computedBins.map((e, i) => 10);
-  const [parts, setParts] = useState(tens_array);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalPeople, setTotalPeople] = useState(0);
-  const [modelName, setModelName] = useState('');
+  const thresholdsRef = useRef(null);
+
+  // Current model
+  const [currentModel, setCurrentModel] = useState<PriceModel>({
+    name: '',
+    thresholds: [...initialThresholds],
+    groups: [emptyGroup(), ...initialThresholds.map(() => emptyGroup())],
+    totalIncome: 0,
+    totalPeople: 0,
+  });
+  
+  // Bins
+  const initialBins = [emptyBin(), ...currentModel.thresholds.map(() => {return emptyBin()})];
+  const [computedBins, setComputedBins] = useState(initialBins);
+  
+  // Saved models
   const [savedModels, setSavedModels] = useState<PriceModel[]>([]);
-  const thresholdsRef = useRef();
+  
 
-  const formatNumber = (value: number, suffix: string = 'лв.') =>
-    value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ' + suffix;
 
-  const handleChange = (event: InputCustomEvent) => {
-    setInputs({
-      ...inputs,
-      [event.target.name]: event.target.value
-    });
-  }
+  // Update current model when bins are re-computed.
+  useEffect(() => {
+    recalculateCurrentModel(computedBins);
+  }, [computedBins]);
 
-  const handleModelNameChange = (event: InputCustomEvent) => {
-    setModelName(String(event.target.value));
-  }
-
-  const saveCurrentModel = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const model: PriceModel = {
-      name: modelName,
-      thresholds: thresholds,
-      prices: prices,
-      parts: parts,
-      totalIncome: totalIncome
-    };
-
-    const models = [...savedModels];
-    models.push(model)
-    setSavedModels(models);
-    localStorage.setItem('savedModels', JSON.stringify(models));
-
-    event.target.reset();
-  }
-
-  const loadModel = (model: PriceModel) => {
-    setPrices(model.prices);
-    setParts(model.parts)
-
-    setThresholds(model.thresholds);
-    thresholdsRef.current.value = model.thresholds;
-  }
-
+  // Get savedModels on page load
   useEffect(()=> {
-    // Get savedModels on page load
     const models = localStorage.getItem('savedModels');
     if (models) {
       setSavedModels(JSON.parse(models));
     }
-    thresholdsRef.current.value = thresholds;
+    
+    if (thresholdsRef.current !== null && thresholdsRef.current !== undefined) {
+      thresholdsRef.current.value = thresholds;
+    }
+    setInputs({thresholds: String(thresholds || '')});
   }, []);
 
-  const removeModel = (model: PriceModel) => {
-    let models = [...savedModels];
-    models = models.filter((m, i) => m.name !== model.name);
+  function recalculateCurrentModel(bins: Bin[]) {
+    const updatedModel = copyModel(currentModel);
+    const newGroups: Group[] = [];
+    let newGroup: Group;
 
+    bins.forEach((bin, i) => {
+      const group = updatedModel.groups[i];
+      if (group) {
+        newGroup = {name: bin.x1, count: bin.length, part: group.part, price: group.price};
+      } else {
+        newGroup = emptyGroup();
+        newGroup.count = bin.length;
+      }
+      newGroups.push(newGroup)
+    });
+    
+    updatedModel.groups = [...newGroups]
+    updatedModel.totalIncome = calcTotalIncome(updatedModel);
+    updatedModel.totalPeople = calcTotalPeople(updatedModel);
+    setCurrentModel(updatedModel);
+  }
+
+  const handleModelNameChange = (event: InputCustomEvent) => {
+    setCurrentModelName('');
+  }
+
+  const handleCurrentModelSave = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      modelName: { value: string };
+    }    
+    const modelName = target.modelName.value;
+    e.target.reset();
+
+    setCurrentModelName(modelName);
+    currentModel.name = modelName;
+    
+    const models = [...savedModels];
+    models.push(currentModel)
     setSavedModels(models);
+
     localStorage.setItem('savedModels', JSON.stringify(models));
   }
 
   const handlePriceChange = (event: InputCustomEvent) => {
     const index = Number(event.target.getAttribute('id'));
-    const newPrices = [...prices];
-    newPrices[index] = Number(event.target.value);
-    setPrices(newPrices);
+    
+    const newGroups = [...currentModel.groups];
+    newGroups[index].price = Number(event.target.value);
+    
+    const newModel = copyModel(currentModel);
+    newModel.groups = newGroups;
+    newModel.totalIncome = calcTotalIncome(newModel);
+    setCurrentModel(newModel);
+
+    setCurrentModelName('');
   }
 
   const handleRangeChange = (event: RangeCustomEvent) => {
     const index = Number(event.target.getAttribute('id'));
-    const newParts = [...parts];
-    newParts[index] = Number(event.detail.value);
-    setParts(newParts);
+
+    const newGroups = [...currentModel.groups];
+    newGroups[index].part = Number(event.detail.value);
+    
+    const newModel = copyModel(currentModel);
+    newModel.groups = newGroups;
+    newModel.totalPeople = calcTotalPeople(newModel);
+    newModel.totalIncome = calcTotalIncome(newModel);
+    setCurrentModel(newModel);
+
+    setCurrentModelName('');
+  }
+
+  const handleThresholdsChange = (event: InputCustomEvent) => {
+    setInputs({thresholds: String(event.target.value || '')});
+    // TODO: set model.thresholds
+    
+    setCurrentModelName('');
   }
 
   const recalulateHistogram = (event: React.FormEvent) => {
     event.preventDefault();
     const inputThresholds = inputs.thresholds.split(',').map((t: string) => Number(t));
-
-    const initialPrices = (inputThresholds.map(() => 0))
-    initialPrices.push(0) // for the last implicit bin
-    setPrices(initialPrices);
-
-    const initialParts = (inputThresholds.map(() => 10))
-    initialParts.push(10) // for the last implicit bin
-    setParts(initialParts);
-
-    setThresholds(inputThresholds);
+    
+    // update model's thresholds
+    const newModel = copyModel(currentModel);
+    newModel.thresholds = inputThresholds;
+    setCurrentModel(newModel);
+    
+    // trigger histogram recalculation
+    setThresholds(currentModel.thresholds);
   }
 
-  useEffect(() => {
-    if (computedBins.length > 0) {
-      const value = computedBins
-        .map((bin, i) => bin.length * (parts[i] / 10) * prices[i])
-        .reduce((sum, v) => sum + v);
-      setTotalIncome(Math.round(value));
+  const loadModel = (model: PriceModel) => {   
+    if (thresholdsRef.current !== null && thresholdsRef.current !== undefined) {
+      thresholdsRef.current.value = model.thresholds;
+    } 
+    setInputs({thresholds: model.thresholds.map((t) => String(t)).join(',')});
+    setCurrentModel(model);
+    setCurrentModelName(model.name);
+    setThresholds(model.thresholds);   
+  }
 
-      const people = computedBins
-        .map((bin, i) => bin.length * (parts[i] / 10))
-        .reduce((sum, v) => sum + v);
-      setTotalPeople(people)
-    }
-  }, [computedBins, prices, parts]);
+  const removeModel = (model: PriceModel) => {
+    let models = [...savedModels];
+    models = models.filter((m, i) => m.name !== model.name);
+    setSavedModels(models);
+    localStorage.setItem('savedModels', JSON.stringify(models));
+  }
 
   return (
     <Page>
       <IonGrid>
         <IonRow>
           <IonCol>
-            <form onSubmit={saveCurrentModel}>
+            <form onSubmit={handleCurrentModelSave}>
               <IonCard>
                 <IonCardContent>
                 <IonGrid>
                 <IonRow>
                   <IonCol size='auto'><IonText><h1>Ценови модел</h1></IonText></IonCol>
                   <IonCol>                    
-                      {savedModels.map((model, i) => {
+                      {savedModels.map((savedModel, i) => {
                         return (
-                          <IonChip key={i} onClick={() => loadModel(model)}>
+                          <IonChip 
+                            key={i} 
+                            className={currentModelName === savedModel.name ? 'active' : ''}
+                            onClick={() => loadModel(savedModel)}
+                          >
                             <IonLabel>
-                              {model.name} 
+                              {savedModel.name} 
                               <br/>
-                              <IonText style={{color: 'green'}}>{formatNumber(model.totalIncome)}</IonText>
+                              <IonText style={{color: 'green'}}>{formatNumber(savedModel.totalIncome)}</IonText>
                             </IonLabel>
-                            <IonIcon icon={close} onClick={() => removeModel(model)}></IonIcon>
+                            <IonIcon icon={close} onClick={() => removeModel(savedModel)}></IonIcon>
                           </IonChip>
                         )
                       })}                    
                   </IonCol>                  
                   <IonCol size='auto'>
                     <div style={{ width: '200px' }}>
-                      <IonButton size="small" type="submit">Запази модела</IonButton>
+                      <IonButton size="small" type="submit">Запази нов модел</IonButton>
                     </div>
                   </IonCol>
                   <IonCol size="auto">
@@ -186,7 +280,6 @@ export const Charts = () => {
               height={400}
               data={data}
               thresholds={thresholds}
-              computedBins={computedBins}
               setComputedBins={setComputedBins}
             ></Histogram>
           </IonCol>
@@ -203,7 +296,7 @@ export const Charts = () => {
                         name="thresholds"
                         label='Групиране'
                         labelPlacement='stacked'
-                        onIonInput={handleChange} />
+                        onIonInput={handleThresholdsChange} />
                       <IonButton size="small" type="submit" onClick={recalulateHistogram}>Обнови групите</IonButton>
                     </div>
                   </IonCol>
@@ -211,16 +304,16 @@ export const Charts = () => {
                     <IonInput
                       className='input'
                       type="text"
-                      value={formatNumber(Math.round(totalPeople), ' ')}
+                      value={formatNumber(Math.round(currentModel.totalPeople), ' ')}
                       readonly={true}
-                      label='Общо хора'
+                      label='Общо пчелини'
                       labelPlacement='floating' />
                   </IonCol>
                   <IonCol>
                     <IonInput
                       className='input money'
                       type="text"
-                      value={formatNumber(Math.round(totalIncome))}
+                      value={formatNumber(Math.round(currentModel.totalIncome))}
                       readonly={true}
                       label='Общо приходи'
                       labelPlacement='floating' />
@@ -229,17 +322,17 @@ export const Charts = () => {
                 <IonRow>
                   <IonCol>
                     <IonGrid>
-                      {computedBins.map((bin, i) => {
+                      {currentModel.groups.map((group, i) => {
                         return (
                           <IonRow key={i}>
                             <IonCol>
                               <IonRange
                                 min={0}
                                 max={10}
-                                value={parts[i]}
+                                value={group.part}
                                 ticks={true}
                                 snaps={true}
-                                label={`Група ${bin.x1} (${parts[i] * 10})%`}
+                                label={`Група ${group.name} (${group.part * 10})%`}
                                 labelPlacement='stacked'
                                 id={`${i}`}
                                 onIonChange={handleRangeChange}
@@ -253,9 +346,9 @@ export const Charts = () => {
                                 <IonInput
                                   className='input'
                                   type="number"
-                                  name={`apiary-number-${computedBins[i]?.length}`}
-                                  value={Number.parseInt(computedBins[i]?.length * (parts[i] / 10))}
-                                  label={`Хора`}
+                                  name={`apiary-count-${group.name}`}
+                                  value={Number.parseInt(group.count * (group.part / 10))}
+                                  label='Пчелини'
                                   labelPlacement='stacked'
                                   disabled={true}
                                 />
@@ -267,8 +360,8 @@ export const Charts = () => {
                                   className='input'
                                   type="number"
                                   min={0}
-                                  value={prices[i]}
-                                  name={`price-${bin.x1}`}
+                                  value={group.price}
+                                  name={`price-${group.name}`}
                                   label={`Цена`}
                                   labelPlacement='stacked'
                                   id={`${i}`}
@@ -281,8 +374,8 @@ export const Charts = () => {
                                 <IonInput
                                   className='input money'
                                   type="text"
-                                  name={`income-${bin.x1}`}
-                                  value={formatNumber(Math.round(computedBins[i]?.length * (parts[i] / 10) * prices[i]))}
+                                  name={`income-${group.name}`}
+                                  value={formatNumber(Math.round(group.count * (group.part / 10) * group.price))}
                                   label={`Приходи`}
                                   labelPlacement='stacked'
                                   readonly={true}
@@ -297,16 +390,16 @@ export const Charts = () => {
                           <IonInput
                             className='input'
                             type="text"
-                            value={formatNumber(Math.round(totalPeople), ' ')}
+                            value={formatNumber(Math.round(currentModel.totalPeople), ' ')}
                             readonly={true}
-                            label='Общо хора'
+                            label='Общо пчелини'
                             labelPlacement='floating' />
                         </IonCol>
                         <IonCol>
                           <IonInput
                             className='input money'
                             type="text"
-                            value={formatNumber(Math.round(totalIncome))}
+                            value={formatNumber(Math.round(currentModel.totalIncome))}
                             readonly={true}
                             label='Общо приходи'
                             labelPlacement='floating' />

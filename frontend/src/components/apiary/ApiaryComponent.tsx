@@ -11,8 +11,8 @@ export const ApiaryComponent = ({apiary}: ApiaryComponentProps) => {
         <IonCardHeader>
           <IonCardTitle>{apiary.name}</IonCardTitle>
           <IonCardSubtitle>{apiary.number}</IonCardSubtitle>
-          <IonText style={{ marginTop: '10px', marginBottom: '20px' }}>
-            {apiary.type == '1' ? 'Подвижен' : ''}
+          <IonText style={{ marginTop: '10px', marginBottom: '20px', height: '20px' }}>
+            <span>{apiary.type == '1' ? 'Подвижен' : ' '}</span>
           </IonText>          
         </IonCardHeader>
         <IonCardContent>          

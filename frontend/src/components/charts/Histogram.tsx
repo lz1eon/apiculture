@@ -1,5 +1,5 @@
-import * as d3 from "d3"; // we will need d3.js
-import { Fragment, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import * as d3 from "d3";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 import './charts.css';
 
 const MARGIN = { top: 30, right: 30, bottom: 40, left: 50 };
@@ -11,11 +11,10 @@ type HistogramProps = {
   height: number;
   data: number[];
   thresholds: number[];
-  computedBins: any[];
   setComputedBins: (bins: any) => void;
 };
 
-export const Histogram = ({ width, height, data, thresholds, computedBins, setComputedBins }: HistogramProps) => {
+export const Histogram = ({ width, height, data, thresholds, setComputedBins }: HistogramProps) => {
   const axesRef = useRef(null);
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
@@ -37,7 +36,6 @@ export const Histogram = ({ width, height, data, thresholds, computedBins, setCo
     return bucketGenerator(data);
   }, [xScale, thresholds]);
 
-  // console.log(bucket[0], xScale.domain());
 
   const yScale = useMemo(() => {
     const max = Math.max(...buckets.map((bucket) => bucket?.length));
@@ -65,13 +63,6 @@ export const Histogram = ({ width, height, data, thresholds, computedBins, setCo
   const allRects = buckets.map((bucket, i) => {
     return (
       <Fragment key={i}> 
-       <text 
-          className="small" 
-          x={xScale(bucket.x0) + 20}
-          y={yScale(bucket.length) - 5}
-        >
-          {bucket.length}
-        </text>
         <rect
           fill="#69b3a2"
           x={xScale(bucket.x0) + BUCKET_PADDING / 2}
@@ -79,19 +70,16 @@ export const Histogram = ({ width, height, data, thresholds, computedBins, setCo
           y={yScale(bucket.length)}
           height={boundsHeight - yScale(bucket.length)}
         />
+       <text 
+          className="small top" 
+          x={xScale(bucket.x0) + 20}
+          y={yScale(bucket.length) - 5}
+        >
+          {bucket.length}
+        </text>        
       </Fragment>
     );
   });
-
-  // const onMouseOut = function(d, i) {
-  //   d3.select(this).attr('style', 'fill: steelblue;');
-  //   d3.select("#toptext").text(`Metropolitan Areas: ${0}`);
-  // }
-
-  // const onMouseOver = function(d, i) {
-  //   d3.select(this).attr('style', 'fill: orange;');
-  //   d3.select("#toptext2").text(`Metropolitan Areas: ${i.length}`);
-  // }
 
   return (
     <svg width={width} height={height}>

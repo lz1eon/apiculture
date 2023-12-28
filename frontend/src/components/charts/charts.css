@@ -1,3 +1,7 @@
 .small {
   font: 13px sans-serif;
 }
+
+text.top {
+  z-index: 1;
+}

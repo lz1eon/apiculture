@@ -16,7 +16,7 @@ const UserToolbar = () => {
           <IonButton routerLink="/apiaries">Пчелини</IonButton>
         </IonButtons>        
         <IonButtons slot="end">
-          <IonButton routerLink="/charts">Графики</IonButton>
+          <IonButton routerLink="/admin">Админ</IonButton>
         </IonButtons>
         <IonButtons slot="end">
           <IonButton onClick={handleLogout}>Изход</IonButton>

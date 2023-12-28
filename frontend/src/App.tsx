@@ -80,7 +80,7 @@ const App: React.FC = () => {
 
                     <PrivateRoute exact path="/apiaries/:id" component={ApiaryDetail} />
                     <PrivateRoute exact path="/apiaries" component={ApiaryList} />
-                    <PrivateRoute exact path="/charts" component={Charts} />
+                    <PrivateRoute exact path="/admin" component={Charts} />
                     {/* <Route component={NotFound} /> */}
                   </IonContent>
                 </IonApp>
