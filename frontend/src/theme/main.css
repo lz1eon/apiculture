@@ -7,10 +7,6 @@ html, body {
   overflow-y: scroll;
 }
 
-/* .toolbar-title {
-  margin-right: 10px;
+.edit-plan {
+  position:absolute;
 }
-
-.logo-text {
-  font-size: x-large;
-} */

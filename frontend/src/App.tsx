@@ -50,6 +50,7 @@ import { AuthContext } from './contexts/AuthContext';
 import { Apiary, User } from './models';
 import { GeneralInfoContext } from './contexts/GeneralInfoContext';
 import { Charts } from './pages/charts/Charts';
+import { PageLoading } from './pages/PageLoading';
 
 
 setupIonicReact({
@@ -61,6 +62,7 @@ setupIonicReact({
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [isAuthReady, setIsAuthReady] = useState(true);
   const [apiaries, setApiaries] = useState<Apiary[]>([]);
 
   return (
@@ -78,9 +80,11 @@ const App: React.FC = () => {
                     <Route exact path="/login" component={Login} />
                     {/* <Route exact path="/register" component={Register} /> */}
 
-                    <PrivateRoute exact path="/apiaries/:id" component={ApiaryDetail} />
-                    <PrivateRoute exact path="/apiaries" component={ApiaryList} />
-                    <PrivateRoute exact path="/admin" component={Charts} />
+                    <PageLoading dismissLoading={isAuthReady}>
+                      <PrivateRoute exact path="/apiaries/:id" component={ApiaryDetail} />
+                      <PrivateRoute exact path="/apiaries" component={ApiaryList} />
+                      <PrivateRoute exact path="/admin" component={Charts} />
+                    </PageLoading>
                     {/* <Route component={NotFound} /> */}
                   </IonContent>
                 </IonApp>

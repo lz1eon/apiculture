@@ -118,7 +118,12 @@ export const Charts = () => {
     bins.forEach((bin, i) => {
       const group = updatedModel.groups[i];
       if (group) {
-        newGroup = {name: String(bin.x1), count: bin.length, part: group.part, price: group.price};
+        newGroup = {
+          name: String(bin.x1), 
+          count: bin.length, 
+          part: group.part, 
+          price: group.price
+        };
       } else {
         newGroup = emptyGroup();
         newGroup.name = String(bin.x1)
