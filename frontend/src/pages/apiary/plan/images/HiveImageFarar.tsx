@@ -2,7 +2,7 @@ import { Hive } from "../../../../models";
 
 export const HiveImageFarar = ({hive, fill}: {hive: Hive, fill: string}) => {
   return (
-    <svg hive-id={hive.id} apiary-id={hive.apiary_id} x={hive.x} y={hive.y} fill={fill} height="6px" width="6px" viewBox="0 0 512 512">
+    <svg className="hive" hive-id={hive.id} apiary-id={hive.apiary_id} x={hive.x} y={hive.y} fill={fill} height="6px" width="6px" viewBox="0 0 512 512">
     <g>
        <g>
           <polygon points="164.571,330.971 146.286,342.857 146.286,361.143 164.571,373.029 182.857,361.143 182.857,342.857 		"/>

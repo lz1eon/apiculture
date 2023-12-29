@@ -10,3 +10,11 @@ html, body {
 .edit-plan {
   position:absolute;
 }
+
+.hive:hover {
+  cursor: pointer;
+}
+
+.hive.dragged {
+  cursor: grab;
+}

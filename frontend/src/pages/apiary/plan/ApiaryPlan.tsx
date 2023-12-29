@@ -20,11 +20,25 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
   const [hivesColor, setHivesColor] = useState('#000000');
 
+  const hiveSelector = 'g.hive svg';
+  const hiveTextSelector = 'g.hive text';
   let dx = 0;
   let dy = 0;
+  
+  function handleZoom(e) {
+    d3.selectAll('svg#apiary-plan g.hive')
+      .attr('transform', e.transform);
+  }
+
+  const zoom = d3.zoom()
+    .on('zoom', handleZoom);
+
+  d3.selectAll('svg#apiary-plan').call(zoom);
 
   function handleDragStart(event: MouseEvent) {
     const dragged = d3.select(this);
+    dragged.classed('dragged', true);
+
     const x = Number(dragged.attr('x'));
     const y = Number(dragged.attr('y'));
     dx = event.x - x;
@@ -33,15 +47,18 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
 
   function handleDrag(event: MouseEvent) {
     d3.select(this)
-        .attr('x', event.x - dx)
-        .attr('y', event.y - dy);
+      .attr('x', event.x - dx)
+      .attr('y', event.y - dy);
   }
 
   function handleDragEnd() {
-    const x = Number(d3.select(this).attr("x"));
-    const y = Number(d3.select(this).attr("y"));
-    const id = Number(d3.select(this).attr("hive-id"));
-    const apiaryId = Number(d3.select(this).attr("apiary-id"));
+    const dragged = d3.select(this);
+    dragged.classed('dragged', false);
+
+    const x = Number(dragged.attr("x"));
+    const y = Number(dragged.attr("y"));
+    const id = Number(dragged.attr("hive-id"));
+    const apiaryId = Number(dragged.attr("apiary-id"));
     client.updateHiveCoordinates(id, apiaryId, x, y);
   }
 
@@ -53,15 +70,15 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   }
 
   function registerClickable(svgElement: any) {
-    svgElement.selectAll('svg').on('click', handleClick);
+    svgElement.selectAll(hiveSelector).on('click', handleClick);
   }
 
   function unregisterClickable(svgElement: any) {
-    svgElement.selectAll('svg').on('click', null);
+    svgElement.selectAll(hiveSelector).on('click', null);
   }
 
   function registerDraggable(svgElement: any) {
-    svgElement.selectAll('svg').call(
+    svgElement.selectAll(hiveSelector).call(
       d3.drag()
       .on("start", handleDragStart)
       .on("drag", handleDrag)
@@ -70,7 +87,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   }
 
   function unregisterDraggable(svgElement: any) {
-    svgElement.selectAll('svg').call(
+    svgElement.selectAll(hiveSelector).call(
       d3.drag()
         .on('start', null)
         .on('drag', null)
@@ -113,7 +130,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
           <IonIcon slot="icon-only" icon={pencil}></IonIcon>
         </IonButton>
         
-        <svg viewBox="0 0 100 50" id="apiary-plan" style={{border: '1px solid black'}}>
+        <svg id="apiary-plan" viewBox="0 0 100 50" style={{border: '1px solid black'}}>
           {apiary.hives?.map((hive, i) => (
               <HiveImage key={i} hive={hive} fill={hivesColor} />
           ))};
