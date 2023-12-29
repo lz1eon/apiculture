@@ -44,31 +44,35 @@ export const HiveForm = ({ hive }: HiveFormProps) => {
   return (
     <form className='ion-padding' onSubmit={handleSubmit}>
       <IonItem>
-        <IonInput name="number" label="Номер" value={hive.number} onIonInput={handleChange} disabled={true} />
+        <IonInput name="number" label="Номер" labelPlacement="stacked" value={hive.number} onIonInput={handleChange} disabled={true} />
       </IonItem>
       <IonItem>
-        <IonInput name="apiary_id" label="Пчелин" value={hive.apiary_id} disabled={true} />
+        <IonInput name="apiary_id" label="Пчелин" labelPlacement="stacked" value={hive.apiary_id} disabled={true} />
       </IonItem>
 
       <IonItem>
         <ApiSelect
+          name="type"
+          value={hive.type}
           type={HiveTypes}
           label="Вид"
-          labelPlacement='floating'
+          labelPlacement='stacked'
           disabled={mode !== 'edit'}
         />
       </IonItem>
       <IonItem>
         <ApiSelect
+          name="model"
+          value={hive.model}
           type={HiveModels}
           label="Модел"
-          labelPlacement='floating'
+          labelPlacement='stacked'
           // onIonChange={handleChange}
           disabled={mode !== 'edit'}
         />
       </IonItem>
       <IonItem>
-        <IonInput name="status" label='Сила' aria-label='Сила' onIonInput={handleChange} disabled={mode !== 'edit'} />
+        <IonInput name="status" label='Сила' labelPlacement="stacked" aria-label='Сила' onIonInput={handleChange} disabled={mode !== 'edit'} />
       </IonItem>
       {mode === 'view' &&
         <IonButton className="ion-margin-top" onClick={setModeEdit}>
@@ -87,54 +91,6 @@ export const HiveForm = ({ hive }: HiveFormProps) => {
       }
     </form>
   );
-
-  {/* <form onSubmit={handleSubmit}>
-        <div className={'my-3'}>  
-          <FormControl defaultValue={hive.number} required>
-            <Label>Номер</Label>
-            <StyledInput placeholder=""  />
-            <HelperText />
-          </FormControl>
-        </div>
-
-        <div className={'my-3'}>  
-          <FormControl defaultValue="" value={hive.apiary_id} required>
-            <Label>Пчелин</Label>
-            <StyledInput placeholder="" />
-            <HelperText />
-          </FormControl>
-        </div>
-
-        <div className={'my-3'}>  
-          <FormControl defaultValue="">
-            <Label>Сила</Label>
-            <StyledInput placeholder="" />
-            <HelperText />
-          </FormControl>
-        </div>
-
-        <div className={'my-3'}>  
-          <FormControl defaultValue="">
-            <Label>Модел</Label>
-            <StyledInput placeholder="" />
-            <HelperText />
-          </FormControl>
-        </div>
-
-        <div className={'my-3'}>  
-          <FormControl defaultValue="">
-            <Label>Вид</Label>
-            <StyledInput placeholder="" />
-            <HelperText />
-          </FormControl>
-        </div>
-
-        <div className={'flex justify-end mt-6'}>
-            <IonButton  type={'submit'} className={'py-3 btn-primary'}>
-                Промени
-            </IonButton>
-        </div>
-      </form> */}
 }
 
 

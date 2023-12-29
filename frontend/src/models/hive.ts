@@ -10,6 +10,7 @@ export type Hive = {
 }
 
 export const HiveModels = {
+    DEFAULT: 0,
     OTHER: 0,
     DADAN_BLAT: 1,
     FARAR: 2,
@@ -17,6 +18,7 @@ export const HiveModels = {
 }
 
 export const HiveTypes = {
+    DEFAULT: 0,
     BEE_FAMILY: 0,
     NUCLEUS_COLONY: 1,
     SWARM: 2

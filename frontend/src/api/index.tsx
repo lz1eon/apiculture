@@ -59,7 +59,11 @@ class Client {
         return api.get(`/apiaries/${id}/`);
     }
 
-    // updateHive(id: number, apiary_id: number, type: number, model: number, status: number) {
+    createApiary(number: string, name: string, type: number) {
+        console.log(number, name, type);
+        return api.post(`/apiaries/`, {number: number, name: name, type: type});
+    }
+
     updateHive(id: number, apiary_id: string, rest: any) {        
         console.log(rest);
         return api.put(`/apiaries/${apiary_id}/hives/${id}/`, rest);

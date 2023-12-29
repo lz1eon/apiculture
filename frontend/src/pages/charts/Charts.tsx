@@ -352,9 +352,9 @@ export const Charts = () => {
                               <div style={{ width: '60px' }}>
                                 <IonInput
                                   className='input'
-                                  type="number"
+                                  type="text"
                                   name={`apiary-count-${group.name}`}
-                                  value={group.count * (group.part / 10)}
+                                  value={formatNumber(group.count * (group.part / 10), ' ')}
                                   label='Пчелини'
                                   labelPlacement='stacked'
                                   disabled={true}

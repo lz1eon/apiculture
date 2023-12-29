@@ -18,3 +18,11 @@ html, body {
 .hive.dragged {
   cursor: grab;
 }
+
+.add-apiary-plus-icon {
+  cursor: pointer;
+  width: 100px;
+  height: 100px;
+  margin-left: 50px;
+  margin-top: 50px;
+}

@@ -1,4 +1,5 @@
-export type { User } from './user';
-export type { Apiary, ApiaryTypes } from './apiary';
+export { ApiaryTypes } from './apiary';
+export type { Apiary } from './apiary';
+export { HiveModels, HiveTypes } from './hive';
 export type { Hive } from './hive';
-export { HiveTypes, HiveModels } from './hive';
+export type { User } from './user';

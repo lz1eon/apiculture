@@ -15,7 +15,6 @@ export type ApiaryPlanProps = {
 }
 
 export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
-  const ref = useRef()
   const [ selectedHive, setSelectedHive ] = useState<Hive | undefined>();
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
@@ -23,7 +22,6 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   const hiveContextMenuRef = useRef(null);
 
   const hiveSelector = 'g.hive svg';
-  const hiveTextSelector = 'g.hive text';
 
   let dx = 0;
   let dy = 0;
