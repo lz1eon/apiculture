@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import { useEffect, useRef, useState } from "react";
+import { ContextMenu } from 'primereact/contextmenu';
 import { HiveForm } from '../../../components/hive/HiveForm';
 import client from "../../../api";
 import { ModalDialog } from '../../../components';
@@ -19,6 +20,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
   const [hivesColor, setHivesColor] = useState('#000000');
+  const hiveContextMenuRef = useRef(null);
 
   const hiveSelector = 'g.hive svg';
   const hiveTextSelector = 'g.hive text';
@@ -68,6 +70,22 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     setSelectedHive(selectedHive);
     setShowModal(true);
   }
+  
+  function handleContextMenu(event: PointerEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log(event);
+    const { clientX, clientY } = event;
+    const opts = {
+      position: {
+        clientY,
+        clientX
+      },
+      'id': 'hive-context-menu'
+    };
+
+    console.log('show context menu')
+  }
 
   function registerClickable(svgElement: any) {
     svgElement.selectAll(hiveSelector).on('click', handleClick);
@@ -75,6 +93,14 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
 
   function unregisterClickable(svgElement: any) {
     svgElement.selectAll(hiveSelector).on('click', null);
+  }
+
+  function registerContextMenu(svgElement: any) {
+    svgElement.selectAll(hiveSelector).on('contextmenu', handleContextMenu);
+  }
+
+  function unregisterContextMenu(svgElement: any) {
+    svgElement.selectAll(hiveSelector).on('contextmenu', null);
   }
 
   function registerDraggable(svgElement: any) {
@@ -98,25 +124,34 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   useEffect(() => {
     const svgElement = d3.select('svg#apiary-plan');
     registerClickable(svgElement);
+    // registerContextMenu(svgElement);
   }, [apiary]);
 
   function toggleMode() {
     const svgElement = d3.select('svg#apiary-plan');
-
+    
     if (mode === 'view') {
       setMode('edit');
       setHivesColor('#ff0000');      
       unregisterClickable(svgElement);
       registerDraggable(svgElement);
+      // unregisterContextMenu(svgElement);
     } else {
       setMode('view');
       setHivesColor('#000000');
       unregisterDraggable(svgElement);
       registerClickable(svgElement);
+      // registerContextMenu(svgElement);
     } 
   }
-  
 
+  const hiveContextMenuItems = [
+    {label: 'Премести в', icon: pencil, items: [{label: 'Ридо'}, {label: 'Рилски манастир'}]},
+    {label: 'Добави задача'},
+    {separator: true},
+    {label: 'Премахни'}
+  ];
+  
   return (
     <>
       { showModal && selectedHive && 
@@ -125,15 +160,17 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
         </ModalDialog>
       }
       
+      <ContextMenu model={hiveContextMenuItems} ref={hiveContextMenuRef} breakpoint="767px" />
+
       <div>
         <IonButton color={mode === 'view' ? "dark" : "danger"} className='edit-plan' onClick={toggleMode}>
           <IonIcon slot="icon-only" icon={pencil}></IonIcon>
         </IonButton>
         
         <svg id="apiary-plan" viewBox="0 0 100 50" style={{border: '1px solid black'}}>
-          {apiary.hives?.map((hive, i) => (
-              <HiveImage key={i} hive={hive} fill={hivesColor} />
-          ))};
+            {apiary.hives?.map((hive, i) => (
+                  <HiveImage key={i} hive={hive} fill={hivesColor} onContextMenu={(e) => hiveContextMenuRef.current.show(e)} />
+              ))};
         </svg>
       </div>
     </>

@@ -8,10 +8,11 @@ import {
 
 type Props = {
   hive: Hive,
-  fill: string
+  fill: string,
+  onContextMenu?: (e: any) => {}
 }
 
-const HiveImage = ({ hive, fill }: Props) => {
+const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
 
   const renderSVG = (model: number) => {
     switch(model) {
@@ -29,8 +30,16 @@ const HiveImage = ({ hive, fill }: Props) => {
   }  
 
   return (
-    <g className="hive" id={hive.id} hive-id={hive.id} apiary-id={hive.apiary_id} x={hive.x} y={hive.y}>
-      <title>Hive</title>
+    <g 
+      className="hive" 
+      id={hive.id}
+      hive-id={hive.id}
+      apiary-id={hive.apiary_id}
+      x={hive.x}
+      y={hive.y}
+      onContextMenu={onContextMenu}
+    >
+        <title>Hive</title>
       {renderSVG(hive.model)}
       <text id={hive.id} style={{fontSize: 1.5}} x={hive.x + 1.7} dy={hive.y + 7.5}>{hive.number}</text>
     </g>

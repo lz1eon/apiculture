@@ -29,6 +29,11 @@ import '@ionic/react/css/text-transformation.css';
 import './theme/variables.css';
 import './theme/main.css';
 
+
+/* Styles for package primereact */
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+
+
 import {
   About,
   ApiaryDetail,
