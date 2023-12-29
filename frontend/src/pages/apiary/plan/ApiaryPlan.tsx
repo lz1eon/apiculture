@@ -24,6 +24,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
 
   const hiveSelector = 'g.hive svg';
   const hiveTextSelector = 'g.hive text';
+
   let dx = 0;
   let dy = 0;
   
@@ -48,19 +49,27 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   }
 
   function handleDrag(event: MouseEvent) {
-    d3.select(this)
+    const hiveSvg = d3.select(this);
+    const groupId = `group-${hiveSvg.attr('hive-id')}`;
+    const hiveTextSvg = d3.select(`svg#apiary-plan g#${groupId} text`);
+
+    hiveSvg
       .attr('x', event.x - dx)
       .attr('y', event.y - dy);
+    
+    hiveTextSvg
+      .attr('x', event.x - dx + 1.7)
+      .attr('y', event.y - dy + 7.5);
   }
 
   function handleDragEnd() {
-    const dragged = d3.select(this);
-    dragged.classed('dragged', false);
+    const hiveSvg = d3.select(this);
+    hiveSvg.classed('dragged', false);
 
-    const x = Number(dragged.attr("x"));
-    const y = Number(dragged.attr("y"));
-    const id = Number(dragged.attr("hive-id"));
-    const apiaryId = Number(dragged.attr("apiary-id"));
+    const x = Number(hiveSvg.attr("x"));
+    const y = Number(hiveSvg.attr("y"));
+    const id = Number(hiveSvg.attr("hive-id"));
+    const apiaryId = Number(hiveSvg.attr("apiary-id"));
     client.updateHiveCoordinates(id, apiaryId, x, y);
   }
 
@@ -71,22 +80,6 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     setShowModal(true);
   }
   
-  function handleContextMenu(event: PointerEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    console.log(event);
-    const { clientX, clientY } = event;
-    const opts = {
-      position: {
-        clientY,
-        clientX
-      },
-      'id': 'hive-context-menu'
-    };
-
-    console.log('show context menu')
-  }
-
   function registerClickable(svgElement: any) {
     svgElement.selectAll(hiveSelector).on('click', handleClick);
   }
@@ -95,13 +88,6 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     svgElement.selectAll(hiveSelector).on('click', null);
   }
 
-  function registerContextMenu(svgElement: any) {
-    svgElement.selectAll(hiveSelector).on('contextmenu', handleContextMenu);
-  }
-
-  function unregisterContextMenu(svgElement: any) {
-    svgElement.selectAll(hiveSelector).on('contextmenu', null);
-  }
 
   function registerDraggable(svgElement: any) {
     svgElement.selectAll(hiveSelector).call(
@@ -124,7 +110,6 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   useEffect(() => {
     const svgElement = d3.select('svg#apiary-plan');
     registerClickable(svgElement);
-    // registerContextMenu(svgElement);
   }, [apiary]);
 
   function toggleMode() {
@@ -135,13 +120,11 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
       setHivesColor('#ff0000');      
       unregisterClickable(svgElement);
       registerDraggable(svgElement);
-      // unregisterContextMenu(svgElement);
     } else {
       setMode('view');
       setHivesColor('#000000');
       unregisterDraggable(svgElement);
       registerClickable(svgElement);
-      // registerContextMenu(svgElement);
     } 
   }
 

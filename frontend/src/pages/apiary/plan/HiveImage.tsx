@@ -31,17 +31,24 @@ const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
 
   return (
     <g 
-      className="hive" 
-      id={hive.id}
+      id={`group-${hive.id}`}
       hive-id={hive.id}
       apiary-id={hive.apiary_id}
-      x={hive.x}
-      y={hive.y}
+      className="hive" 
       onContextMenu={onContextMenu}
     >
-        <title>Hive</title>
+      <title>Hive</title>
+      
       {renderSVG(hive.model)}
-      <text id={hive.id} style={{fontSize: 1.5}} x={hive.x + 1.7} dy={hive.y + 7.5}>{hive.number}</text>
+      
+      <text 
+        id={`text-${hive.id}`}
+        x={hive.x + 1.7} 
+        y={hive.y + 7.5}
+        style={{fontSize: 1.5}} 
+      >
+        {hive.number}
+      </text>
     </g>
   )
 
