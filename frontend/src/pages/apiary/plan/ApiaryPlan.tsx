@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { useEffect, useRef, useState } from "react";
+import { SyntheticEvent, createRef, useEffect, useRef, useState } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
 import { HiveForm } from '../../../components/hive/HiveForm';
 import client from "../../../api";
@@ -8,6 +8,7 @@ import { Apiary, Hive } from '../../../models';
 import { IonButton, IonIcon } from '@ionic/react';
 import { pencil } from 'ionicons/icons';
 import HiveImage from './HiveImage';
+import { BaseType } from 'd3';
 
 
 export type ApiaryPlanProps = {
@@ -19,7 +20,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
   const [hivesColor, setHivesColor] = useState('#000000');
-  const hiveContextMenuRef = useRef(null);
+  const hiveContextMenuRef = createRef<ContextMenu>();
 
   const hiveSelector = 'g.hive svg';
 
@@ -31,10 +32,10 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
       .attr('transform', event.transform);
   }
 
-  const zoom = d3.zoom()
+  const zoom = d3.zoom<SVGSVGElement, unknown>()
     .on('zoom', handleZoom);
 
-  d3.selectAll('svg#apiary-plan').call(zoom);
+  d3.selectAll<SVGSVGElement, unknown>('svg#apiary-plan').call(zoom);
 
   function handleDragStart(this: any, event: MouseEvent) {
     const dragged = d3.select(this);
@@ -105,6 +106,14 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     )
   }
 
+  function onHiveContextMenu(event: SyntheticEvent) {
+    const node = hiveContextMenuRef.current;
+    if (node) {
+      node.show(event);
+    } 
+    return {}; // somehow fixing typescript error
+  }
+
   useEffect(() => {
     const svgElement = d3.select('svg#apiary-plan');
     registerClickable(svgElement);
@@ -141,7 +150,11 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
         </ModalDialog>
       }
       
-      <ContextMenu model={hiveContextMenuItems} ref={hiveContextMenuRef} breakpoint="767px" />
+      <ContextMenu
+        model={hiveContextMenuItems}
+        ref={hiveContextMenuRef}
+        breakpoint="767px" 
+      />
 
       <div>
         <IonButton color={mode === 'view' ? "dark" : "danger"} className='edit-plan' onClick={toggleMode}>
@@ -154,7 +167,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
                     key={i}
                     hive={hive}
                     fill={hivesColor}
-                    onContextMenu={(e) => hiveContextMenuRef.current.show(e)} 
+                    onContextMenu={onHiveContextMenu} 
                   />
               ))};
         </svg>
