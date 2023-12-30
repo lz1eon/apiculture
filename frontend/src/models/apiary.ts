@@ -6,7 +6,7 @@ export type Apiary = {
     number: string;
     name: string;
     type: number;
-    hives?: Hive[];
+    hives: Hive[];
 }
 
 export const ApiaryTypes = {

@@ -3,7 +3,7 @@ import { close } from 'ionicons/icons';
 import { Histogram } from '../../components';
 import Page from '../Page';
 import data from '../../components/charts/apiaries';
-import { useEffect, useRef, useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import './charts.css';
 
 const DOMAIN_UPPER_LIMIT = 650;
@@ -72,7 +72,7 @@ export const Charts = () => {
   const initialThresholds = [10, 20, 50, 100, 200, 300]
   const [thresholds, setThresholds] = useState(initialThresholds) 
   const [inputs, setInputs] = useState({ thresholds: '' });
-  const thresholdsRef = useRef(null);
+  const thresholdsRef = createRef<HTMLIonInputElement>();
 
   // Current model
   const [currentModel, setCurrentModel] = useState<PriceModel>({
@@ -104,8 +104,9 @@ export const Charts = () => {
       setSavedModels(JSON.parse(models));
     }
     
-    if (thresholdsRef.current !== null && thresholdsRef.current !== undefined) {
-      thresholdsRef.current.value = thresholds;
+    const node = thresholdsRef.current;
+    if (node) {
+      node.value = String(thresholds);
     }
     setInputs({thresholds: String(thresholds || '')});
   }, []);
@@ -138,17 +139,17 @@ export const Charts = () => {
     setCurrentModel(updatedModel);
   }
 
-  const handleModelNameChange = (event: InputCustomEvent) => {
+  const handleModelNameChange = () => {
     setCurrentModelName('');
   }
 
   const handleCurrentModelSave = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const target = e.target as typeof e.target & {
+    const target = e.target as HTMLIonInputElement & {
       modelName: { value: string };
     }    
     const modelName = target.modelName.value;
-    e.target.reset();
+    target.modelName.value = '';
 
     setCurrentModelName(modelName);
     currentModel.name = modelName;
@@ -210,8 +211,9 @@ export const Charts = () => {
   }
 
   const loadModel = (model: PriceModel) => {   
-    if (thresholdsRef.current !== null && thresholdsRef.current !== undefined) {
-      thresholdsRef.current.value = model.thresholds;
+    const node = thresholdsRef.current;
+    if (node) {
+      node.value = String(model.thresholds);
     } 
     setInputs({thresholds: model.thresholds.map((t) => String(t)).join(',')});
     setCurrentModel(model);

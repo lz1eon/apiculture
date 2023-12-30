@@ -26,9 +26,9 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   let dx = 0;
   let dy = 0;
   
-  function handleZoom(e) {
+  function handleZoom(event: any) {
     d3.selectAll('svg#apiary-plan g.hive')
-      .attr('transform', e.transform);
+      .attr('transform', event.transform);
   }
 
   const zoom = d3.zoom()
@@ -36,7 +36,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
 
   d3.selectAll('svg#apiary-plan').call(zoom);
 
-  function handleDragStart(event: MouseEvent) {
+  function handleDragStart(this: any, event: MouseEvent) {
     const dragged = d3.select(this);
     dragged.classed('dragged', true);
 
@@ -46,7 +46,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     dy = event.y - y;
   }
 
-  function handleDrag(event: MouseEvent) {
+  function handleDrag(this: any, event: MouseEvent) {
     const hiveSvg = d3.select(this);
     const groupId = `group-${hiveSvg.attr('hive-id')}`;
     const hiveTextSvg = d3.select(`svg#apiary-plan g#${groupId} text`);
@@ -60,7 +60,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
       .attr('y', event.y - dy + 7.5);
   }
 
-  function handleDragEnd() {
+  function handleDragEnd(this: any) {
     const hiveSvg = d3.select(this);
     hiveSvg.classed('dragged', false);
 
@@ -71,7 +71,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     client.updateHiveCoordinates(id, apiaryId, x, y);
   }
 
-  function handleClick() {
+  function handleClick(this: any) {
     const hiveId = d3.select(this).attr('hive-id');
     const selectedHive = apiary.hives.find(hive => hive.id == hiveId);
     setSelectedHive(selectedHive);
@@ -92,7 +92,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
       d3.drag()
       .on("start", handleDragStart)
       .on("drag", handleDrag)
-      .on("end", handleDragEnd) as any
+      .on("end", handleDragEnd)
     )      
   }
 
@@ -101,7 +101,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
       d3.drag()
         .on('start', null)
         .on('drag', null)
-        .on('end', null) as any
+        .on('end', null)
     )
   }
 
@@ -150,7 +150,12 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
         
         <svg id="apiary-plan" viewBox="0 0 100 50" style={{border: '1px solid black'}}>
             {apiary.hives?.map((hive, i) => (
-                  <HiveImage key={i} hive={hive} fill={hivesColor} onContextMenu={(e) => hiveContextMenuRef.current.show(e)} />
+                  <HiveImage
+                    key={i}
+                    hive={hive}
+                    fill={hivesColor}
+                    onContextMenu={(e) => hiveContextMenuRef.current.show(e)} 
+                  />
               ))};
         </svg>
       </div>

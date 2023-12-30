@@ -21,17 +21,35 @@ export const ApiaryForm = ({ apiary, onFormSuccess }: ApiaryFormProps) => {
       });
   }
 
-  const handleChange = (event: InputCustomEvent) => {
-    apiary[event.target.name] = event.target.value
+  const handleChangeNumber = (event: InputCustomEvent) => {
+    apiary.number = String(event.target.value);
+  }
+
+  const handleChangeName = (event: InputCustomEvent) => {
+    apiary.name = String(event.target.value);
   }
 
   return (
     <form className='ion-padding' onSubmit={handleSubmit}>
       <IonItem>
-        <IonInput name="number" label="Номер" labelPlacement="stacked" value={apiary.number} onIonInput={handleChange} />
+        <IonInput
+          name="number"
+          type="text"
+          label="Номер"
+          labelPlacement="stacked"
+          value={apiary.number}
+          onIonInput={handleChangeNumber} 
+        />
       </IonItem>
       <IonItem>
-        <IonInput name="name" label="Име" labelPlacement="stacked" value={apiary.name} onIonInput={handleChange} />
+        <IonInput
+          name="name"
+          type="text"
+          label="Име"
+          labelPlacement="stacked"
+          value={apiary.name}
+          onIonInput={handleChangeName} 
+        />
       </IonItem>
 
       <IonItem>

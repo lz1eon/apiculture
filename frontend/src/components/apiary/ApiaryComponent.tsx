@@ -12,7 +12,7 @@ export const ApiaryComponent = ({apiary}: ApiaryComponentProps) => {
           <IonCardTitle>{apiary.name}</IonCardTitle>
           <IonCardSubtitle>{apiary.number}</IonCardSubtitle>
           <IonText style={{ marginTop: '10px', marginBottom: '20px', height: '20px' }}>
-            <span>{apiary.type == '1' ? 'Подвижен' : ' '}</span>
+            <span>{apiary.type == 1 ? 'Подвижен' : ' '}</span>
           </IonText>          
         </IonCardHeader>
         <IonCardContent>          

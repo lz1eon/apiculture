@@ -5,4 +5,3 @@ export { ModalDialog } from './common/ModalDialog';
 export { ApiaryComponent } from './apiary/ApiaryComponent';
 export { HiveComponent } from './hive/HiveComponent';
 export { Histogram } from './charts/Histogram';
-export { CurrencyInput } from './inputs/CurrencyInput';

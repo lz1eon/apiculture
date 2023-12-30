@@ -31,7 +31,7 @@ export const Histogram = ({ width, height, data, thresholds, setComputedBins }: 
     const bucketGenerator = d3
       .bin()
       .value((d) => d)
-      .domain(xScale.domain())
+      .domain([xScale.domain()[0], xScale.domain()[1]])
       .thresholds(thresholds)
     return bucketGenerator(data);
   }, [xScale, thresholds]);
@@ -65,14 +65,14 @@ export const Histogram = ({ width, height, data, thresholds, setComputedBins }: 
       <Fragment key={i}> 
         <rect
           fill="#69b3a2"
-          x={xScale(bucket.x0) + BUCKET_PADDING / 2}
-          width={xScale(bucket.x1) - xScale(bucket.x0) - BUCKET_PADDING}
+          x={xScale(bucket.x0!) + BUCKET_PADDING / 2}
+          width={xScale(bucket.x1!) - xScale(bucket.x0!) - BUCKET_PADDING}
           y={yScale(bucket.length)}
           height={boundsHeight - yScale(bucket.length)}
         />
        <text 
           className="small top" 
-          x={xScale(bucket.x0) + 20}
+          x={xScale(bucket.x0!) + 20}
           y={yScale(bucket.length) - 5}
         >
           {bucket.length}

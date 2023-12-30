@@ -13,7 +13,7 @@ import { Apiary, ApiaryTypes } from '../../models';
 export const ApiaryList = () => {
   const { apiaries, setApiaries } = useGeneralInfo();
   const [showModal, setShowModal] = useState(false);
-  const emptyApiary: Apiary = {number: '', name: '', type: ApiaryTypes.DEFAULT}
+  const emptyApiary: Apiary = {number: '', name: '', type: ApiaryTypes.DEFAULT, hives: []}
 
   useEffect(() => {
     client.getApiaries()
