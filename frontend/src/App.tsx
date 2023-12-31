@@ -78,20 +78,20 @@ const App: React.FC = () => {
                 <IonApp>
                   <Header />
                   <IonContent>
-                    <Route exact path="/" render={() => user ? <Redirect to='/apiaries' /> : <Home />} />
+                    <Route exact path="/" render={() => <Redirect to='/admin' />} />
+                    {/* <Route exact path="/" render={() => user ? <Redirect to='/apiaries' /> : <Home />} />
                     <Route exact path="/pricing" component={Pricing} />
                     <Route exact path="/about" component={About} />
                     <Route exact path="/contacts" component={Contacts} />
                     <Route exact path="/login" component={Login} />
-                    {/* <Route exact path="/register" component={Register} /> */}
 
                     <PageLoading dismissLoading={isAuthReady}>
                       <PrivateRoute exact path="/apiaries/:id" component={ApiaryDetail} />
                       <PrivateRoute exact path="/apiaries" component={ApiaryList} />
                       <PrivateRoute exact path="/admin" component={Charts} />
-                    </PageLoading>
-                    {/* <Route component={NotFound} /> */}
-                  </IonContent>
+                      </PageLoading> */}
+                      <Route exact path="/admin" component={Charts} />
+                    </IonContent>
                 </IonApp>
               </IonRouterOutlet>
             </IonReactRouter>
