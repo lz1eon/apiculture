@@ -4,7 +4,7 @@ import { User } from '../models/user';
 import { useLocalStorage} from './useLocalStorage';
 
 export const useAuth = () => {
-    const { user, addUser, removeUser } = useUser();
+    const { user, addUser, removeUser, isAuthReady, setIsAuthReady } = useUser();
     const { getItem } = useLocalStorage();
 
     useEffect(() => {
@@ -12,6 +12,7 @@ export const useAuth = () => {
         if (user) {
             addUser(JSON.parse(user))
         }
+        setIsAuthReady(true);
     }, []);
 
     const loginUser = (user: User) => {
@@ -22,5 +23,5 @@ export const useAuth = () => {
         removeUser();
     };
 
-    return { user, loginUser, logoutUser };
+    return { user, loginUser, logoutUser, isAuthReady, setIsAuthReady };
 }

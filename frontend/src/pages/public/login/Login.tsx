@@ -1,7 +1,7 @@
 import LoginForm from './LoginForm';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useAuth';
 import { Redirect } from 'react-router-dom';
-import Page from '../Page';
+import Page from '../../Page';
 
 export const Login = () => {
   const { user } = useAuth(); 

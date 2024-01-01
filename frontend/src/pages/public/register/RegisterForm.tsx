@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../hooks/useAuth';
-import client from '../../api';
+import { useAuth } from '../../../hooks/useAuth';
+import client from '../../../api';
 import { IonButton, IonCol, InputCustomEvent, IonGrid, IonInput, IonItem, IonLabel, IonRow, IonText } from '@ionic/react';
 import { Link, Redirect } from 'react-router-dom';
 

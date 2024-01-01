@@ -49,13 +49,12 @@ import {
 import { useState } from 'react';
 import {
   Header,
-  PrivateRoute
+  PrivateRoutes
 } from './components';
 import { AuthContext } from './contexts/AuthContext';
 import { Apiary, User } from './models';
 import { GeneralInfoContext } from './contexts/GeneralInfoContext';
 import { Charts } from './pages/charts/Charts';
-import { PageLoading } from './pages/PageLoading';
 
 
 setupIonicReact({
@@ -67,31 +66,27 @@ setupIonicReact({
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [isAuthReady, setIsAuthReady] = useState(true);
+  const [isAuthReady, setIsAuthReady] = useState(false);
   const [apiaries, setApiaries] = useState<Apiary[]>([]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, isAuthReady, setIsAuthReady }}>
       <GeneralInfoContext.Provider value={{ apiaries, setApiaries }}>
             <IonReactRouter>
               <IonRouterOutlet animated={false}>
                 <IonApp>
                   <Header />
                   <IonContent>
-                    <Route exact path="/" render={() => <Redirect to='/admin' />} />
-                    {/* <Route exact path="/" render={() => user ? <Redirect to='/apiaries' /> : <Home />} />
-                    <Route exact path="/pricing" component={Pricing} />
-                    <Route exact path="/about" component={About} />
+                    <Route exact path="/" render={() => user ? <Redirect to='/apiaries' /> : <Home />} />
                     <Route exact path="/contacts" component={Contacts} />
                     <Route exact path="/login" component={Login} />
 
-                    <PageLoading dismissLoading={isAuthReady}>
-                      <PrivateRoute exact path="/apiaries/:id" component={ApiaryDetail} />
-                      <PrivateRoute exact path="/apiaries" component={ApiaryList} />
-                      <PrivateRoute exact path="/admin" component={Charts} />
-                      </PageLoading> */}
+                    <PrivateRoutes>
+                      <Route exact path="/apiaries/:id" component={ApiaryDetail} />
+                      <Route exact path="/apiaries" component={ApiaryList} />
                       <Route exact path="/admin" component={Charts} />
-                    </IonContent>
+                    </PrivateRoutes>
+                  </IonContent> 
                 </IonApp>
               </IonRouterOutlet>
             </IonReactRouter>

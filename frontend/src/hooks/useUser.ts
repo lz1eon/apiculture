@@ -4,7 +4,7 @@ import { useLocalStorage } from './useLocalStorage';
 import { User } from '../models/user';
 
 export const useUser = () => {
-    const { user, setUser } = useContext(AuthContext);
+    const { user, setUser, isAuthReady, setIsAuthReady } = useContext(AuthContext);
     const { setItem } = useLocalStorage();
 
     const addUser = (user: User) => {
@@ -17,5 +17,5 @@ export const useUser = () => {
         setItem('user', '');
     };
 
-    return { user, addUser, removeUser };
+    return { user, addUser, removeUser, isAuthReady, setIsAuthReady };
 }

@@ -18,10 +18,10 @@ import {
 } from '@ionic/react';
 import { OverlayEventDetail } from '@ionic/core/components';
 
-import { useAuth } from '../../hooks/useAuth';
-import client from '../../api';
+import { useAuth } from '../../../hooks/useAuth';
+import client from '../../../api';
 import { Redirect, Link } from 'react-router-dom';
-import { ModalDialog } from '../../components';
+import { ModalDialog } from '../../../components';
 
 
 const LoginForm = () => {
@@ -33,7 +33,7 @@ const LoginForm = () => {
   const [isTouched, setIsTouched] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState<boolean>();
   const [isValidPassword, setIsValidPassword] = useState<boolean>();
-  const { loginUser } = useAuth();
+  const { loginUser, setIsAuthReady } = useAuth();
 
   const validateEmail = (email: string) => {
     return email.match(
@@ -66,6 +66,7 @@ const LoginForm = () => {
         if (response.data.access_token !== '' && response.data.access_token !== undefined) {
           const user = response.data.user;
           user.authToken = response.data.access_token;
+          setIsAuthReady(true);
           setLoggedIn(true);
           loginUser(user);
         }
@@ -73,6 +74,7 @@ const LoginForm = () => {
       .catch((error) => {
         setErrorMessage(error);
         setLoggedIn(false);
+        setIsAuthReady(true);
       });
   };
 

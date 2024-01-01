@@ -1,5 +1,5 @@
 import { IonList, IonItem, IonCol, IonGrid, IonRow, IonText } from "@ionic/react"
-import Page from '../Page';
+import Page from '../../Page';
 
 export const Pricing = () => {
   return (

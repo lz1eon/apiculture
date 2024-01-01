@@ -1,9 +1,9 @@
-export { Home } from './home/Home';
-export { About } from './about/About';
-export { Contacts } from './contacts/Contacts';
-export { Pricing } from './pricing/Pricing';
-export { Login } from './login/Login';
-export { Register } from './register/Register';
+export { Home } from './public/home/Home';
+export { About } from './public/about/About';
+export { Contacts } from './public/contacts/Contacts';
+export { Pricing } from './public/pricing/Pricing';
+export { Login } from './public/login/Login';
+export { Register } from './public/register/Register';
 export { NotFound } from './NotFound';
 export { ApiaryList } from './apiary/ApiaryList';
 export { ApiaryDetail } from './apiary/ApiaryDetail';

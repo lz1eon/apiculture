@@ -1,7 +1,7 @@
 import { Redirect } from 'react-router-dom';
 import RegisterForm from './RegisterForm';
-import { useAuth } from '../../hooks/useAuth';
-import Page from '../Page';
+import { useAuth } from '../../../hooks/useAuth';
+import Page from '../../Page';
 
 
 export const Register = () => {

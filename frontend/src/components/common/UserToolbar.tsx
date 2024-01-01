@@ -12,15 +12,15 @@ const UserToolbar = () => {
   return (
       <IonToolbar>
         <PageHeaderTitle />
-        {/* <IonButtons slot="start">
+        <IonButtons slot="start">
           <IonButton routerLink="/apiaries">Пчелини</IonButton>
-        </IonButtons>         */}
+        </IonButtons>        
         <IonButtons slot="end">
           <IonButton routerLink="/admin">Админ</IonButton>
         </IonButtons>
-        {/* <IonButtons slot="end">
+        <IonButtons slot="end">
           <IonButton onClick={handleLogout}>Изход</IonButton>
-        </IonButtons> */}
+        </IonButtons>
       </IonToolbar>
   )
 }

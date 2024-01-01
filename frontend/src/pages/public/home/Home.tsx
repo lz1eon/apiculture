@@ -1,6 +1,6 @@
-import Page from '../Page';
+import Page from '../../Page';
 import { IonText, IonButton, IonGrid, IonRow, IonCol } from '@ionic/react';
-import mainImage from '../../assets/images/bee.jpg';
+import mainImage from '../../../assets/images/bee.jpg';
 import './home.css';
 
 export const Home = () => {
