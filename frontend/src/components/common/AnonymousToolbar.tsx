@@ -3,17 +3,14 @@ import PageHeaderTitle from "./ToolbarTitle";
 
 const AnonymousToolbar = () => {
   return (
-    <IonToolbar>
+    <IonToolbar className="toolbar" color="warning">
       <PageHeaderTitle />
-      <IonButtons slot="start">
+      <IonButtons slot="primary">
         <IonButton routerLink="/">Начало</IonButton>
       </IonButtons>
       <IonButtons slot="end">
         <IonButton routerLink="/contacts">Контакти</IonButton>
       </IonButtons>
-      {/* <IonButtons slot="end">
-          <IonButton routerLink="/register">Регистрация</IonButton>
-        </IonButtons> */}
       <IonButtons slot="end">
         <IonButton routerLink="/login">Вход</IonButton>
       </IonButtons>

@@ -10,9 +10,9 @@ const UserToolbar = () => {
   }
 
   return (
-      <IonToolbar>
+      <IonToolbar className="toolbar" color="warning">
         <PageHeaderTitle />
-        <IonButtons slot="start">
+        <IonButtons slot="primary">
           <IonButton routerLink="/apiaries">Пчелини</IonButton>
         </IonButtons>        
         <IonButtons slot="end">

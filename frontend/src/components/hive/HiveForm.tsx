@@ -53,7 +53,7 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
     }
   }
 
-  const handleChange = (event: InputCustomEvent) => {
+  const handleChange = (event: any) => {
     console.log(event.target.name, event.target.value)
     setInputs({
       ...inputs,

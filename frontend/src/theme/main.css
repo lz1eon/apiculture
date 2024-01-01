@@ -3,6 +3,19 @@ html, body {
   overflow-y: hidden;
 }
 
+.logo-label {
+  font-size: xx-large;
+}
+
+ion-header {
+  box-shadow: none;  
+}
+
+.toolbar {
+  /* color: white; */
+  padding: 10px;  
+}
+
 .histogram-parameters {
   overflow-y: scroll;
 }
@@ -30,4 +43,17 @@ html, body {
   height: 100px;
   margin-left: 50px;
   margin-top: 50px;
+}
+
+
+:root {
+  /* Set 'primary' color to the value of 'warning' color */
+  --ion-color-primary: var(--ion-color-warning);
+  --ion-color-primary-rgb: var(--ion-color-warning-rgb);
+  --ion-color-primary-contrast: var(--ion-color-warning-contrast);
+  --ion-color-primary-contrast-rgb: var(--ion-color-warning-contrast-rgb)
+  --ion-color-primary-shade: var(--ion-color-shade);
+  --ion-color-primary-tint: var(--ion-color-tint);
+
+  --ion-font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Roboto', sans-serif;
 }

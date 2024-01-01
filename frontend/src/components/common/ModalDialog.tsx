@@ -26,6 +26,6 @@ export const ModalDialog: React.FC<ModalDialogProps> = ({ onClose, isOpen, title
     <IonContent>
       {children}
     </IonContent>
-    <IonButton fill="clear" onClick={onClose}>Затвори</IonButton>
+    <IonButton onClick={onClose}>Затвори</IonButton>
   </IonModal>
 )};
