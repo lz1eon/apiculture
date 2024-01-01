@@ -52,5 +52,4 @@ class Hive(Base):
     x: Mapped[Optional[float]] = mapped_column(default=0.0)
     y: Mapped[Optional[float]] = mapped_column(default=0.0)
 
-    class Meta:
-        unique_together = ("apiary_id", "number")
+    __table_args__ = (UniqueConstraint("apiary_id", "number"),)

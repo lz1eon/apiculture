@@ -8,12 +8,13 @@ import { ApiaryComponent } from '../../components/apiary/ApiaryComponent';
 import { ApiaryForm } from '../../components/apiary/ApiaryForm';
 import { useGeneralInfo } from '../../hooks/useGeneralInfo';
 import Page from '../Page';
-import { Apiary, ApiaryTypes } from '../../models';
+import { Apiary, emptyApiary } from '../../models';
+
 
 export const ApiaryList = () => {
   const { apiaries, setApiaries } = useGeneralInfo();
   const [showModal, setShowModal] = useState(false);
-  const emptyApiary: Apiary = {number: '', name: '', type: ApiaryTypes.DEFAULT, hives: []}
+  const apiary: Apiary = emptyApiary();
 
   useEffect(() => {
     client.getApiaries()
@@ -32,7 +33,7 @@ export const ApiaryList = () => {
     <Page>
       { showModal && 
         <ModalDialog isOpen={showModal} title={`Нов пчелин`} onClose={() => setShowModal(false)}>
-          <ApiaryForm apiary={emptyApiary} onFormSuccess={onFormSuccess}/>
+          <ApiaryForm apiary={apiary} onFormSuccess={onFormSuccess}/>
         </ModalDialog>
       }
 

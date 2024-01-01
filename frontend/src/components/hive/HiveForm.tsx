@@ -9,9 +9,10 @@ type HiveFormProps = {
   hive: Hive,
   openMode: 'view' | 'edit' | 'create',
   onCreateSuccess: (hive: Hive) => void
+  onUpdateSuccess: (hive: Hive) => void
 }
 
-export const HiveForm = ({ hive, openMode, onCreateSuccess}: HiveFormProps) => {
+export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: HiveFormProps) => {
   const [mode, setMode] = useState<'view' | 'edit' | 'create'>(openMode);
   const [inputs, setInputs] = useState({
     number: hive.number,
@@ -32,7 +33,12 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess}: HiveFormProps) => {
     if (shouldUpdate) {
       client.updateHive(Number(hive.id), hive.apiary_id, inputs)
         .then((response) => {
+          console.log(inputs)
           setMode('view');
+          hive.type = inputs.type;
+          hive.model = inputs.model;
+          hive.status = inputs.status;
+          onUpdateSuccess({...hive});
         })
         .catch((error) => {
         });
@@ -48,6 +54,7 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess}: HiveFormProps) => {
   }
 
   const handleChange = (event: InputCustomEvent) => {
+    console.log(event.target.name, event.target.value)
     setInputs({
       ...inputs,
       [event.target.name]: event.target.value
@@ -85,6 +92,7 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess}: HiveFormProps) => {
           label="Вид"
           labelPlacement='stacked'
           disabled={mode === 'view'}
+          onIonChange={handleChange}
         />
       </IonItem>
       <IonItem>
@@ -95,8 +103,8 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess}: HiveFormProps) => {
           option_labels={HiveModelsLabels}
           label="Модел"
           labelPlacement='stacked'
-          // onIonChange={handleChange}
           disabled={mode === 'view'}
+          onIonChange={handleChange}
         />
       </IonItem>
       <IonItem>
@@ -131,7 +139,8 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess}: HiveFormProps) => {
 
 HiveForm.defaultProps = {
   openMode: 'view',
-  onCreateSuccess: () => {}
+  onCreateSuccess: () => {},
+  onUpdateSuccess: () => {}
 }
 
 

@@ -1,6 +1,6 @@
 import { InputCustomEvent, IonButton, IonInput, IonItem } from '@ionic/react';
 import client from '../../api';
-import { Apiary, ApiaryTypes } from '../../models';
+import { Apiary, ApiaryTypes, ApiaryTypesLabels } from '../../models';
 import { ApiSelect } from '../inputs/ApiSelect';
 
 type ApiaryFormProps = {
@@ -57,6 +57,7 @@ export const ApiaryForm = ({ apiary, onFormSuccess }: ApiaryFormProps) => {
           name="type"
           value={apiary.type}
           type={ApiaryTypes}
+          option_labels={ApiaryTypesLabels}
           label="Вид"
           labelPlacement='stacked'
         />

@@ -17,7 +17,8 @@ export type ApiaryPlanProps = {
 export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   const [selectedHive, setSelectedHive] = useState<Hive | undefined>();
   const [showModal, setShowModal] = useState(false);
-  const [mode, setMode] = useState<'view' | 'edit' | 'create'>('view');
+  const [planMode, setPlanMode] = useState<'view' | 'edit'>('view');
+  const [formOpenMode, setFormOpenMode] = useState<'view' | 'create'>('view');
   const [hivesColor, setHivesColor] = useState('#000000');
   const hiveContextMenuRef = createRef<ContextMenu>();
 
@@ -118,6 +119,10 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     setShowModal(false);
   }
 
+  function onHiveUpdated(hive: Hive) {
+    setSelectedHive(hive);
+  }
+
   useEffect(() => {
     const svgElement = d3.select('svg#apiary-plan');
     registerClickable(svgElement);
@@ -126,13 +131,13 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   function toggleMode() {
     const svgElement = d3.select('svg#apiary-plan');
 
-    if (mode === 'view') {
-      setMode('edit');
+    if (planMode === 'view') {
+      setPlanMode('edit');
       setHivesColor('#ff0000');
       unregisterClickable(svgElement);
       registerDraggable(svgElement);
     } else {
-      setMode('view');
+      setPlanMode('view');
       setHivesColor('#000000');
       unregisterDraggable(svgElement);
       registerClickable(svgElement);
@@ -141,9 +146,10 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
 
   function addHive() {
     setSelectedHive(emptyHive(apiary));
-    setMode('create');
     setShowModal(true);
+    setFormOpenMode('create');
   }
+
 
   const hiveContextMenuItems = [
     { label: 'Премести в', icon: pencil, items: [{ label: 'Ридо' }, { label: 'Рилски манастир' }] },
@@ -160,7 +166,16 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
           title={`Кошер ${selectedHive.number}`}
           onClose={() => setShowModal(false)}
         >
-          {selectedHive ? <HiveForm hive={selectedHive} openMode={mode} onCreateSuccess={onHiveCreated} /> : ''}
+          {selectedHive ? 
+            <HiveForm
+              hive={selectedHive}
+              openMode={formOpenMode}
+              onCreateSuccess={onHiveCreated}
+              onUpdateSuccess={onHiveUpdated}
+            /> 
+            : 
+            ''
+          }
         </ModalDialog>
       }
 
@@ -172,7 +187,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
 
       <div>
         <IonButton 
-          color={mode === 'view' ? "primary" : "danger"}
+          color={planMode === 'view' ? "primary" : "danger"}
           className='edit-plan-button'
           onClick={toggleMode}
         >
