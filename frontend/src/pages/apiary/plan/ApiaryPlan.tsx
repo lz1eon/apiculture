@@ -10,6 +10,7 @@ import { Apiary, Hive, emptyHive } from '../../../models';
 import HiveImage from './HiveImage';
 
 
+const HIVES_DEFAULT_COLOR = '#000000';
 export type ApiaryPlanProps = {
   apiary: Apiary
 }
@@ -19,7 +20,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   const [showModal, setShowModal] = useState(false);
   const [planMode, setPlanMode] = useState<'view' | 'edit'>('view');
   const [formOpenMode, setFormOpenMode] = useState<'view' | 'create'>('view');
-  const [hivesColor, setHivesColor] = useState('#000000');
+  const [hivesColor, setHivesColor] = useState(HIVES_DEFAULT_COLOR);
   const hiveContextMenuRef = createRef<ContextMenu>();
 
   const hiveSelector = 'g.hive svg';
@@ -138,7 +139,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
       registerDraggable(svgElement);
     } else {
       setPlanMode('view');
-      setHivesColor('#000000');
+      setHivesColor(HIVES_DEFAULT_COLOR);
       unregisterDraggable(svgElement);
       registerClickable(svgElement);
     }
@@ -202,7 +203,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
           <IonIcon slot="icon-only" icon={addCircle}></IonIcon>
         </IonButton>
 
-        <svg id="apiary-plan" viewBox="0 0 100 50" style={{ border: '1px solid black' }}>
+        <svg id="apiary-plan" viewBox="0 0 100 50" style={{ background: '#2dd36f', border: '1px solid black' }}>
           {apiary.hives?.map((hive, i) => (
             <HiveImage
               key={i}
