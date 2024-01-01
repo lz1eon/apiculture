@@ -34,6 +34,11 @@ class Apiary(Base):
     type: Mapped[Optional[int]] = mapped_column(default=ApiaryTypes.IMMOBILE.value)
     hives: Mapped[Optional[List["Hive"]]] = relationship()
 
+    __table_args__ = (
+        UniqueConstraint("owner_id", "number"),
+        UniqueConstraint("owner_id", "name"),
+    )
+
 
 class Hive(Base):
     __tablename__ = "hive"

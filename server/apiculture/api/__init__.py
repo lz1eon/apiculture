@@ -1,18 +1,30 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status, Body
+from fastapi import Body, Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_auth_middleware import AuthMiddleware
 from sqlalchemy.orm import Session
 
-from apiculture.api import schemas
-from apiculture.api.auth import (authenticate_user, create_access_token,
-                                 handle_auth_error, register_user,
-                                 verify_authorization_header)
-from apiculture.api.schemas import UserCreateSchema, UserSchema
-from apiculture.dal.command import update_hive
+from apiculture.api.auth import (
+    authenticate_user,
+    create_access_token,
+    handle_auth_error,
+    register_user,
+    verify_authorization_header,
+)
+from apiculture.api.schemas import (
+    ApiaryCreateSchema,
+    ApiarySchema,
+    HiveCreateSchema,
+    HiveSchema,
+    HiveUpdateSchema,
+    TokenUserSchema,
+    UserCreateSchema,
+    UserSchema,
+)
+from apiculture.dal.command import create_apiary, create_hive, update_hive
 from apiculture.dal.query import get_apiaries, get_apiary, get_hives
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
@@ -41,25 +53,37 @@ app.add_middleware(
 
 
 @app.get("/apiaries/", response_model=list[schemas.ApiarySchema])
-async def apiaries(request: Request, db: Session = Depends(get_db)):
+async def apiaries_get(request: Request, db: Session = Depends(get_db)):
     return get_apiaries(db, request.user)
 
 
-@app.get("/apiaries/{apiary_id}/", response_model=schemas.ApiarySchema)
-async def apiary(apiary_id, request: Request, db: Session = Depends(get_db)):
+@app.post("/apiaries/", response_model=ApiarySchema)
+async def apiary_create(
+    request: Request, apiary: ApiaryCreateSchema, db: Session = Depends(get_db)
+):
+    return create_apiary(db, request.user, apiary)
+
+
+@app.get("/apiaries/{apiary_id}/", response_model=ApiarySchema)
+async def apiary_get(apiary_id, request: Request, db: Session = Depends(get_db)):
     return get_apiary(db, request.user, apiary_id)
 
 
-@app.get("/apiaries/{apiary_id}/hives/", response_model=list[schemas.HiveSchema])
-async def hives(request: Request, apiary_id: int, db: Session = Depends(get_db)):
+@app.get("/apiaries/{apiary_id}/hives/", response_model=list[HiveSchema])
+async def hives_get(request: Request, apiary_id: int, db: Session = Depends(get_db)):
     return get_hives(db, request.user, apiary_id=apiary_id)
+
+
+@app.post("/apiaries/{apiary_id}/hives/", response_model=HiveSchema)
+async def hives_create(request: Request, apiary_id: int, hive: HiveCreateSchema, db: Session = Depends(get_db)):
+    return create_hive(db, request.user, apiary_id=apiary_id, hive=hive)
 
 
 @app.put("/apiaries/{apiary_id}/hives/{hive_id}/")
 async def hive_update(
     request: Request,
     hive_id: int,
-    hive_data: schemas.HiveUpdateSchema,
+    hive_data: HiveUpdateSchema,
     db: Session = Depends(get_db),
 ):
     return update_hive(db, request.user, hive_id, hive_data)
@@ -86,7 +110,7 @@ async def register(user_data: UserCreateSchema, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer", "user": user_data}
 
 
-@app.post("/login/", response_model=schemas.TokenUserSchema)
+@app.post("/login/", response_model=TokenUserSchema)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):

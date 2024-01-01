@@ -26,6 +26,10 @@ pylint = "^3.0.3"
 ipython = "^8.18.1"
 mypy = "^1.7.1"
 
+[tool.isort]
+profile = "black"
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

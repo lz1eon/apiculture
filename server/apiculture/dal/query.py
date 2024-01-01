@@ -49,6 +49,7 @@ def get_hives(
     else:
         hives = (
             db.query(Hive)
+            .where(Apiary.owner_id == user.id)
             .where(Hive.apiary_id == apiary_id)
             .offset(skip)
             .limit(limit)
