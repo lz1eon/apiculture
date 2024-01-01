@@ -6,7 +6,7 @@ const ToolbarTitle = () => {
   return (
     <IonButtons slot="start" class="toolbar-title">
       <IonButton disabled>
-        <img src={logo} width="36px" height="36px"></img>
+        <img className="logo" src={logo}></img>
       </IonButton>
       <IonLabel className="logo-label">Пчелинът</IonLabel>
     </IonButtons>

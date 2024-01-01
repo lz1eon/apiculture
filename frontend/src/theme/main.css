@@ -13,7 +13,12 @@ ion-header {
 
 .toolbar {
   /* color: white; */
-  padding: 10px;  
+  /* padding: 10px;   */
+}
+
+img.logo {
+  width: 30px;
+  height: 30px;
 }
 
 .histogram-parameters {
