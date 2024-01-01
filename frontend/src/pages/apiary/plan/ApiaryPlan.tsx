@@ -1,24 +1,23 @@
+import { IonButton, IonIcon } from '@ionic/react';
 import * as d3 from 'd3';
-import { SyntheticEvent, createRef, useEffect, useRef, useState } from "react";
+import { addCircle, pencil } from 'ionicons/icons';
 import { ContextMenu } from 'primereact/contextmenu';
-import { HiveForm } from '../../../components/hive/HiveForm';
+import { SyntheticEvent, createRef, useEffect, useState } from "react";
 import client from "../../../api";
 import { ModalDialog } from '../../../components';
-import { Apiary, Hive } from '../../../models';
-import { IonButton, IonIcon } from '@ionic/react';
-import { pencil } from 'ionicons/icons';
+import { HiveForm } from '../../../components/hive/HiveForm';
+import { Apiary, Hive, emptyHive } from '../../../models';
 import HiveImage from './HiveImage';
-import { BaseType } from 'd3';
 
 
 export type ApiaryPlanProps = {
   apiary: Apiary
 }
 
-export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
-  const [ selectedHive, setSelectedHive ] = useState<Hive | undefined>();
+export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
+  const [selectedHive, setSelectedHive] = useState<Hive | undefined>();
   const [showModal, setShowModal] = useState(false);
-  const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const [mode, setMode] = useState<'view' | 'edit' | 'create'>('view');
   const [hivesColor, setHivesColor] = useState('#000000');
   const hiveContextMenuRef = createRef<ContextMenu>();
 
@@ -26,7 +25,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
 
   let dx = 0;
   let dy = 0;
-  
+
   function handleZoom(event: any) {
     d3.selectAll('svg#apiary-plan g.hive')
       .attr('transform', event.transform);
@@ -55,7 +54,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     hiveSvg
       .attr('x', event.x - dx)
       .attr('y', event.y - dy);
-    
+
     hiveTextSvg
       .attr('x', event.x - dx + 1.7)
       .attr('y', event.y - dy + 7.5);
@@ -78,7 +77,7 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     setSelectedHive(selectedHive);
     setShowModal(true);
   }
-  
+
   function registerClickable(svgElement: any) {
     svgElement.selectAll(hiveSelector).on('click', handleClick);
   }
@@ -91,10 +90,10 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
   function registerDraggable(svgElement: any) {
     svgElement.selectAll(hiveSelector).call(
       d3.drag()
-      .on("start", handleDragStart)
-      .on("drag", handleDrag)
-      .on("end", handleDragEnd)
-    )      
+        .on("start", handleDragStart)
+        .on("drag", handleDrag)
+        .on("end", handleDragEnd)
+    )
   }
 
   function unregisterDraggable(svgElement: any) {
@@ -110,8 +109,13 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
     const node = hiveContextMenuRef.current;
     if (node) {
       node.show(event);
-    } 
+    }
     return {}; // somehow fixing typescript error
+  }
+
+  function onHiveCreated(hive: Hive) {
+    apiary.hives.push(hive)
+    setShowModal(false);
   }
 
   useEffect(() => {
@@ -121,10 +125,10 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
 
   function toggleMode() {
     const svgElement = d3.select('svg#apiary-plan');
-    
+
     if (mode === 'view') {
       setMode('edit');
-      setHivesColor('#ff0000');      
+      setHivesColor('#ff0000');
       unregisterClickable(svgElement);
       registerDraggable(svgElement);
     } else {
@@ -132,44 +136,66 @@ export const ApiaryPlan = ({apiary}: ApiaryPlanProps) => {
       setHivesColor('#000000');
       unregisterDraggable(svgElement);
       registerClickable(svgElement);
-    } 
+    }
+  }
+
+  function addHive() {
+    setSelectedHive(emptyHive(apiary));
+    setMode('create');
+    setShowModal(true);
   }
 
   const hiveContextMenuItems = [
-    {label: 'Премести в', icon: pencil, items: [{label: 'Ридо'}, {label: 'Рилски манастир'}]},
-    {label: 'Добави задача'},
-    {separator: true},
-    {label: 'Премахни'}
+    { label: 'Премести в', icon: pencil, items: [{ label: 'Ридо' }, { label: 'Рилски манастир' }] },
+    { label: 'Добави задача' },
+    { separator: true },
+    { label: 'Премахни' }
   ];
-  
+
   return (
     <>
-      { showModal && selectedHive && 
-        <ModalDialog isOpen={showModal} title={`Кошер ${selectedHive.number}`} onClose={() => setShowModal(false)}>
-          {selectedHive ? <HiveForm hive={selectedHive}/> : ''}
+      {showModal && selectedHive &&
+        <ModalDialog
+          isOpen={showModal}
+          title={`Кошер ${selectedHive.number}`}
+          onClose={() => setShowModal(false)}
+        >
+          {selectedHive ? <HiveForm hive={selectedHive} openMode={mode} onCreateSuccess={onHiveCreated} /> : ''}
         </ModalDialog>
       }
-      
+
       <ContextMenu
         model={hiveContextMenuItems}
         ref={hiveContextMenuRef}
-        breakpoint="767px" 
+        breakpoint="767px"
       />
 
       <div>
-        <IonButton color={mode === 'view' ? "dark" : "danger"} className='edit-plan' onClick={toggleMode}>
+        <IonButton 
+          color={mode === 'view' ? "primary" : "danger"}
+          className='edit-plan-button'
+          onClick={toggleMode}
+        >
           <IonIcon slot="icon-only" icon={pencil}></IonIcon>
         </IonButton>
-        
-        <svg id="apiary-plan" viewBox="0 0 100 50" style={{border: '1px solid black'}}>
-            {apiary.hives?.map((hive, i) => (
-                  <HiveImage
-                    key={i}
-                    hive={hive}
-                    fill={hivesColor}
-                    onContextMenu={onHiveContextMenu} 
-                  />
-              ))};
+
+        <IonButton
+          color={"primary"}
+          className='add-hive-button'
+          onClick={addHive}
+        >
+          <IonIcon slot="icon-only" icon={addCircle}></IonIcon>
+        </IonButton>
+
+        <svg id="apiary-plan" viewBox="0 0 100 50" style={{ border: '1px solid black' }}>
+          {apiary.hives?.map((hive, i) => (
+            <HiveImage
+              key={i}
+              hive={hive}
+              fill={hivesColor}
+              onContextMenu={onHiveContextMenu}
+            />
+          ))};
         </svg>
       </div>
     </>

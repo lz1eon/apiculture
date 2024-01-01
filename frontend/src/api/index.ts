@@ -60,12 +60,14 @@ class Client {
     }
 
     createApiary(number: string, name: string, type: number) {
-        console.log(number, name, type);
         return api.post(`/apiaries/`, {number: number, name: name, type: type});
     }
 
+    createHive(apiary_id: string, data: any) {        
+        return api.post(`/apiaries/${apiary_id}/hives/`, data);
+    }
+
     updateHive(id: number, apiary_id: string, rest: any) {        
-        console.log(rest);
         return api.put(`/apiaries/${apiary_id}/hives/${id}/`, rest);
     }
 

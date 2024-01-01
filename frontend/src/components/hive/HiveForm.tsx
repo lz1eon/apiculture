@@ -1,37 +1,50 @@
-import { InputCustomEvent, IonButton, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/react';
+import { InputCustomEvent, IonButton, IonInput, IonItem } from '@ionic/react';
 
 import { useState } from 'react';
-import { useGeneralInfo } from '../../hooks/useGeneralInfo';
-import { Hive, HiveTypes, HiveModels } from '../../models';
-import { ApiSelect } from '../inputs/ApiSelect';
 import client from '../../api';
+import { Hive, HiveModels, HiveModelsLabels, HiveTypes, HiveTypesLabels } from '../../models';
+import { ApiSelect } from '../inputs/ApiSelect';
 
 type HiveFormProps = {
-  hive: Hive
+  hive: Hive,
+  openMode: 'view' | 'edit' | 'create',
+  onCreateSuccess: (hive: Hive) => void
 }
 
-export const HiveForm = ({ hive }: HiveFormProps) => {
-  const [mode, setMode] = useState<'view' | 'edit'>('view');
+export const HiveForm = ({ hive, openMode, onCreateSuccess}: HiveFormProps) => {
+  const [mode, setMode] = useState<'view' | 'edit' | 'create'>(openMode);
   const [inputs, setInputs] = useState({
-    number: '',
-    apiary_id: '',
-    type: '',
-    model: '',
-    status: ''
+    number: hive.number,
+    apiary_id: hive.apiary_id,
+    type: hive.type,
+    model: hive.model,
+    status: hive.status
   });
 
   const setModeView = () => setMode('view');
   const setModeEdit = () => setMode('edit');
 
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    client.updateHive(Number(hive.id), hive.apiary_id, inputs)
-      .then((response) => {
-      })
-      .catch((error) => {
-      });
+    const shouldUpdate = hive.id ? true : false;
+
+    if (shouldUpdate) {
+      client.updateHive(Number(hive.id), hive.apiary_id, inputs)
+        .then((response) => {
+          setMode('view');
+        })
+        .catch((error) => {
+        });
+    } else {
+      client.createHive(hive.apiary_id, inputs)
+        .then((response) => {
+          setMode('view');
+          onCreateSuccess(response.data);
+        })
+        .catch((error) => {
+        });
+    }
   }
 
   const handleChange = (event: InputCustomEvent) => {
@@ -44,42 +57,65 @@ export const HiveForm = ({ hive }: HiveFormProps) => {
   return (
     <form className='ion-padding' onSubmit={handleSubmit}>
       <IonItem>
-        <IonInput name="number" label="Номер" labelPlacement="stacked" value={hive.number} onIonInput={handleChange} disabled={true} />
+        <IonInput
+          name="number"
+          value={inputs.number}
+          label="Номер"
+          labelPlacement="stacked"
+          onIonInput={handleChange}
+          disabled={mode !== 'create'} 
+        />
       </IonItem>
       <IonItem>
-        <IonInput name="apiary_id" label="Пчелин" labelPlacement="stacked" value={hive.apiary_id} disabled={true} />
+        <IonInput
+          name="apiary_id"
+          value={inputs.apiary_id}
+          label="Пчелин"
+          labelPlacement="stacked"
+          disabled={true}
+        />
       </IonItem>
 
       <IonItem>
         <ApiSelect
           name="type"
-          value={hive.type}
+          value={inputs.type}
           type={HiveTypes}
+          option_labels={HiveTypesLabels}
           label="Вид"
           labelPlacement='stacked'
-          disabled={mode !== 'edit'}
+          disabled={mode === 'view'}
         />
       </IonItem>
       <IonItem>
         <ApiSelect
           name="model"
-          value={hive.model}
+          value={inputs.model}
           type={HiveModels}
+          option_labels={HiveModelsLabels}
           label="Модел"
           labelPlacement='stacked'
           // onIonChange={handleChange}
-          disabled={mode !== 'edit'}
+          disabled={mode === 'view'}
         />
       </IonItem>
       <IonItem>
-        <IonInput name="status" label='Сила' labelPlacement="stacked" aria-label='Сила' onIonInput={handleChange} disabled={mode !== 'edit'} />
+        <IonInput
+          name="status"
+          value={inputs.status}          
+          label='Сила'
+          labelPlacement="stacked"
+          aria-label='Сила'
+          onIonInput={handleChange}
+          disabled={mode === 'view'}
+        />
       </IonItem>
       {mode === 'view' &&
         <IonButton className="ion-margin-top" onClick={setModeEdit}>
           Промени
         </IonButton>
       }
-      {mode === 'edit' &&
+      {(mode === 'edit' || mode === 'create') &&
         <IonButton className="ion-margin-top" type="submit" onClick={handleSubmit}>
           Запази
         </IonButton>
@@ -91,6 +127,11 @@ export const HiveForm = ({ hive }: HiveFormProps) => {
       }
     </form>
   );
+}
+
+HiveForm.defaultProps = {
+  openMode: 'view',
+  onCreateSuccess: () => {}
 }
 
 

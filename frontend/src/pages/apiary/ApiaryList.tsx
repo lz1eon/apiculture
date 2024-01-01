@@ -24,7 +24,8 @@ export const ApiaryList = () => {
 
 
   function onFormSuccess(apiary: Apiary) {
-    setApiaries([...apiaries, apiary])
+    setApiaries([...apiaries, apiary]);
+    setShowModal(false);
   }
 
   return (

@@ -7,8 +7,13 @@ html, body {
   overflow-y: scroll;
 }
 
-.edit-plan {
+.edit-plan-button {
   position:absolute;
+}
+
+.add-hive-button {
+  position:absolute;
+  right: 5px;
 }
 
 .hive:hover {
