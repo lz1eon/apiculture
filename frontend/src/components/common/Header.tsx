@@ -7,7 +7,7 @@ export const Header = () => {
   const { user } = useAuth();
 
   return (
-    <IonHeader>
+    <IonHeader className="main">
       { user ? <UserToolbar /> : <AnonymousToolbar /> } 
     </IonHeader>
   );

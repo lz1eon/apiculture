@@ -148,7 +148,6 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   function addHive() {
     setSelectedHive(emptyHive(apiary));
     setShowModal(true);
-    setFormOpenMode('create');
   }
 
 
@@ -164,13 +163,13 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
       {showModal && selectedHive &&
         <ModalDialog
           isOpen={showModal}
-          title={`Кошер ${selectedHive.number}`}
+          title={selectedHive.id ? `Кошер ${selectedHive.number}` : 'Нов кошер'}
           onClose={() => setShowModal(false)}
         >
           {selectedHive ? 
             <HiveForm
               hive={selectedHive}
-              openMode={formOpenMode}
+              openMode={selectedHive.id ? 'view' : 'create'}
               onCreateSuccess={onHiveCreated}
               onUpdateSuccess={onHiveUpdated}
             /> 

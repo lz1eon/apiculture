@@ -7,13 +7,16 @@ html, body {
   font-size: xx-large;
 }
 
-ion-header {
-  box-shadow: none;  
+ion-header.main {
+  box-shadow: none !important;
 }
 
-.toolbar {
-  /* color: white; */
-  /* padding: 10px;   */
+ion-header.modal-header{
+  box-shadow: none !important;
+}
+
+ion-header.modal-header .toolbar {
+  background-color: var(--ion-color-primary);
 }
 
 img.logo {
@@ -56,7 +59,7 @@ img.logo {
   --ion-color-primary: var(--ion-color-warning);
   --ion-color-primary-rgb: var(--ion-color-warning-rgb);
   --ion-color-primary-contrast: var(--ion-color-warning-contrast);
-  --ion-color-primary-contrast-rgb: var(--ion-color-warning-contrast-rgb)
+  --ion-color-primary-contrast-rgb: var(--ion-color-warning-contrast-rgb);
   --ion-color-primary-shade: var(--ion-color-shade);
   --ion-color-primary-tint: var(--ion-color-tint);
 

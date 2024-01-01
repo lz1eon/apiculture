@@ -18,8 +18,8 @@ export const ModalDialog: React.FC<ModalDialogProps> = ({ onClose, isOpen, title
 
   return (
   <IonModal ref={modal} isOpen={isOpen} onDidDismiss={() => {onClose()}}>
-    <IonHeader>
-      <IonToolbar>
+    <IonHeader className='modal-header'>
+      <IonToolbar color='primary'>
         <IonTitle>{title}</IonTitle>
       </IonToolbar>
     </IonHeader>
