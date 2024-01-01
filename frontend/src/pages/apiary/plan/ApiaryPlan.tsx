@@ -203,7 +203,12 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
           <IonIcon slot="icon-only" icon={addCircle}></IonIcon>
         </IonButton>
 
-        <svg id="apiary-plan" viewBox="0 0 100 50" style={{ background: '#2dd36f', border: '1px solid black' }}>
+        <svg
+          id="apiary-plan"
+          viewBox="0 0 100 50"
+          // style={{ background: '#2dd36f', border: '1px solid black' }}
+          style={{border: '1px solid black' }}
+        >
           {apiary.hives?.map((hive, i) => (
             <HiveImage
               key={i}
