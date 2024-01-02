@@ -6,10 +6,11 @@ import { SyntheticEvent, createRef, useEffect, useState } from "react";
 import client from "../../../api";
 import { ModalDialog } from '../../../components';
 import { HiveForm } from '../../../components/hive/HiveForm';
-import { Apiary, Hive, emptyHive } from '../../../models';
+import { Apiary, Hive, HiveModels, emptyHive } from '../../../models';
 import HiveImage from './HiveImage';
 import { useGeneralInfo } from '../../../hooks/useGeneralInfo';
 import { MenuItem } from 'primereact/menuitem';
+import { HiveSelection } from './HiveSelection';
 
 
 const HIVES_DEFAULT_COLOR = '#000000';
@@ -26,18 +27,18 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   const hiveContextMenuRef = createRef<ContextMenu>();
   const { apiaries } = useGeneralInfo();
   const hiveSelector = 'g.hive svg';
-  const [ hiveContextMenuItems, setContextMenuItems ] = useState<MenuItem[]>([]);
+  const [hiveContextMenuItems, setContextMenuItems] = useState<MenuItem[]>([]);
 
   let dx = 0;
   let dy = 0;
 
   function handleZoom(event: any) {
     d3.selectAll('svg#apiary-plan g.hive')
-    .attr('transform', event.transform);
+      .attr('transform', event.transform);
   }
 
   const zoom = d3.zoom<SVGSVGElement, unknown>()
-                 .on('zoom', handleZoom);
+    .on('zoom', handleZoom);
 
   // Zoom and pan only with Ctrl key pressed
   zoom.filter((event: any) => {
@@ -145,23 +146,6 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     setSelectedHive(hive);
   }
 
-  useEffect(() => {
-    const svgElement = d3.select('svg#apiary-plan');
-    registerClickable(svgElement);
-    unregisterDoubleClick(svgElement);
-
-    
-    setContextMenuItems([{ 
-        label: 'Премести в', 
-        icon: pencil, 
-        items: apiaries.map((a) => {return { label: a.name }}) 
-      },
-      { label: 'Добави задача' },
-      { separator: true },
-      { label: 'Премахни' }
-    ]);    
-  }, [apiary]);
-
   function toggleMode() {
     const svgElement = d3.select('svg#apiary-plan');
 
@@ -183,6 +167,29 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     setShowModal(true);
   }
 
+  useEffect(() => {
+    const svgElement = d3.select('svg#apiary-plan');
+    registerClickable(svgElement);
+    unregisterDoubleClick(svgElement);
+
+    setContextMenuItems([{
+      label: 'Премести в',
+      icon: pencil,
+      items: apiaries.map((a) => { return { label: a.name } })
+    },
+    { label: 'Добави задача' },
+    { separator: true },
+    { label: 'Премахни' }
+    ]);
+
+    console.log('hives: ', apiary.hives);
+    const hiveSelection = new HiveSelection('svg#apiary-plan', apiary.hives);
+
+    if (apiary.hives)
+      hiveSelection.select(function (h) { return h.model === HiveModels.DADAN_BLAT });
+
+  }, [apiary]);
+
   return (
     <>
       {showModal && selectedHive &&
@@ -191,14 +198,14 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
           title={selectedHive.id ? `Кошер ${selectedHive.number}` : 'Нов кошер'}
           onClose={() => setShowModal(false)}
         >
-          {selectedHive ? 
+          {selectedHive ?
             <HiveForm
               hive={selectedHive}
               openMode={selectedHive.id ? 'view' : 'create'}
               onCreateSuccess={onHiveCreated}
               onUpdateSuccess={onHiveUpdated}
-            /> 
-            : 
+            />
+            :
             ''
           }
         </ModalDialog>
@@ -211,7 +218,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
       />
 
       <div>
-        <IonButton 
+        <IonButton
           color={planMode === 'view' ? "primary" : "danger"}
           className='edit-plan-button'
           onClick={toggleMode}
@@ -231,7 +238,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
           id="apiary-plan"
           viewBox="0 0 100 50"
           // style={{ background: '#2dd36f', border: '1px solid black' }}
-          style={{border: '1px solid black' }}
+          style={{ border: '1px solid black' }}
         >
           {apiary.hives?.map((hive, i) => (
             <HiveImage

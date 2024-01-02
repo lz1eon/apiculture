@@ -4,6 +4,7 @@ import { useState } from 'react';
 import client from '../../api';
 import { Hive, HiveModels, HiveModelsLabels, HiveTypes, HiveTypesLabels } from '../../models';
 import { ApiSelect } from '../inputs/ApiSelect';
+import { useGeneralInfo } from '../../hooks/useGeneralInfo';
 
 type HiveFormProps = {
   hive: Hive,
@@ -21,6 +22,8 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
     model: hive.model,
     status: hive.status
   });
+  const { apiaries } = useGeneralInfo();
+  const apiaryName = apiaries.find((a) => a.id === hive.apiary_id)!.name;
 
   const setModeView = () => setMode('view');
   const setModeEdit = () => setMode('edit');
@@ -76,7 +79,7 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
       <IonItem>
         <IonInput
           name="apiary_id"
-          value={inputs.apiary_id}
+          value={apiaryName}
           label="Пчелин"
           labelPlacement="stacked"
           disabled={true}
