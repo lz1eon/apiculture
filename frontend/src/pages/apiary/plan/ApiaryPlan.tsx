@@ -30,13 +30,27 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
 
   function handleZoom(event: any) {
     d3.selectAll('svg#apiary-plan g.hive')
-      .attr('transform', event.transform);
+    .attr('transform', event.transform);
   }
 
   const zoom = d3.zoom<SVGSVGElement, unknown>()
-    .on('zoom', handleZoom);
+                 .on('zoom', handleZoom);
 
-  d3.selectAll<SVGSVGElement, unknown>('svg#apiary-plan').call(zoom);
+  // Zoom and pan only with Ctrl key pressed
+  zoom.filter((event: any) => {
+    if (planMode === 'view' && !event.ctrlKey) {
+      return false;
+    }
+    return true
+  });
+
+  zoom.wheelDelta((event: any) => {
+    // Override default function to remove multiplying zoom when Ctrl is pressed
+    return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) * 1;
+  });
+
+  d3.selectAll<SVGSVGElement, unknown>('svg#apiary-plan')
+    .call(zoom)
 
   function handleDragStart(this: any, event: MouseEvent) {
     const dragged = d3.select(this);
@@ -107,6 +121,10 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     )
   }
 
+  function unregisterDoubleClick(svgElement: any) {
+    svgElement.on('dblclick.zoom', null);
+  }
+
   function onHiveContextMenu(event: SyntheticEvent) {
     const node = hiveContextMenuRef.current;
     if (node) {
@@ -127,6 +145,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   useEffect(() => {
     const svgElement = d3.select('svg#apiary-plan');
     registerClickable(svgElement);
+    unregisterDoubleClick(svgElement);
   }, [apiary]);
 
   function toggleMode() {
