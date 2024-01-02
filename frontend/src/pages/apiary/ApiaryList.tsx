@@ -16,13 +16,6 @@ export const ApiaryList = () => {
   const [showModal, setShowModal] = useState(false);
   const apiary: Apiary = emptyApiary();
 
-  useEffect(() => {
-    client.getApiaries()
-      .then((response) => {
-        setApiaries(response.data);
-      });
-  }, []);
-
 
   function onFormSuccess(apiary: Apiary) {
     setApiaries([...apiaries, apiary]);

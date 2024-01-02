@@ -8,6 +8,8 @@ import { ModalDialog } from '../../../components';
 import { HiveForm } from '../../../components/hive/HiveForm';
 import { Apiary, Hive, emptyHive } from '../../../models';
 import HiveImage from './HiveImage';
+import { useGeneralInfo } from '../../../hooks/useGeneralInfo';
+import { MenuItem } from 'primereact/menuitem';
 
 
 const HIVES_DEFAULT_COLOR = '#000000';
@@ -22,8 +24,9 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   const [formOpenMode, setFormOpenMode] = useState<'view' | 'create'>('view');
   const [hivesColor, setHivesColor] = useState(HIVES_DEFAULT_COLOR);
   const hiveContextMenuRef = createRef<ContextMenu>();
-
+  const { apiaries } = useGeneralInfo();
   const hiveSelector = 'g.hive svg';
+  const [ hiveContextMenuItems, setContextMenuItems ] = useState<MenuItem[]>([]);
 
   let dx = 0;
   let dy = 0;
@@ -146,6 +149,17 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     const svgElement = d3.select('svg#apiary-plan');
     registerClickable(svgElement);
     unregisterDoubleClick(svgElement);
+
+    
+    setContextMenuItems([{ 
+        label: 'Премести в', 
+        icon: pencil, 
+        items: apiaries.map((a) => {return { label: a.name }}) 
+      },
+      { label: 'Добави задача' },
+      { separator: true },
+      { label: 'Премахни' }
+    ]);    
   }, [apiary]);
 
   function toggleMode() {
@@ -168,14 +182,6 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     setSelectedHive(emptyHive(apiary));
     setShowModal(true);
   }
-
-
-  const hiveContextMenuItems = [
-    { label: 'Премести в', icon: pencil, items: [{ label: 'Ридо' }, { label: 'Рилски манастир' }] },
-    { label: 'Добави задача' },
-    { separator: true },
-    { label: 'Премахни' }
-  ];
 
   return (
     <>

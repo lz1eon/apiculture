@@ -46,7 +46,7 @@ import {
   Register
 } from './pages';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Header,
   PrivateRoutes
@@ -55,6 +55,7 @@ import { AuthContext } from './contexts/AuthContext';
 import { Apiary, User } from './models';
 import { GeneralInfoContext } from './contexts/GeneralInfoContext';
 import { Charts } from './pages/charts/Charts';
+import client from './api';
 
 
 setupIonicReact({
@@ -68,6 +69,11 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [apiaries, setApiaries] = useState<Apiary[]>([]);
+
+  useEffect(() => {
+      if (user)
+      client.getApiaries().then((response: any) => setApiaries(response.data));    
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, isAuthReady, setIsAuthReady }}>
