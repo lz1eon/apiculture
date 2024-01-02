@@ -54,14 +54,21 @@ img.logo {
 }
 
 
+/* Set 'primary' color to the value of 'warning' color */
 :root {
-  /* Set 'primary' color to the value of 'warning' color */
   --ion-color-primary: var(--ion-color-warning);
   --ion-color-primary-rgb: var(--ion-color-warning-rgb);
   --ion-color-primary-contrast: var(--ion-color-warning-contrast);
   --ion-color-primary-contrast-rgb: var(--ion-color-warning-contrast-rgb);
   --ion-color-primary-shade: var(--ion-color-shade);
   --ion-color-primary-tint: var(--ion-color-tint);
-
-  --ion-font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Roboto', sans-serif;
 }
+
+/* :root {
+  --ion-color-primary: #006600;
+  --ion-color-primary-rgb: 0, 102, 0;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #005a00;
+  --ion-color-primary-tint: #1a751a;
+} */
