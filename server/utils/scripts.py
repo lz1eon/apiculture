@@ -85,7 +85,18 @@ if __name__ == "__main__":
     db = SessionLocal()
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+
+    # User 1
     create_user("stefanov.alexandre@gmail.com", "alex", "Александър", "Стефанов")
-    # create_user("viki@gmail.com", "viki", "Виктор", "Стефанов")
     user = db.query(User).filter(User.email == "stefanov.alexandre@gmail.com").first()
+    create_sample_data(db, user)
+
+    # User 2
+    create_user("viki@gmail.com", "viki", "Виктор", "Стефанов")
+    user = db.query(User).filter(User.email == "viki@gmail.com").first()
+    create_sample_data(db, user)
+
+    # User 3
+    create_user("joro@gmail.com", "joro", "Георги", "Стефанов")
+    user = db.query(User).filter(User.email == "joro@gmail.com").first()
     create_sample_data(db, user)
