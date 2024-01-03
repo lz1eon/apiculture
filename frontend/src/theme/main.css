@@ -51,6 +51,14 @@ img.logo {
   cursor: grab;
 }
 
+.hive.selected-hive {
+  opacity: 1;
+}
+
+.hive.deselected-hive {
+  opacity: 0.3;
+}
+
 ion-chip.selected {
   background-color: var(--ion-color-warning);
 }

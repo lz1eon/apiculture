@@ -54,7 +54,9 @@ export const ApiaryDetail = () => {
                   title='Вид'
                   filterValue={typeFilter}
                   setFilterValue={setTypeFilter}
-                  items={hiveTypes.map((key, i) => {return {key: HiveTypesLabels[key], value: HiveTypes[key]}})}
+                  items={hiveTypes.map((key, i) => {
+                    return {key: HiveTypesLabels[key], value: HiveTypes[key]
+                  }})}
                 />
 
                 <ChipsFilter 
@@ -75,12 +77,22 @@ export const ApiaryDetail = () => {
                   title='Модел' 
                   filterValue={modelFilter}
                   setFilterValue={setModelFilter}
-                  items={hiveModels.map((key, i) => {return {key: HiveModelsLabels[key], value: HiveModels[key]}})}
+                  items={hiveModels.map((key, i) => {
+                    return {key: HiveModelsLabels[key], value: HiveModels[key]}
+                  })}
                 />
               </IonAccordionGroup>
             </IonCol>
             <IonCol>
-              <ApiaryPlan apiary={apiary} />
+              <ApiaryPlan 
+                apiary={apiary} 
+                filters={[
+                  {prop: 'type', value: typeFilter}, 
+                  {prop: 'mother', value: motherFilter},
+                  {prop: 'super', value: superFilter}, 
+                  {prop: 'model', value: modelFilter}
+                ]} 
+              />
             </IonCol>
           </IonRow>
         </IonGrid>

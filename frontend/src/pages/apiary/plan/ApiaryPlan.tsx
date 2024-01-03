@@ -15,13 +15,14 @@ import { HiveSelection } from './HiveSelection';
 
 const HIVES_DEFAULT_COLOR = '#000000';
 export type ApiaryPlanProps = {
-  apiary: Apiary
+  apiary: Apiary,
+  filters: {prop: string, value: number | null}[]
 }
 
 const PLAN_SELECTOR = 'svg#apiary-plan';
 const HIVE_SELECTOR = 'g.hive'
 
-export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
+export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
   const [selectedHive, setSelectedHive] = useState<Hive | undefined>();
   const [showModal, setShowModal] = useState(false);
   const [planMode, setPlanMode] = useState<'view' | 'edit'>('view');
@@ -192,14 +193,15 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     ]);
 
     
-    if (apiary.hives) {
-      const hiveSelection = new HiveSelection('svg#apiary-plan', apiary.hives);
-      hiveSelection.select(function (h) { return h.model === HiveModels.DADAN_BLAT });
-    }
-
     // zoomToHivesBBox();
-
   }, [apiary]);
+  
+  useEffect(() => {
+    if (apiary.hives) {
+      const hiveSelection = new HiveSelection(PLAN_SELECTOR, apiary.hives);
+      hiveSelection.select(filters);
+    }
+  }, [apiary, filters])
 
   return (
     <>
