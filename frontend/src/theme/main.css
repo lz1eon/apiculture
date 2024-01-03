@@ -3,6 +3,10 @@ html, body {
   overflow-y: hidden;
 }
 
+#apiary-plan {
+  border-top: 1px solid black;
+}
+
 .logo-label {
   font-size: xx-large;
 }
@@ -30,6 +34,8 @@ img.logo {
 
 .edit-plan-button {
   position:absolute;
+  right: 5px;
+  top: 50px;
 }
 
 .add-hive-button {
@@ -43,6 +49,10 @@ img.logo {
 
 .hive.dragged {
   cursor: grab;
+}
+
+ion-chip.selected {
+  background-color: var(--ion-color-warning);
 }
 
 .add-apiary-plus-icon {

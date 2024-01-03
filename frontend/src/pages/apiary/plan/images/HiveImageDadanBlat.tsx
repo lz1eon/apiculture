@@ -1,8 +1,8 @@
 import { Hive } from "../../../../models";
 
-export const HiveImageDadanBlat = ({hive, fill}: {hive: Hive, fill: string}) => {
+export const HiveImageDadanBlat = ({hive}: {hive: Hive}) => {
   return (
-    <svg className="hive" hive-id={hive.id} apiary-id={hive.apiary_id} x={hive.x} y={hive.y} fill={fill} height="6px" width="6px" viewBox="0 0 511.998 511.998">
+    <svg className="hive" hive-id={hive.id} apiary-id={hive.apiary_id} x={hive.x} y={hive.y} height="6px" width="6px" viewBox="0 0 511.998 511.998">
       <g>
         <g>
           <g>

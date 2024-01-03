@@ -1,8 +1,8 @@
 import { Hive } from "../../../../models";
 
-export const HiveImageLangstroth = ({hive, fill}: {hive: Hive, fill: string}) => {
+export const HiveImageLangstroth = ({hive}: {hive: Hive}) => {
   return (
-    <svg className="hive" hive-id={hive.id} apiary-id={hive.apiary_id} x={hive.x} y={hive.y} fill={fill} height="6px" width="6px" viewBox="0 0 511.999 511.999">
+    <svg className="hive" hive-id={hive.id} apiary-id={hive.apiary_id} x={hive.x} y={hive.y} height="6px" width="6px" viewBox="0 0 511.999 511.999">
 		<g>
 			<g>
 				<path d="M507.947,163.413l-34.133-25.6L260.48,1.28c-2.56-1.707-5.973-1.707-9.387,0L37.76,137.813l-34.133,25.6

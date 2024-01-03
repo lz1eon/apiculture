@@ -182,11 +182,11 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     { label: 'Премахни' }
     ]);
 
-    console.log('hives: ', apiary.hives);
-    const hiveSelection = new HiveSelection('svg#apiary-plan', apiary.hives);
-
-    if (apiary.hives)
+    
+    if (apiary.hives) {
+      const hiveSelection = new HiveSelection('svg#apiary-plan', apiary.hives);
       hiveSelection.select(function (h) { return h.model === HiveModels.DADAN_BLAT });
+    }
 
   }, [apiary]);
 
@@ -238,7 +238,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
           id="apiary-plan"
           viewBox="0 0 100 50"
           // style={{ background: '#2dd36f', border: '1px solid black' }}
-          style={{ border: '1px solid black' }}
+          
         >
           {apiary.hives?.map((hive, i) => (
             <HiveImage

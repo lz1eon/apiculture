@@ -17,15 +17,15 @@ const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
   const renderSVG = (model: number) => {
     switch(model) {
       case HiveModels.DADAN_BLAT:
-        return <HiveImageDadanBlat hive={hive} fill={fill}/>;
+        return <HiveImageDadanBlat hive={hive}/>;
       case HiveModels.FARAR:
-        return <HiveImageFarar hive={hive} fill={fill} />;
+        return <HiveImageFarar hive={hive} />;
       case HiveModels.LANGSTROTH:
-        return <HiveImageLangstroth hive={hive} fill={fill} />;
+        return <HiveImageLangstroth hive={hive} />;
       case HiveModels.OTHER:
-        return <HiveImageOther hive={hive} fill={fill} />;
+        return <HiveImageOther hive={hive} />;
       default:
-        return <HiveImageOther hive={hive} fill={fill} />;
+        return <HiveImageOther hive={hive} />;
     }
   }  
 
@@ -35,6 +35,7 @@ const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
       hive-id={hive.id}
       apiary-id={hive.apiary_id}
       className="hive" 
+      fill={fill}
       onContextMenu={onContextMenu}
     >
       <title>Hive</title>
