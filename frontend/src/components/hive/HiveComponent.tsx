@@ -1,34 +1,30 @@
-import { IonCard, IonCardContent, IonText, IonButton } from "@ionic/react";
-import { Hive } from "../../models";
+import { IonCard, IonCardContent, IonText, IonButton, IonItem, IonLabel, IonCardTitle, IonCardSubtitle, IonCardHeader } from "@ionic/react";
+import { Hive, HiveModels, HiveModelsInverted, HiveModelsLabels, HiveTypes, HiveTypesInverted, HiveTypesLabels } from "../../models";
 import { ComponentProps } from "react";
+import HiveImage from "../../pages/apiary/plan/HiveImage";
 
 type HiveComponentProps = {
   hive: Hive
 }; // & ComponentProps;
 
 
-export const HiveComponent = ({hive}: HiveComponentProps) => {
-    return (
-        <IonCard>
-        <IonCardContent>
-          <IonText color="text.secondary">
-            {hive.model}
-          </IonText>
-          <IonText>
-            {hive.number}
-          </IonText>
-          <IonText color="text.secondary">
-            {hive.type}
-          </IonText>
-          <IonText>
-            {hive.status}
-            <br/>
-            x: {hive.x}
-            <br/>
-            y: {hive.y}
-          </IonText>
-        </IonCardContent>
-          <IonButton size="small">Редактирай</IonButton>
-      </IonCard>
-    );
+export const HiveComponent = ({ hive }: HiveComponentProps) => {
+  return (
+    <IonCard>
+      <IonCardHeader>
+        <IonCardTitle>Кошер {hive.number}</IonCardTitle>
+        <IonCardSubtitle>
+          {HiveModelsLabels[HiveModelsInverted[hive.model]]}
+        </IonCardSubtitle>
+      </IonCardHeader>
+      <IonCardContent>
+        <p><IonText color="secondary">
+          {HiveTypesLabels[HiveTypesInverted[hive.type]]}
+        </IonText></p>
+        <IonText>
+          {hive.status}
+        </IonText>
+      </IonCardContent>
+    </IonCard>
+  );
 }

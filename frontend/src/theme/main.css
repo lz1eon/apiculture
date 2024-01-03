@@ -65,10 +65,8 @@ ion-chip.selected {
 
 .add-apiary-plus-icon {
   cursor: pointer;
-  width: 100px;
-  height: 100px;
-  margin-left: 50px;
-  margin-top: 50px;
+  /* width: 100px; */
+  height: 160px;
 }
 
 

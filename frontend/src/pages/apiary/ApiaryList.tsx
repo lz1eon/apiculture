@@ -1,4 +1,4 @@
-import { IonCol, IonGrid, IonImg, IonRow, IonText } from '@ionic/react';
+import { IonCard, IonCardContent, IonCol, IonGrid, IonImg, IonRow, IonText } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ModalDialog } from '../../components';
@@ -34,19 +34,23 @@ export const ApiaryList = () => {
       <IonGrid>
         <IonRow>
           {apiaries.map((apiary) => (
-            <IonCol key={apiary.id}>
+            <IonCol size="4" key={apiary.id}>
               <Link to={`/apiaries/${apiary.id}`}>
                 <ApiaryComponent key={apiary.id} apiary={apiary} />
               </Link>
             </IonCol>
           ))}
-          <IonCol>
-            <IonImg 
-              src={imgPlus} 
-              title='Добави Пчелин' 
-              className='add-apiary-plus-icon'
-              onClick={() => setShowModal(true)} 
-            ></IonImg>
+          <IonCol size="4">
+            <IonCard>
+              <IonCardContent>
+                <IonImg 
+                  src={imgPlus} 
+                  title='Добави Пчелин' 
+                  className='add-apiary-plus-icon'
+                  onClick={() => setShowModal(true)} 
+                ></IonImg>
+              </IonCardContent>
+            </IonCard>
           </IonCol>
         </IonRow>
       </IonGrid>

@@ -12,8 +12,8 @@ export const ApiaryDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [apiary, setApiary] = useState<any>({});
   const [typeFilter, setTypeFilter] = useState<number | null>(null);
-  const [motherFilter, setMotherFilter] = useState<number | null>(null);
-  const [superFilter, setSuperFilter] = useState<number | null>(null);
+  const [motherFilter, setMotherFilter] = useState<boolean | null>(null);
+  const [superFilter, setSuperFilter] = useState<boolean | null>(null);
   const [modelFilter, setModelFilter] = useState<number | null>(null);
 
   const hiveTypes = Object.keys(HiveTypes);

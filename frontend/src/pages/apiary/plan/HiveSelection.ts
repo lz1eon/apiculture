@@ -23,7 +23,7 @@ export class HiveSelection {
     this.svgElement.selectAll('.hive').classed('deselected-hive', false);
   }
 
-  select(filters: { prop: string, value: number | null }[]) {
+  select(filters: { prop: string, value: number | boolean | null }[]) {
     const new_selected: Hive[] = [];
     const new_deselected: Hive[] = [];
     this.selected = [...this.hives];
@@ -42,8 +42,7 @@ export class HiveSelection {
 
         this.selected.forEach((hive) => { 
           const value = hive[filter.prop];
-          if (filter.value === value) {
-            console.log(value, filter.value, value === filter.value); 
+          if (filter.value == value) {
             new_selected.push(hive);
           } else {
             new_deselected.push(hive);
@@ -55,8 +54,6 @@ export class HiveSelection {
     });
 
     this.deselected = [...new_deselected];
-
-    console.log(this.selected, this.deselected)
 
     this.selected.forEach((hive) => {
       this.svgElement.select(`g#group-${hive.id}`).classed('selected-hive', true);

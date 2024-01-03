@@ -26,8 +26,8 @@ def hive_number_generator(count=MAX_HIVES_COUNT):
 
 
 def hive_coordinates_generator(count=MAX_HIVES_COUNT):
-    x = 0
-    y = 0
+    x = 5
+    y = 5
     delta_x = 10
     delta_y = 10
     max_x = int(math.sqrt(count)) * 10

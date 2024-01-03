@@ -8,11 +8,12 @@ import {
 
 type Props = {
   hive: Hive,
-  fill: string,
+  fill?: string,
   onContextMenu?: (e: any) => {}
 }
 
 const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
+  fill = fill ? fill : '#000000';
 
   const renderSVG = (model: number) => {
     switch(model) {

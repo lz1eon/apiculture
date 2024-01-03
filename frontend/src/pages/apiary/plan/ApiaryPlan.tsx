@@ -16,7 +16,7 @@ import { HiveSelection } from './HiveSelection';
 const HIVES_DEFAULT_COLOR = '#000000';
 export type ApiaryPlanProps = {
   apiary: Apiary,
-  filters: {prop: string, value: number | null}[]
+  filters: {prop: string, value: number | boolean | null}[]
 }
 
 const PLAN_SELECTOR = 'svg#apiary-plan';

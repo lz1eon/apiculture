@@ -13,10 +13,10 @@ export const Shared = () => {
 
   useEffect(() => {
     client.getMySharedHives()
-          .then((response) => setMySharedHives(response.data));
+      .then((response) => setMySharedHives(response.data));
 
     client.getSharedWithMe()
-          .then((response) => setSharedWithMe(response.data));
+      .then((response) => setSharedWithMe(response.data));
   }, []);
 
   return (
@@ -35,25 +35,34 @@ export const Shared = () => {
             <TabView>
               <TabPanel header="Кои съм споделил">
                 <p className="m-0">
-
-                  {mySharedHives.length > 0 ?
-                    mySharedHives.map((myHive, i) => {
-                      return <HiveComponent key={i} hive={myHive} />
-                    })
-                    :
-                    <IonLabel>Не сте споделил кошери с никого.</IonLabel>
-                  }
+                  <IonGrid className="my-shared-hives">
+                    <IonRow>
+                      {mySharedHives.length > 0 ?
+                        mySharedHives.map((myHive, i) => {
+                          return <IonCol size="4"><HiveComponent key={i} hive={myHive} /></IonCol>
+                        })
+                        :
+                        <IonCol><IonLabel>Не сте споделил кошери с никого.</IonLabel></IonCol>
+                      }
+                    </IonRow>
+                  </IonGrid>
                 </p>
               </TabPanel>
+
               <TabPanel header="Споделени с мен">
                 <p className="m-0">
-                  {sharedWithMe.length > 0 ?
-                    sharedWithMe.map((sharedHive, i) => {
-                      return <HiveComponent key={i} hive={sharedHive} />
-                    })
-                    :
-                    <IonLabel>Никой не е споделил кошери с Вас.</IonLabel>
-                  }
+                  <IonGrid className="hive-shared-with-me">
+                    <IonRow>
+                      {sharedWithMe.length > 0 ?
+                        sharedWithMe.map((sharedHive, i) => {
+                          return <IonCol size="4"><HiveComponent key={i} hive={sharedHive} /></IonCol>
+                        })
+                        :
+                        <IonCol><IonLabel>Никой не е споделил кошери с Вас.</IonLabel></IonCol>
+                      }
+                    </IonRow>
+                  </IonGrid>
+
                 </p>
               </TabPanel>
             </TabView>

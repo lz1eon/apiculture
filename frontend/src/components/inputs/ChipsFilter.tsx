@@ -14,7 +14,6 @@ export const ChipsFilter = ({ title, filterValue, setFilterValue, items }: Chips
 
   function handleClick(event: any) {
     const chipValue = parseInt(event.target.getAttribute('data-value'));
-    console.log(filterValue, chipValue)
     if (filterValue === chipValue)
       setFilterValue(null)
     else
@@ -43,7 +42,7 @@ export const ChipsFilter = ({ title, filterValue, setFilterValue, items }: Chips
                 <IonChip
                   key={i}
                   data-value={item.value}
-                  className={filterValue == item.value ? 'selected' : ''}
+                  className={filterValue === item.value ? 'selected' : ''}
                   style={{userSelect: 'none'}}
                   onClick={handleClick}
                 >
