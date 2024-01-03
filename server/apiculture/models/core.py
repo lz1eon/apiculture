@@ -29,8 +29,8 @@ class Apiary(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    number: Mapped[str]
     name: Mapped[str]
+    number: Mapped[str] = mapped_column(nullable=True)
     type: Mapped[Optional[int]] = mapped_column(default=ApiaryTypes.IMMOBILE.value)
     hives: Mapped[Optional[List["Hive"]]] = relationship()
 
@@ -38,6 +38,12 @@ class Apiary(Base):
         UniqueConstraint("owner_id", "number"),
         UniqueConstraint("owner_id", "name"),
     )
+
+    def __str__(self):
+        return f"Apiary {self.name} ({self.number})"
+
+    def __repr__(self):
+        return f"<Apiary: name={self.name}, number={self.number}>"
 
 
 class Hive(Base):
@@ -53,3 +59,9 @@ class Hive(Base):
     y: Mapped[Optional[float]] = mapped_column(default=0.0)
 
     __table_args__ = (UniqueConstraint("apiary_id", "number"),)
+
+    def __str__(self):
+        return f"Hive {self.number}"
+
+    def __repr__(self):
+        return f"<Hive: number={self.number}>"

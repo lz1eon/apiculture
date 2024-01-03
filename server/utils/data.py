@@ -1,3 +1,4 @@
+import math
 from random import randint
 from passlib.context import CryptContext
 
@@ -29,7 +30,7 @@ def hive_coordinates_generator(count=MAX_HIVES_COUNT):
     y = 0
     delta_x = 10
     delta_y = 10
-    max_x = 120
+    max_x = int(math.sqrt(count)) * 10
 
     for index in range(1, count + 1):
         if x > max_x:
