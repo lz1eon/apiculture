@@ -56,6 +56,7 @@ import { Apiary, User } from './models';
 import { GeneralInfoContext } from './contexts/GeneralInfoContext';
 import { Charts } from './pages/charts/Charts';
 import client from './api';
+import { Shared } from './pages/shared/Shared';
 
 
 setupIonicReact({
@@ -91,6 +92,7 @@ const App: React.FC = () => {
                       <Route exact path="/apiaries/:id" component={ApiaryDetail} />
                       <Route exact path="/apiaries" component={ApiaryList} />
                       <Route exact path="/admin" component={Charts} />
+                      <Route exact path="/shared" component={Shared} />
                     </PrivateRoutes>
                   </IonContent> 
                 </IonApp>

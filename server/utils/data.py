@@ -3,7 +3,7 @@ from random import randint
 from passlib.context import CryptContext
 
 from apiculture.database import SessionLocal, engine
-from apiculture.models.core import Apiary, Hive, User, Base
+from apiculture.models.core import Apiary, Hive, User, Base, SharedHive
 from apiculture.models.enum import HiveModels, HiveTypes
 
 MAX_APIARIES_COUNT = 10
@@ -65,32 +65,48 @@ def random_coordinate(minimum=0, maximum=100):
     return randint(minimum, maximum)
 
 
-def create_hive(apiary_id, number, x, y):
+def share_some_hives(hives, owner, recipients, percent=5):
+    new_shares = []
+
+    for hive in hives:
+        to_share = not bool(randint(0, int(100 / percent)))
+        if to_share and recipients:
+            random_recipient = recipients[randint(0, len(recipients))]
+            new_share = SharedHive(hive_id=hive.id, owner_id=owner.id, recipient_id=random_recipient.id)
+            new_shares.append(new_share)
+
+    db.add_all(new_shares)
+    db.commit()
+
+
+def create_hive(owner_id, apiary_id, number, x, y):
     hive = Hive()
-    hive.number = number
+    hive.owner_id = owner_id
     hive.apiary_id = apiary_id
+    hive.number = number
     hive.type = random_type()
     hive.model = random_model()
     hive.super = random_super()
     hive.mother = random_mother()
     hive.x = x
     hive.y = y
-
     return hive
 
 
-def create_hives(db, apiary_id, hives_count):
+def create_hives(db, owner_id, apiary_id, hives_count):
     new_hives = []
     generate_hive_number = hive_number_generator(hives_count)
     generate_hive_coordinates = hive_coordinates_generator(hives_count)
     for index in range(0, hives_count):
         x, y = next(generate_hive_coordinates)
-        new_hives.append(create_hive(apiary_id, next(generate_hive_number), x, y))
+        new_hive = create_hive(owner_id, apiary_id, next(generate_hive_number), x, y)
+        new_hives.append(new_hive)
 
-    print(apiary_id, new_hives)
-    # bulk insert hives into DB
     db.add_all(new_hives)
     db.commit()
+
+    # Return the newly created ives
+    return db.query(Hive).where(Hive.apiary_id == apiary_id)
 
 
 def create_apiary(db, user_id, number, name):
@@ -104,6 +120,7 @@ def create_apiary(db, user_id, number, name):
 def create_data(db, user, apiaries=None, hives=None):
     apiaries = apiaries or ['Водоема']
     hives = hives or [20]
+    users = list(db.query(User).where(User.id != user.id))
 
     if len(apiaries) != len(hives):
         raise ValueError('len() of "apiaries" argument must be the same as the len() of "hives" argument.')
@@ -113,7 +130,8 @@ def create_data(db, user, apiaries=None, hives=None):
     for i, apiary_name in enumerate(apiaries):
         apiary_number = next(generate_apiary_number)
         apiary = create_apiary(db, user.id, apiary_number, apiary_name)
-        create_hives(db, apiary.id, hives[i])
+        new_hives = create_hives(db, user.id, apiary.id, hives[i])
+        share_some_hives(new_hives, owner=user, recipients=users)
 
         print(f'Apiary "{apiary_name}" created.')
         print(f'Created {hives[i]} hives for apiary "{apiary_name}"')

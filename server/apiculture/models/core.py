@@ -50,8 +50,9 @@ class Hive(Base):
     __tablename__ = "hive"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    number: Mapped[str]
+    owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     apiary_id: Mapped[int] = mapped_column(ForeignKey("apiary.id"))
+    number: Mapped[str]
     model: Mapped[Optional[int]] = mapped_column(default=HiveModels.DADAN_BLAT.value)
     type: Mapped[Optional[int]] = mapped_column(default=HiveTypes.BEE_FAMILY.value)
     status: Mapped[Optional[str]]
@@ -68,3 +69,12 @@ class Hive(Base):
 
     def __repr__(self):
         return f"<Hive: number={self.number}>"
+
+
+class SharedHive(Base):
+    __tablename__ = "shared_hive"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    hive_id: Mapped[int] = mapped_column(ForeignKey("hive.id"))
+    owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    recipient_id: Mapped[int] = mapped_column(ForeignKey("user.id"))

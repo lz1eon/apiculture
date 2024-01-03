@@ -25,7 +25,7 @@ from apiculture.api.schemas import (
     UserSchema,
 )
 from apiculture.dal.command import create_apiary, create_hive, update_hive
-from apiculture.dal.query import get_apiaries, get_apiary, get_hives
+from apiculture.dal.query import get_apiaries, get_apiary, get_hives, get_my_shared_hives, get_hives_shared_with_me
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
 
@@ -74,6 +74,16 @@ async def hives_get(request: Request, apiary_id: int, db: Session = Depends(get_
     return get_hives(db, request.user, apiary_id=apiary_id)
 
 
+@app.get("/hives/my-shared/", response_model=list[HiveSchema])
+async def hives_get_my_shred(request: Request, db: Session = Depends(get_db)):
+    return get_my_shared_hives(db, request.user)
+
+
+@app.get("/hives/shared-with-me/", response_model=list[HiveSchema])
+async def hives_get_shared_with_me(request: Request, db: Session = Depends(get_db)):
+    return get_hives_shared_with_me(db, request.user)
+
+
 @app.post("/apiaries/{apiary_id}/hives/", response_model=HiveSchema)
 async def hives_create(request: Request, apiary_id: int, hive: HiveCreateSchema, db: Session = Depends(get_db)):
     return create_hive(db, request.user, apiary_id=apiary_id, hive=hive)
@@ -89,8 +99,9 @@ async def hive_update(
     return update_hive(db, request.user, hive_id, hive_data)
 
 
-# Authentication Paths #
 
+
+# Authentication Paths #
 
 @app.post("/register/")
 async def register(user_data: UserCreateSchema, db: Session = Depends(get_db)):

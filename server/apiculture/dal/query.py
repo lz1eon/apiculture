@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from apiculture.models.core import Apiary, Hive, User
+from apiculture.models.core import Apiary, Hive, User, SharedHive
 
 PAGE_SIZE = 100
 
@@ -55,6 +55,24 @@ def get_hives(
             .limit(limit)
             .all()
         )
+    return hives
+
+
+def get_my_shared_hives(db: Session, user: User):
+    hives = (
+        db.query(Hive)
+        .where(Hive.owner_id == user.id)
+        .where(Hive.id == SharedHive.hive_id)
+    )
+    return hives
+
+
+def get_hives_shared_with_me(db: Session, user: User):
+    hives = (
+        db.query(Hive)
+        .where(Hive.id == SharedHive.hive_id)
+        .where(SharedHive.recipient_id == user.id)
+    )
     return hives
 
 

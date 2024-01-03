@@ -49,7 +49,7 @@ const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
         id={`text-${hive.id}`}
         x={hive.x + 1.7} 
         y={hive.y + 7.5}
-        style={{fontSize: 1.5}} 
+        style={{fontSize: 1.5, userSelect: 'none'}} 
       >
         {hive.number}
       </text>

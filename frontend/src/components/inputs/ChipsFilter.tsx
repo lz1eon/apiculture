@@ -44,6 +44,7 @@ export const ChipsFilter = ({ title, filterValue, setFilterValue, items }: Chips
                   key={i}
                   data-value={item.value}
                   className={filterValue == item.value ? 'selected' : ''}
+                  style={{userSelect: 'none'}}
                   onClick={handleClick}
                 >
                   {item.key}

@@ -63,6 +63,14 @@ class Client {
         return api.post(`/apiaries/`, {number: number, name: name, type: type});
     }
 
+    getMySharedHives() {
+        return api.get('/hives/my-shared/');
+    }
+
+    getSharedWithMe() {
+        return api.get('/hives/shared-with-me/');
+    }
+
     createHive(apiary_id: string, data: any) {        
         return api.post(`/apiaries/${apiary_id}/hives/`, data);
     }
