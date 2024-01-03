@@ -126,6 +126,11 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
           Промени
         </IonButton>
       }
+      {mode === 'view' &&
+        <IonButton className="ion-margin-top" fill='outline' style={{float: 'right'}}>
+          Сподели
+        </IonButton>
+      }
       {(mode === 'edit' || mode === 'create') &&
         <IonButton className="ion-margin-top" type="submit" onClick={handleSubmit}>
           Запази

@@ -6,11 +6,15 @@ import client from '../../api';
 import Page from '../Page';
 import { ApiaryPlan } from './plan/ApiaryPlan';
 import { HiveTypes, HiveTypesLabels, HiveModels, HiveModelsLabels } from '../../models';
-import { ChipsGroup } from '../../components/inputs/ChipsGroup';
+import { ChipsFilter } from '../../components/inputs/ChipsFilter';
 
 export const ApiaryDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [apiary, setApiary] = useState<any>({});
+  const [typeFilter, setTypeFilter] = useState<number | null>(null);
+  const [motherFilter, setMotherFilter] = useState<number | null>(null);
+  const [superFilter, setSuperFilter] = useState<number | null>(null);
+  const [modelFilter, setModelFilter] = useState<number | null>(null);
 
   const hiveTypes = Object.keys(HiveTypes);
   const hiveModels = Object.keys(HiveModels);
@@ -46,23 +50,33 @@ export const ApiaryDetail = () => {
           <IonRow>
             <IonCol size="auto">
               <IonAccordionGroup multiple={true} style={{width: "250px"}}>
-                <IonAccordion value='first'>
-                  <IonItem slot="header">
-                    <IonLabel color="primary">Вид</IonLabel>
-                  </IonItem>
-                  <IonItem slot='content'>
-                    <ChipsGroup items={hiveTypes.map((key, i) => {return {key: HiveTypesLabels[key], value: HiveTypes[key]}})}></ChipsGroup>
-                  </IonItem>
-                </IonAccordion>
-                
-                <IonAccordion value='second'>
-                  <IonItem slot="header">
-                    <IonLabel color="primary">Модел</IonLabel>
-                  </IonItem>
-                  <IonItem slot='content'>
-                    <ChipsGroup items={hiveModels.map((key, i) => {return {key: HiveModelsLabels[key], value: HiveModels[key]}})}></ChipsGroup>
-                  </IonItem>
-                </IonAccordion>
+                <ChipsFilter 
+                  title='Вид'
+                  filterValue={typeFilter}
+                  setFilterValue={setTypeFilter}
+                  items={hiveTypes.map((key, i) => {return {key: HiveTypesLabels[key], value: HiveTypes[key]}})}
+                />
+
+                <ChipsFilter 
+                  title='Майка' 
+                  filterValue={motherFilter}
+                  setFilterValue={setMotherFilter}
+                  items={[{key: 'Без майка', value: 0}, {key: 'С майка', value: 1}]}
+                />
+            
+                <ChipsFilter 
+                  title='Магазин' 
+                  filterValue={superFilter}
+                  setFilterValue={setSuperFilter}
+                  items={[{key: 'Без магазин', value: 0}, {key: 'С магазин', value: 1}]}
+                />
+                        
+                <ChipsFilter 
+                  title='Модел' 
+                  filterValue={modelFilter}
+                  setFilterValue={setModelFilter}
+                  items={hiveModels.map((key, i) => {return {key: HiveModelsLabels[key], value: HiveModels[key]}})}
+                />
               </IonAccordionGroup>
             </IonCol>
             <IonCol>

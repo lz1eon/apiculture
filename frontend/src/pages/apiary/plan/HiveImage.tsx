@@ -1,4 +1,4 @@
-import { Hive, HiveModels } from "../../../models";
+import { Hive, HiveModels, HiveModelsInverted, HiveModelsLabels, HiveTypesInverted, HiveTypesLabels } from "../../../models";
 import { 
   HiveImageDadanBlat, 
   HiveImageFarar,
@@ -38,7 +38,10 @@ const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
       fill={fill}
       onContextMenu={onContextMenu}
     >
-      <title>Hive</title>
+      <title>
+        {HiveTypesLabels[HiveTypesInverted[String(hive.type)]]}        
+        ({HiveModelsLabels[HiveModelsInverted[String(hive.model)]]})
+      </title>
       
       {renderSVG(hive.model)}
       

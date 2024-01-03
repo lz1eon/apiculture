@@ -17,6 +17,12 @@ export const HiveTypes = {
   SWARM: 2
 }
 
+export const HiveTypesInverted = {
+  '0': 'BEE_FAMILY',
+  '1': 'NUCLEUS_COLONY',
+  '2': 'SWARM'
+}
+
 export const HiveTypesLabels = {
   BEE_FAMILY: 'Пчелно семейство',
   NUCLEUS_COLONY: 'Отводка',
@@ -28,6 +34,13 @@ export const HiveModels = {
   DADAN_BLAT: 1,
   FARAR: 2,
   LANGSTROTH: 3,
+}
+
+export const HiveModelsInverted = {
+  '0': 'OTHER',
+  '1': 'DADAN_BLAT',
+  '2': 'FARAR',
+  '3': 'LANGSTROTH'
 }
 
 export const HiveModelsLabels = {

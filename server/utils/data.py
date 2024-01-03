@@ -50,6 +50,17 @@ def random_model():
     return randint(0, len(HiveModels) - 1)
 
 
+def random_super():
+    return bool(randint(0, 1))
+
+
+def random_mother():
+    """
+    Generate random true/false with 5:1 chance for true
+    """
+    return bool(randint(0, 5))
+
+
 def random_coordinate(minimum=0, maximum=100):
     return randint(minimum, maximum)
 
@@ -60,6 +71,8 @@ def create_hive(apiary_id, number, x, y):
     hive.apiary_id = apiary_id
     hive.type = random_type()
     hive.model = random_model()
+    hive.super = random_super()
+    hive.mother = random_mother()
     hive.x = x
     hive.y = y
 

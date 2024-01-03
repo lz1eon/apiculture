@@ -18,6 +18,9 @@ export type ApiaryPlanProps = {
   apiary: Apiary
 }
 
+const PLAN_SELECTOR = 'svg#apiary-plan';
+const HIVE_SELECTOR = 'g.hive'
+
 export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   const [selectedHive, setSelectedHive] = useState<Hive | undefined>();
   const [showModal, setShowModal] = useState(false);
@@ -33,7 +36,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   let dy = 0;
 
   function handleZoom(event: any) {
-    d3.selectAll('svg#apiary-plan g.hive')
+    d3.selectAll(`${PLAN_SELECTOR} ${HIVE_SELECTOR}`)
       .attr('transform', event.transform);
   }
 
@@ -53,7 +56,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) * 1;
   });
 
-  d3.selectAll<SVGSVGElement, unknown>('svg#apiary-plan')
+  d3.selectAll<SVGSVGElement, unknown>(PLAN_SELECTOR)
     .call(zoom)
 
   function handleDragStart(this: any, event: MouseEvent) {
@@ -147,7 +150,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
   }
 
   function toggleMode() {
-    const svgElement = d3.select('svg#apiary-plan');
+    const svgElement = d3.select(PLAN_SELECTOR);
 
     if (planMode === 'view') {
       setPlanMode('edit');
@@ -167,8 +170,13 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
     setShowModal(true);
   }
 
+  function zoomToHivesBBox() {
+    const svgElement = d3.select(PLAN_SELECTOR);
+    svgElement.selectAll(HIVE_SELECTOR);
+  }
+
   useEffect(() => {
-    const svgElement = d3.select('svg#apiary-plan');
+    const svgElement = d3.select(PLAN_SELECTOR);
     registerClickable(svgElement);
     unregisterDoubleClick(svgElement);
 
@@ -178,6 +186,7 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
       items: apiaries.map((a) => { return { label: a.name } })
     },
     { label: 'Добави задача' },
+    { label: 'Сподели' },
     { separator: true },
     { label: 'Премахни' }
     ]);
@@ -187,6 +196,8 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
       const hiveSelection = new HiveSelection('svg#apiary-plan', apiary.hives);
       hiveSelection.select(function (h) { return h.model === HiveModels.DADAN_BLAT });
     }
+
+    // zoomToHivesBBox();
 
   }, [apiary]);
 
@@ -237,8 +248,6 @@ export const ApiaryPlan = ({ apiary }: ApiaryPlanProps) => {
         <svg
           id="apiary-plan"
           viewBox="0 0 100 50"
-          // style={{ background: '#2dd36f', border: '1px solid black' }}
-          
         >
           {apiary.hives?.map((hive, i) => (
             <HiveImage

@@ -55,6 +55,9 @@ class Hive(Base):
     model: Mapped[Optional[int]] = mapped_column(default=HiveModels.DADAN_BLAT.value)
     type: Mapped[Optional[int]] = mapped_column(default=HiveTypes.BEE_FAMILY.value)
     status: Mapped[Optional[str]]
+    super: Mapped[Optional[bool]] = mapped_column(nullable=True)
+    mother: Mapped[bool] = mapped_column(default=True)
+    notes: Mapped[Optional[str]] = mapped_column(String(2048), nullable=True)
     x: Mapped[Optional[float]] = mapped_column(default=0.0)
     y: Mapped[Optional[float]] = mapped_column(default=0.0)
 
