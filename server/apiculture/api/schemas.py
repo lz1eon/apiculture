@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+from apiculture.models import Hive, User
+
 
 class UserSchema(BaseModel):
     id: int
@@ -20,6 +22,12 @@ class UserCreateSchema(BaseModel):
     email: str
     first_name: str
     last_name: str
+
+
+class UserShareSchema(BaseModel):
+    email: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class UserInDBSchema(UserSchema):
@@ -74,6 +82,22 @@ class HiveSchema(HiveBaseSchema):
 
     class Config:
         orm_mode = True
+
+
+class HivePublicSchema(BaseModel):
+    number: str
+    model: int | None = None
+    type: int | None = None
+    status: str | None = None
+    mother: bool | None = True
+    brood: bool | None = False
+    super: bool | None = False
+
+
+class SharedHiveSchema(BaseModel):
+    owner: UserShareSchema
+    recipient: UserShareSchema
+    hive: HivePublicSchema
 
 
 class ApiaryBaseSchema(BaseModel):

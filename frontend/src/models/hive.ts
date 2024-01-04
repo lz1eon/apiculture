@@ -1,4 +1,5 @@
 import { Apiary } from "./apiary";
+import { User } from "./user";
 
 export type Hive = {
   id: string | undefined;
@@ -13,6 +14,12 @@ export type Hive = {
   shared: boolean;
   x: number;
   y: number;
+}
+
+export type SharedHive = {
+  hive: Hive,
+  owner: User,
+  recipient: User
 }
 
 interface StringKeys {

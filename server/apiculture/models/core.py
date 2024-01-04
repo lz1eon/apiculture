@@ -8,8 +8,13 @@ from apiculture.models.enum import ApiaryTypes, HiveModels, HiveTypes
 
 
 class Base(DeclarativeBase):
+    # __abstract__ = True
+
     created_datetime: Mapped[Optional[datetime.datetime]]
     updated_datetime: Mapped[Optional[datetime.datetime]]
+
+    def to_dict(self):
+        return {field.name: getattr(self, field.name) for field in self.__table__.c}
 
 
 class User(Base):
@@ -22,6 +27,12 @@ class User(Base):
     password: Mapped[str]
 
     __table_args__ = (UniqueConstraint("email"),)
+
+    def __str__(self):
+        return f"User: {self.first_name} {self.last_name} ({self.email})"
+
+    def __repr__(self):
+        return f"<User: first_name={self.first_name}, last_name={self.last_name}, emali={self.email}>"
 
 
 class Apiary(Base):
@@ -40,7 +51,7 @@ class Apiary(Base):
     )
 
     def __str__(self):
-        return f"Apiary {self.name} ({self.number})"
+        return f"Apiary: {self.name} ({self.number})"
 
     def __repr__(self):
         return f"<Apiary: name={self.name}, number={self.number}>"
@@ -66,7 +77,7 @@ class Hive(Base):
     __table_args__ = (UniqueConstraint("apiary_id", "number"),)
 
     def __str__(self):
-        return f"Hive {self.number}"
+        return f"Hive: {self.number}"
 
     def __repr__(self):
         return f"<Hive: number={self.number}>"
@@ -79,3 +90,9 @@ class SharedHive(Base):
     hive_id: Mapped[int] = mapped_column(ForeignKey("hive.id"))
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     recipient_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+
+    def __str__(self):
+        return f"SharedHive: [{self.hive_id}] from user ({self.owner_id} to user {self.recipient_id})"
+
+    def __repr__(self):
+        return f"<SharedHive: hive_id={self.hive_id}, owner_id={self.owner_id}, recipient_id={self.recipient_id}>"

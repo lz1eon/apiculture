@@ -21,7 +21,9 @@ def create_user(db: Session, user: schemas.UserCreateSchema):
 
 
 def create_apiary(db: Session, user, apiary: schemas.ApiaryCreateSchema):
-    db_apiary = Apiary(owner_id=user.id, number=apiary.number, name=apiary.name, type=apiary.type)
+    db_apiary = Apiary(
+        owner_id=user.id, number=apiary.number, name=apiary.name, type=apiary.type
+    )
     db.add(db_apiary)
     db.commit()
     db.refresh(db_apiary)

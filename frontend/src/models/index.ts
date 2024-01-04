@@ -9,6 +9,6 @@ export {
     HiveTypesInverted,
     HiveTypesLabels 
 } from './hive';
-export type { Hive } from './hive';
+export type { Hive, SharedHive } from './hive';
 export { emptyHive } from './hive';
 export type { User } from './user';

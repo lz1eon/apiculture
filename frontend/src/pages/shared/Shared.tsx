@@ -1,19 +1,19 @@
 import { IonCol, IonGrid, IonLabel, IonRow, IonText } from "@ionic/react"
 import { TabView, TabPanel } from 'primereact/tabview';
 import Page from '../Page';
-import { Hive } from "../../models";
+import { Hive, SharedHive } from "../../models";
 import { HiveComponent } from "../../components";
 import { useEffect, useState } from "react";
 import client from "../../api";
 
 
 export const Shared = () => {
-  const [mySharedHives, setMySharedHives] = useState<Hive[]>([]);
-  const [sharedWithMe, setSharedWithMe] = useState<Hive[]>([]);
+  const [mySharedHives, setMySharedHives] = useState<SharedHive[]>([]);
+  const [sharedWithMe, setSharedWithMe] = useState<SharedHive[]>([]);
 
   useEffect(() => {
-    client.getMySharedHives()
-      .then((response) => setMySharedHives(response.data));
+    // client.getMySharedHives()
+    //   .then((response) => setMySharedHives(response.data));
 
     client.getSharedWithMe()
       .then((response) => setSharedWithMe(response.data));
@@ -38,8 +38,8 @@ export const Shared = () => {
                   <IonGrid className="my-shared-hives">
                     <IonRow>
                       {mySharedHives.length > 0 ?
-                        mySharedHives.map((myHive, i) => {
-                          return <IonCol key={i} size="4"><HiveComponent hive={myHive} /></IonCol>
+                        mySharedHives.map((myShared, i) => {
+                          return <IonCol key={i} size="4"><HiveComponent sharedHive={myShared} /></IonCol>
                         })
                         :
                         <IonCol><IonLabel>Не сте споделил кошери с никого.</IonLabel></IonCol>
@@ -55,7 +55,7 @@ export const Shared = () => {
                     <IonRow>
                       {sharedWithMe.length > 0 ?
                         sharedWithMe.map((sharedHive, i) => {
-                          return <IonCol key={i} size="4"><HiveComponent hive={sharedHive} /></IonCol>
+                          return <IonCol key={i} size="4"><HiveComponent sharedHive={sharedHive} /></IonCol>
                         })
                         :
                         <IonCol><IonLabel>Никой не е споделил кошери с Вас.</IonLabel></IonCol>

@@ -1,16 +1,22 @@
-import { IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonGrid, IonIcon, IonImg, IonRow, IonText } from "@ionic/react";
-import { Hive, HiveModelsInverted, HiveModelsLabels, HiveTypesInverted, HiveTypesLabels } from "../../models";
-import frame from '../../assets/images/frame.jpg';
+import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonGrid, IonImg, IonRow, IonText } from "@ionic/react";
 import beemother from '../../assets/images/beemother.png';
 import brood from '../../assets/images/brood.jpg';
+import frame from '../../assets/images/frame.jpg';
 import superImg from '../../assets/images/super.jpg';
+import { 
+  HiveModelsInverted, 
+  HiveModelsLabels, 
+  HiveTypesInverted, 
+  HiveTypesLabels, 
+  SharedHive 
+} from "../../models";
 
 type HiveComponentProps = {
-  hive: Hive
+  sharedHive: SharedHive;
 };
 
-
-export const HiveComponent = ({ hive }: HiveComponentProps) => {
+export const HiveComponent = ({ sharedHive }: HiveComponentProps) => {
+  const {hive, owner, recipient} = sharedHive;
   
   function openHive() {
     console.log('open')
@@ -20,6 +26,7 @@ export const HiveComponent = ({ hive }: HiveComponentProps) => {
     <IonCard className="hive-card" onClick={openHive}>
       <IonCardHeader>
         <IonCardTitle>Кошер {hive.number}</IonCardTitle>
+        <IonCardSubtitle>Споделил: <b>{owner.first_name} {owner.last_name}</b></IonCardSubtitle>
       </IonCardHeader>
       <IonCardContent>
         <IonGrid>
