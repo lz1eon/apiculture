@@ -121,6 +121,21 @@ ion-chip.selected {
   }
 }
 
+.apis-hive-card-status-icon {
+  width: 48px;
+  height: 48px;
+  border: 1px solid lightgray;
+
+  &.apis-null {
+    border: none;
+    opacity: 0.2;
+  }
+}
+
+.hive-card {
+  cursor: pointer;
+}
+
 /* Set 'primary' color to the value of 'warning' color */
 :root {
   --ion-color-primary: var(--ion-color-warning);

@@ -8,6 +8,7 @@ export type Hive = {
   model: number;
   status: string;
   mother: boolean;
+  brood: boolean;
   super: boolean;
   shared: boolean;
   x: number;
@@ -70,6 +71,7 @@ export const emptyHive = (apiary: Apiary): Hive => {
     type: HiveTypes.BEE_FAMILY,
     model: HiveModels.DADAN_BLAT,
     mother: false,
+    brood: false,
     super: false,
     status: '',
     shared: false,

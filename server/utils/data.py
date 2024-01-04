@@ -61,17 +61,24 @@ def random_mother():
     return bool(randint(0, 5))
 
 
+def random_brood():
+    """
+    Generate random true/false with 5:1 chance for true
+    """
+    return bool(randint(0, 5))
+
+
 def random_coordinate(minimum=0, maximum=100):
     return randint(minimum, maximum)
 
 
-def share_some_hives(hives, owner, recipients, percent=5):
+def share_some_hives(hives, owner, recipients, percent=10):
     new_shares = []
 
     for hive in hives:
         to_share = not bool(randint(0, int(100 / percent)))
         if to_share and recipients:
-            random_recipient = recipients[randint(0, len(recipients))]
+            random_recipient = recipients[randint(0, len(recipients)) - 1]
             new_share = SharedHive(hive_id=hive.id, owner_id=owner.id, recipient_id=random_recipient.id)
             new_shares.append(new_share)
 
@@ -88,6 +95,7 @@ def create_hive(owner_id, apiary_id, number, x, y):
     hive.model = random_model()
     hive.super = random_super()
     hive.mother = random_mother()
+    hive.brood = random_brood()
     hive.x = x
     hive.y = y
     return hive
@@ -160,14 +168,14 @@ if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
 
     # User 1
-    create_user(db, "stefanov.alexandre@gmail.com", "alex", "Александър", "Стефанов")
-    user = db.query(User).filter(User.email == "stefanov.alexandre@gmail.com").first()
-    create_data(db, user, apiaries=["Манастиро", "Водоема", "Ридо"], hives=[57, 10, 105])
-
-    # User 2
     create_user(db, "viki@gmail.com", "viki", "Виктор", "Стефанов")
     user = db.query(User).filter(User.email == "viki@gmail.com").first()
     create_data(db, user, apiaries=["Лозето", "Парапунов"], hives=[5, 33])
+
+    # User 2
+    create_user(db, "stefanov.alexandre@gmail.com", "alex", "Александър", "Стефанов")
+    user = db.query(User).filter(User.email == "stefanov.alexandre@gmail.com").first()
+    create_data(db, user, apiaries=["Манастиро", "Водоема", "Ридо"], hives=[57, 10, 105])
 
     # User 3
     create_user(db, "joro@gmail.com", "joro", "Георги", "Стефанов")

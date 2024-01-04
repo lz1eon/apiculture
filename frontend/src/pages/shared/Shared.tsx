@@ -33,13 +33,13 @@ export const Shared = () => {
           <IonCol>
 
             <TabView>
-              <TabPanel header="Кои съм споделил">
+              <TabPanel header={`Кои съм споделил (${mySharedHives.length})`}>
                 <p className="m-0">
                   <IonGrid className="my-shared-hives">
                     <IonRow>
                       {mySharedHives.length > 0 ?
                         mySharedHives.map((myHive, i) => {
-                          return <IonCol size="4"><HiveComponent key={i} hive={myHive} /></IonCol>
+                          return <IonCol key={i} size="4"><HiveComponent hive={myHive} /></IonCol>
                         })
                         :
                         <IonCol><IonLabel>Не сте споделил кошери с никого.</IonLabel></IonCol>
@@ -49,13 +49,13 @@ export const Shared = () => {
                 </p>
               </TabPanel>
 
-              <TabPanel header="Споделени с мен">
+              <TabPanel header={`Споделени с мен (${sharedWithMe.length})`}>
                 <p className="m-0">
                   <IonGrid className="hive-shared-with-me">
                     <IonRow>
                       {sharedWithMe.length > 0 ?
                         sharedWithMe.map((sharedHive, i) => {
-                          return <IonCol size="4"><HiveComponent key={i} hive={sharedHive} /></IonCol>
+                          return <IonCol key={i} size="4"><HiveComponent hive={sharedHive} /></IonCol>
                         })
                         :
                         <IonCol><IonLabel>Никой не е споделил кошери с Вас.</IonLabel></IonCol>
