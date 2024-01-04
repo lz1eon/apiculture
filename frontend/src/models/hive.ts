@@ -19,7 +19,7 @@ export type Hive = {
 export type SharedHive = {
   hive: Hive,
   owner: User,
-  recipient: User
+  recipients: User[]
 }
 
 interface StringKeys {

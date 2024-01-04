@@ -96,7 +96,7 @@ class HivePublicSchema(BaseModel):
 
 class SharedHiveSchema(BaseModel):
     owner: UserShareSchema
-    recipient: UserShareSchema
+    recipients: list[UserShareSchema]
     hive: HivePublicSchema
 
 

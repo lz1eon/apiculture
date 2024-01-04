@@ -12,8 +12,8 @@ export const Shared = () => {
   const [sharedWithMe, setSharedWithMe] = useState<SharedHive[]>([]);
 
   useEffect(() => {
-    // client.getMySharedHives()
-    //   .then((response) => setMySharedHives(response.data));
+    client.getMySharedHives()
+      .then((response) => setMySharedHives(response.data));
 
     client.getSharedWithMe()
       .then((response) => setSharedWithMe(response.data));

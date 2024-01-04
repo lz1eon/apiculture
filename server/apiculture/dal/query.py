@@ -59,13 +59,27 @@ def get_hives(
 
 
 def get_my_shared_hives(db: Session, user: User):
-    hives = (
-        db.query(Hive)
+    # TODO: optimize loops and the whole function
+    shared_hives = []
+
+    hives = list(
+        db.query(Hive, SharedHive)
         .where(Hive.owner_id == user.id)
         .where(Hive.id == SharedHive.hive_id)
         .order_by(SharedHive.recipient_id)
     )
-    return hives
+
+    recipients_ids = [shared_hive.recipient_id for _, shared_hive in hives]
+    recipients = db.query(User).where(User.id.in_(recipients_ids))
+
+    for hive, shared_hive in hives:
+        hive.recipients = []
+        for recipient in recipients:
+            if shared_hive.recipient_id == recipient.id:
+                hive.recipients.append(recipient)
+        shared_hives.append(hive)
+
+    return shared_hives
 
 
 def get_hives_shared_with_me(db: Session, user: User):
