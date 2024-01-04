@@ -69,6 +69,57 @@ ion-chip.selected {
   height: 160px;
 }
 
+.apis-filters-controls {
+  margin-top: 20px;
+  float: 'right';
+  border-bottom: '1px solid black';
+  width: '100%';
+}
+
+.apis-drone-box {
+  width: '400px';
+  display: block;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10;  
+  background-color: white;
+  
+  &.apis-open {
+    border: 1px solid var(--ion-color-primary);
+  }
+
+}
+
+.apis-icon-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.apis-drone-img {
+  width: 100px;
+  opacity: 0.2;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+
+  &.apis-active {
+    opacity: 1;
+  }
+}
+
+.apis-drone-content {
+  display: none;
+  transition: 2s ease;
+  &.apis-open {
+    display: block;
+  }
+}
 
 /* Set 'primary' color to the value of 'warning' color */
 :root {

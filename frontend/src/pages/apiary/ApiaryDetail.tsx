@@ -1,12 +1,14 @@
-import { IonAccordion, IonAccordionGroup, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonRadio, IonRadioGroup, IonRow, IonText, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAccordionGroup, IonButton, IonCol, IonGrid, IonIcon, IonImg, IonItem, IonList, IonRow, IonText } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import client from '../../api';
 
+import { ChipsFilter } from '../../components/inputs/ChipsFilter';
+import { HiveModels, HiveModelsLabels, HiveTypes, HiveTypesLabels } from '../../models';
 import Page from '../Page';
 import { ApiaryPlan } from './plan/ApiaryPlan';
-import { HiveTypes, HiveTypesLabels, HiveModels, HiveModelsLabels } from '../../models';
-import { ChipsFilter } from '../../components/inputs/ChipsFilter';
+import { ActionItem, Drone } from '../../components/common/Drone';
+import { arrowDown, arrowDownCircle, arrowDownCircleOutline, arrowDownOutline, arrowDownSharp, arrowUp, chevronDownOutline, chevronUpOutline, closeCircle, closeCircleOutline } from 'ionicons/icons';
 
 export const ApiaryDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,9 +17,22 @@ export const ApiaryDetail = () => {
   const [motherFilter, setMotherFilter] = useState<boolean | null>(null);
   const [superFilter, setSuperFilter] = useState<boolean | null>(null);
   const [modelFilter, setModelFilter] = useState<number | null>(null);
+  const [advices, setAdvices] = useState<ActionItem[]>([]);
 
   const hiveTypes = Object.keys(HiveTypes);
   const hiveModels = Object.keys(HiveModels);
+
+
+  function toggleFilters() {
+
+  }
+
+  function clearFilters() {
+    setTypeFilter(null);
+    setMotherFilter(null);
+    setSuperFilter(null);
+    setModelFilter(null);
+  }
 
   useEffect(() => {
     client.getApiary(id)
@@ -25,6 +40,24 @@ export const ApiaryDetail = () => {
         setApiary(response.data);
       });
   }, []);
+
+  useEffect(() => {
+    if (
+      (typeFilter !== null) ||
+      (motherFilter !== null) ||
+      (superFilter !== null) ||
+      (modelFilter !== null)
+    ) {
+      setAdvices([
+        { text: 'Добави магазини на избраните', action: () => { } },
+        { text: 'Добави майка на избраните', action: () => { } },
+        { text: 'Създай задача за поставяне на магазини', action: () => { } }
+      ]);
+    } else {
+      setAdvices([]);
+    }
+
+  }, [typeFilter, motherFilter, superFilter, modelFilter]);
 
   return (
     <>
@@ -38,10 +71,12 @@ export const ApiaryDetail = () => {
       </IonMenu> */}
 
       <Page>
+        <Drone advices={advices}></Drone>
+
         <IonGrid>
           <IonRow>
             <IonCol>
-              <h1><IonText>{apiary.name}</IonText></h1>
+              <h1><IonText style={{ userSelect: 'none' }}>{apiary.name}</IonText></h1>
               {/* <IonMenuToggle>
                 <IonButton>Click to open the menu</IonButton>
               </IonMenuToggle> */}
@@ -49,49 +84,66 @@ export const ApiaryDetail = () => {
           </IonRow>
           <IonRow>
             <IonCol size="auto">
-              <IonAccordionGroup multiple={true} style={{width: "250px"}}>
-                <ChipsFilter 
+              <div className="apis-filters-controls">
+                <IonButton
+                  size="small"
+                  fill='outline'
+                  style={{ float: 'left' }}
+                  onClick={clearFilters}
+                >
+                  <IonIcon
+                    title='Изчисти филтрите'
+                    src={closeCircleOutline}
+                  >
+                  </IonIcon>
+                </IonButton>
+              </div>
+
+              <IonAccordionGroup value={null} multiple={true} style={{ width: "250px" }}>
+                <ChipsFilter
                   title='Вид'
                   filterValue={typeFilter}
                   setFilterValue={setTypeFilter}
                   items={hiveTypes.map((key, i) => {
-                    return {key: HiveTypesLabels[key], value: HiveTypes[key]
-                  }})}
+                    return {
+                      key: HiveTypesLabels[key], value: HiveTypes[key]
+                    }
+                  })}
                 />
 
-                <ChipsFilter 
-                  title='Майка' 
+                <ChipsFilter
+                  title='Майка'
                   filterValue={motherFilter}
                   setFilterValue={setMotherFilter}
-                  items={[{key: 'Без майка', value: 0}, {key: 'С майка', value: 1}]}
+                  items={[{ key: 'Без майка', value: 0 }, { key: 'С майка', value: 1 }]}
                 />
-            
-                <ChipsFilter 
-                  title='Магазин' 
+
+                <ChipsFilter
+                  title='Магазин'
                   filterValue={superFilter}
                   setFilterValue={setSuperFilter}
-                  items={[{key: 'Без магазин', value: 0}, {key: 'С магазин', value: 1}]}
+                  items={[{ key: 'Без магазин', value: 0 }, { key: 'С магазин', value: 1 }]}
                 />
-                        
-                <ChipsFilter 
-                  title='Модел' 
+
+                <ChipsFilter
+                  title='Модел'
                   filterValue={modelFilter}
                   setFilterValue={setModelFilter}
                   items={hiveModels.map((key, i) => {
-                    return {key: HiveModelsLabels[key], value: HiveModels[key]}
+                    return { key: HiveModelsLabels[key], value: HiveModels[key] }
                   })}
                 />
               </IonAccordionGroup>
             </IonCol>
             <IonCol>
-              <ApiaryPlan 
-                apiary={apiary} 
+              <ApiaryPlan
+                apiary={apiary}
                 filters={[
-                  {prop: 'type', value: typeFilter}, 
-                  {prop: 'mother', value: motherFilter},
-                  {prop: 'super', value: superFilter}, 
-                  {prop: 'model', value: modelFilter}
-                ]} 
+                  { prop: 'type', value: typeFilter },
+                  { prop: 'mother', value: motherFilter },
+                  { prop: 'super', value: superFilter },
+                  { prop: 'model', value: modelFilter }
+                ]}
               />
             </IonCol>
           </IonRow>
