@@ -58,6 +58,7 @@ class Hive(Base):
     status: Mapped[Optional[str]]
     super: Mapped[Optional[bool]] = mapped_column(nullable=True)
     mother: Mapped[bool] = mapped_column(default=True)
+    brood: Mapped[bool] = mapped_column(default=False, nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(String(2048), nullable=True)
     x: Mapped[Optional[float]] = mapped_column(default=0.0)
     y: Mapped[Optional[float]] = mapped_column(default=0.0)

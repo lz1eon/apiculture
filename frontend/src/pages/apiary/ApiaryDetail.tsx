@@ -15,6 +15,7 @@ export const ApiaryDetail = () => {
   const [apiary, setApiary] = useState<any>({});
   const [typeFilter, setTypeFilter] = useState<number | null>(null);
   const [motherFilter, setMotherFilter] = useState<boolean | null>(null);
+  const [broodFilter, setBroodFilter] = useState<boolean | null>(null);
   const [superFilter, setSuperFilter] = useState<boolean | null>(null);
   const [modelFilter, setModelFilter] = useState<number | null>(null);
   const [advices, setAdvices] = useState<ActionItem[]>([]);
@@ -30,6 +31,7 @@ export const ApiaryDetail = () => {
   function clearFilters() {
     setTypeFilter(null);
     setMotherFilter(null);
+    setBroodFilter(null);
     setSuperFilter(null);
     setModelFilter(null);
   }
@@ -121,6 +123,13 @@ export const ApiaryDetail = () => {
                 />
 
                 <ChipsFilter
+                  title='Пило'
+                  filterValue={broodFilter}
+                  setFilterValue={setBroodFilter}
+                  items={[{ key: 'Без пило', value: 0 }, { key: 'С пило', value: 1 }]}
+                />
+
+                <ChipsFilter
                   title='Магазин'
                   filterValue={superFilter}
                   setFilterValue={setSuperFilter}
@@ -143,6 +152,7 @@ export const ApiaryDetail = () => {
                 filters={[
                   { prop: 'type', value: typeFilter },
                   { prop: 'mother', value: motherFilter },
+                  { prop: 'brood', value: broodFilter },
                   { prop: 'super', value: superFilter },
                   { prop: 'model', value: modelFilter }
                 ]}

@@ -42,7 +42,8 @@ class HiveBaseSchema(BaseModel):
     model: int | None = None
     type: int | None = None
     status: str | None = None
-    mother: bool | None = False
+    mother: bool | None = True
+    brood: bool | None = False
     super: bool | None = False
     shared: bool | None = False
 
@@ -56,7 +57,8 @@ class HiveUpdateSchema(BaseModel):
     model: Optional[int] = None
     type: Optional[int] = None
     status: Optional[str] = None
-    mother: Optional[bool] = False
+    mother: Optional[bool] = True
+    brood: Optional[bool] = False
     super: Optional[bool] = False
     shared: Optional[bool] = False
     x: Optional[float] = 0.0
