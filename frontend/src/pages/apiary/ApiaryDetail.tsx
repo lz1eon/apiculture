@@ -42,22 +42,24 @@ export const ApiaryDetail = () => {
   }, []);
 
   useEffect(() => {
-    if (
-      (typeFilter !== null) ||
-      (motherFilter !== null) ||
-      (superFilter !== null) ||
-      (modelFilter !== null)
-    ) {
-      setAdvices([
-        { text: 'Добави магазини на избраните', action: () => { } },
-        { text: 'Добави майка на избраните', action: () => { } },
-        { text: 'Създай задача за поставяне на магазини', action: () => { } }
-      ]);
-    } else {
-      setAdvices([]);
+    const advices = [];
+
+    if (motherFilter == false) {
+      advices.push({ text: 'Добави майка на избраните', action: () => { } });
+      advices.push({ text: 'Създай задача за поставяне на майка', action: () => { } });
     }
 
-  }, [typeFilter, motherFilter, superFilter, modelFilter]);
+    if (superFilter == false) {
+      advices.push({ text: 'Добави магазин на избраните', action: () => { } });
+      advices.push({ text: 'Създай задача за поставяне на магазин', action: () => { } });
+    } else if (superFilter == true) {
+      advices.push({ text: 'Свали магазините на избраните', action: () => { } });
+      advices.push({ text: 'Създай задача за сваляне на магазините', action: () => { } });
+    }
+
+    setAdvices(advices);
+
+  }, [motherFilter, superFilter]);
 
   return (
     <>
