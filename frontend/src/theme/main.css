@@ -1,5 +1,6 @@
-html, body { 
-  overflow-x: hidden; 
+html,
+body {
+  overflow-x: hidden;
   overflow-y: hidden;
 }
 
@@ -15,7 +16,7 @@ ion-header.main {
   box-shadow: none !important;
 }
 
-ion-header.modal-header{
+ion-header.modal-header {
   box-shadow: none !important;
 }
 
@@ -32,15 +33,22 @@ img.logo {
   overflow-y: scroll;
 }
 
+
+.add-hive-button {
+  position: absolute;
+  right: 5px;
+}
+
 .edit-plan-button {
-  position:absolute;
+  position: absolute;
   right: 5px;
   top: 50px;
 }
 
-.add-hive-button {
-  position:absolute;
+.zoom-plan-button {
+  position: absolute;
   right: 5px;
+  top: 95px;
 }
 
 .hive:hover {
@@ -58,6 +66,22 @@ img.logo {
 .hive.deselected-hive {
   opacity: 0.3;
 }
+
+/* .truncate-long-text {
+  display: inline-block;
+  width: 170px;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  overflow:hidden;    
+  white-space: nowrap;
+}
+
+.truncate-long-text:hover {
+  overflow: visible;
+  white-space: normal;
+  height: auto;
+} */
+
 
 ion-chip.selected {
   background-color: var(--ion-color-warning);
@@ -82,9 +106,9 @@ ion-chip.selected {
   position: fixed;
   top: 10px;
   left: 10px;
-  z-index: 10;  
+  z-index: 10;
   background-color: white;
-  
+
   &.apis-open {
     border: 1px solid var(--ion-color-primary);
   }
@@ -116,6 +140,7 @@ ion-chip.selected {
 .apis-drone-content {
   display: none;
   transition: 2s ease;
+
   &.apis-open {
     display: block;
   }

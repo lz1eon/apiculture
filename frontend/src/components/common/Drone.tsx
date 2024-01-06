@@ -11,10 +11,11 @@ export type ActionItem = {
 
 type DroneProps = {
   advices?: ActionItem[];
+  selectedHivesCount: number;
 }
 
 
-export const Drone = ({ advices = [] }: DroneProps) => {
+export const Drone = ({ advices = [], selectedHivesCount = 0 }: DroneProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDroneContent = () => {
@@ -30,7 +31,7 @@ export const Drone = ({ advices = [] }: DroneProps) => {
       <IonImg
         src={drone}
         title='Кликни за съвет'
-        className={`apis-drone-img ${advices.length ? 'apis-active' : ''}`}
+        className={`apis-drone-img ${advices.length && selectedHivesCount ? 'apis-active' : ''}`}
         draggable={false}
         onClick={toggleDroneContent}
       >
@@ -46,7 +47,7 @@ export const Drone = ({ advices = [] }: DroneProps) => {
     }
 
       <div className={`apis-drone-content ${isOpen ? 'apis-open' : ''}`}>
-        {advices.length > 0 ? (
+        {advices.length > 0 && selectedHivesCount ? (
           <p>
             <IonText>Търтеят предлага:</IonText>
             <IonList lines='none' className='ion-no-padding'>

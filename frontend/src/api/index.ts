@@ -83,6 +83,10 @@ class Client {
         return api.put(`/apiaries/${apiary_id}/hives/${id}/`, {x: x, y: y});
     }
 
+    shareHive(id: number, apiary_id: number, recipientEmail: string) {
+        return api.post(`/apiaries/${apiary_id}/hives/${id}/share/`, {recipient_email: recipientEmail});
+    }
+
     // get(url, config) {
     //     return api.get(url, config)
     //                 .catch(error => {

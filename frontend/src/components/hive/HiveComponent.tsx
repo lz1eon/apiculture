@@ -98,11 +98,15 @@ export const HiveComponent = ({ sharedHive }: HiveComponentProps) => {
               ></IonImg>
             </IonCol>
           </IonRow>
-          <IonRow className="ion-justify-content-start">
-            <IonCol>
-              <IonButton size='small' fill='clear' color='danger'>Спри да споделяш</IonButton>
-            </IonCol>
-          </IonRow>
+          {user?.email === owner.email ?
+            <IonRow className="ion-justify-content-start">
+              <IonCol>
+                <IonButton size='small' fill='clear' color='danger'>Спри да споделяш</IonButton>
+              </IonCol>
+            </IonRow>
+            :
+            <></>
+          }
         </IonGrid>
       </IonCardContent>
     </IonCard>

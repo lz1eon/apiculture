@@ -1,40 +1,47 @@
-import { IonButton, IonIcon } from '@ionic/react';
+import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
 import * as d3 from 'd3';
-import { addCircle, pencil } from 'ionicons/icons';
+import { addCircle, contractOutline, pencil } from 'ionicons/icons';
 import { ContextMenu } from 'primereact/contextmenu';
-import { SyntheticEvent, createRef, useEffect, useState } from "react";
+import { MenuItem, MenuItemCommandEvent } from 'primereact/menuitem';
+import { SyntheticEvent, createRef, useContext, useEffect, useState } from "react";
 import client from "../../../api";
 import { ModalDialog } from '../../../components';
 import { HiveForm } from '../../../components/hive/HiveForm';
-import { Apiary, Hive, HiveModels, emptyHive } from '../../../models';
-import HiveImage from './HiveImage';
 import { useGeneralInfo } from '../../../hooks/useGeneralInfo';
-import { MenuItem } from 'primereact/menuitem';
+import { Apiary, Hive, emptyHive } from '../../../models';
+import HiveImage from './HiveImage';
 import { HiveSelection } from './HiveSelection';
-
+import { HiveSelectionContext } from '../../../contexts/HiveSelectionContext';
 
 const HIVES_DEFAULT_COLOR = '#000000';
-export type ApiaryPlanProps = {
-  apiary: Apiary,
-  filters: {prop: string, value: number | boolean | null}[]
-}
-
 const PLAN_SELECTOR = 'svg#apiary-plan';
 const HIVE_SELECTOR = 'g.hive'
+
+type BoundingBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+
+export type ApiaryPlanProps = {
+  apiary: Apiary,
+  filters: { prop: string, value: number | boolean | null }[],
+}
 
 export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
   const [selectedHive, setSelectedHive] = useState<Hive | undefined>();
   const [showModal, setShowModal] = useState(false);
   const [planMode, setPlanMode] = useState<'view' | 'edit'>('view');
-  const [formOpenMode, setFormOpenMode] = useState<'view' | 'create'>('view');
   const [hivesColor, setHivesColor] = useState(HIVES_DEFAULT_COLOR);
+  const [zoomReady, setZoomReady] = useState(false);
   const hiveContextMenuRef = createRef<ContextMenu>();
   const { apiaries } = useGeneralInfo();
+  const { setSelectedHivesCount } = useContext(HiveSelectionContext);
   const hiveSelector = 'g.hive svg';
   const [hiveContextMenuItems, setContextMenuItems] = useState<MenuItem[]>([]);
-
-  let dx = 0;
-  let dy = 0;
+  const hiveSelection = new HiveSelection(PLAN_SELECTOR, apiary.hives);
 
   function handleZoom(event: any) {
     d3.selectAll(`${PLAN_SELECTOR} ${HIVE_SELECTOR}`)
@@ -59,6 +66,10 @@ export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
 
   d3.selectAll<SVGSVGElement, unknown>(PLAN_SELECTOR)
     .call(zoom)
+
+
+  let dx = 0;
+  let dy = 0;
 
   function handleDragStart(this: any, event: MouseEvent) {
     const dragged = d3.select(this);
@@ -100,6 +111,10 @@ export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
     const selectedHive = apiary.hives.find(hive => hive.id == hiveId);
     setSelectedHive(selectedHive);
     setShowModal(true);
+  }
+
+  function handleShareHive(event: MenuItemCommandEvent) {
+    console.log(event);
   }
 
   function registerClickable(svgElement: any) {
@@ -171,9 +186,44 @@ export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
     setShowModal(true);
   }
 
+
+  function extendBBox(accumulator: BoundingBox, newBBox: BoundingBox): BoundingBox {
+    accumulator = {
+      x: Math.min(accumulator.x, newBBox.x),
+      y: Math.min(accumulator.y, newBBox.y),
+      width: Math.max(accumulator.width, newBBox.x + newBBox.width),
+      height: Math.max(accumulator.height, newBBox.y + newBBox.height)
+    };
+    return accumulator;
+  }
+
   function zoomToHivesBBox() {
     const svgElement = d3.select(PLAN_SELECTOR);
-    svgElement.selectAll(HIVE_SELECTOR);
+    if (!svgElement || !svgElement.node()) {
+      return
+    }
+
+    let bbox = { x: 0, y: 0, width: 0, height: 0 };
+
+    svgElement.selectAll(HIVE_SELECTOR).each((datum, i, nodes: any) => {
+      const elementBBox = nodes[i].getBBox();
+      bbox = extendBBox(bbox, elementBBox);
+    });
+
+    const dx = bbox.width;
+    const dy = bbox.height;
+    const x = (bbox.x + bbox.width) / 2;
+    const y = (bbox.y + bbox.height) / 2;
+
+    const { width, height } = svgElement.node().viewBox.baseVal;
+    const scale = Math.max(0.1, Math.min(20, 0.9 / Math.max(dx / width, dy / height)));
+    const translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+    if (scale && translate) {
+      svgElement.transition()
+        .on('end', () => { setZoomReady(true) })
+        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
+    }
   }
 
   useEffect(() => {
@@ -187,20 +237,20 @@ export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
       items: apiaries.map((a) => { return { label: a.name } })
     },
     { label: 'Добави задача' },
-    { label: 'Сподели' },
+    { label: 'Сподели', command: handleShareHive },
     { separator: true },
     { label: 'Премахни' }
     ]);
 
-    
-    // zoomToHivesBBox();
+    // setZoomReady(true)
+    zoomToHivesBBox();
+
   }, [apiary]);
-  
+
+
   useEffect(() => {
-    if (apiary.hives) {
-      const hiveSelection = new HiveSelection(PLAN_SELECTOR, apiary.hives);
-      hiveSelection.select(filters);
-    }
+    hiveSelection.select(filters);
+    setSelectedHivesCount(hiveSelection.selectedCount())
   }, [apiary, filters])
 
   return (
@@ -231,6 +281,15 @@ export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
       />
 
       <div>
+
+        <IonButton
+          color={"primary"}
+          className='add-hive-button'
+          onClick={addHive}
+        >
+          <IonIcon slot="icon-only" icon={addCircle}></IonIcon>
+        </IonButton>
+
         <IonButton
           color={planMode === 'view' ? "primary" : "danger"}
           className='edit-plan-button'
@@ -241,15 +300,16 @@ export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
 
         <IonButton
           color={"primary"}
-          className='add-hive-button'
-          onClick={addHive}
+          className='zoom-plan-button'
+          onClick={zoomToHivesBBox}
         >
-          <IonIcon slot="icon-only" icon={addCircle}></IonIcon>
+          <IonIcon slot="icon-only" icon={contractOutline}></IonIcon>
         </IonButton>
-
+        <IonSpinner style={{ display: !zoomReady ? 'block' : 'none' }}></IonSpinner>
         <svg
           id="apiary-plan"
           viewBox="0 0 100 50"
+          style={{ visibility: zoomReady ? 'visible' : 'hidden' }}
         >
           {apiary.hives?.map((hive, i) => (
             <HiveImage

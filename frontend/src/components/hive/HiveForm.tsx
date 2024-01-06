@@ -64,6 +64,10 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
     })
   }
 
+  const handleShareHive = (event: any) => {
+    client.shareHive(hive.apiary_id, hive.id)
+  }
+
   return (
     <form className='ion-padding' onSubmit={handleSubmit}>
       <IonItem>
@@ -127,7 +131,11 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
         </IonButton>
       }
       {mode === 'view' &&
-        <IonButton className="ion-margin-top" fill='outline' style={{float: 'right'}}>
+        <IonButton 
+          className="ion-margin-top" 
+          fill='outline' 
+          style={{float: 'right'}}
+        >
           Сподели
         </IonButton>
       }

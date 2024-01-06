@@ -14,7 +14,7 @@ export class HiveSelection {
     this.selector = selector;
     this.svgElement = d3.select<SVGElement, {}>(selector);
     this.hives = hives;
-    this.selected = [...hives];
+    this.selected = [];
     this.deselected = [];
   }
 
@@ -23,25 +23,31 @@ export class HiveSelection {
     this.svgElement.selectAll('.hive').classed('deselected-hive', false);
   }
 
+  selectedCount() {
+    return this.selected.length;
+  }
+
   select(filters: { prop: string, value: number | boolean | null }[]) {
-    const new_selected: Hive[] = [];
+    let new_selected: Hive[] = [];
     const new_deselected: Hive[] = [];
     this.selected = [...this.hives];
     this.deselected = [];
-
+    
     // this.removeDimAll();
     this.hives.forEach((hive) => {
       this.svgElement.select(`g#group-${hive.id}`).classed('selected-hive', true);
       this.svgElement.select(`g#group-${hive.id}`).classed('deselected-hive', false);
     })
 
-
     // Apply each filter to the currently selected (thus narrowing the selection)
     filters.forEach((filter) => {
-      if (filter.value !== null) {
+      if (filter.value !== null) {      
+        new_selected = [];
 
         this.selected.forEach((hive) => { 
-          const value = hive[filter.prop];
+          type HiveObjectKey = keyof Hive;          
+          const value = hive[filter.prop as HiveObjectKey];
+          
           if (filter.value == value) {
             new_selected.push(hive);
           } else {
@@ -49,10 +55,10 @@ export class HiveSelection {
           }
         });
 
-        this.selected = [...this.selected];
+        this.selected = [...new_selected];
       }
     });
-
+    
     this.deselected = [...new_deselected];
 
     this.selected.forEach((hive) => {
@@ -62,21 +68,6 @@ export class HiveSelection {
     this.deselected.forEach((hive) => {
       this.svgElement.select(`g#group-${hive.id}`).classed('deselected-hive', true);
     })
-
-    // this.dimDeselected();
-
-    // this.hives.forEach((hive, i, all) => {
-    //     if (filterFn(hive, i, all)) {
-    //         this.selected.push(hive);
-    //         this.svgElement.select(`g#group-${hive.id}`).classed('selected-hive', true);
-
-    //     } else {
-    //         this.deselected.push(hive);
-    //         this.svgElement.select(`g#group-${hive.id}`).classed('deselected-hive', true);
-    //     }
-    // });
-
-    // this.highlightSelected();
   }
 
   private dimDeselected() {

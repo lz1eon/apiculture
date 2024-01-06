@@ -1,4 +1,4 @@
-import { InputCustomEvent, IonAccordion, IonChip, IonItem, IonLabel } from "@ionic/react"
+import { InputCustomEvent, IonAccordion, IonChip, IonItem, IonLabel, IonText } from "@ionic/react"
 import { useState } from "react"
 import { HiveTypesLabels, HiveTypes } from "src/models"
 

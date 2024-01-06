@@ -1,24 +1,28 @@
-import { IonAccordionGroup, IonButton, IonCol, IonGrid, IonIcon, IonImg, IonItem, IonList, IonRow, IonText } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { IonAccordionGroup, IonButton, IonCol, IonGrid, IonIcon, IonImg, IonItem, IonLabel, IonList, IonRow, IonText } from '@ionic/react';
+import { Context, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import client from '../../api';
 
 import { ChipsFilter } from '../../components/inputs/ChipsFilter';
-import { HiveModels, HiveModelsLabels, HiveTypes, HiveTypesLabels } from '../../models';
+import { Apiary, HiveModels, HiveModelsLabels, HiveTypes, HiveTypesLabels, emptyApiary } from '../../models';
 import Page from '../Page';
 import { ApiaryPlan } from './plan/ApiaryPlan';
 import { ActionItem, Drone } from '../../components/common/Drone';
 import { arrowDown, arrowDownCircle, arrowDownCircleOutline, arrowDownOutline, arrowDownSharp, arrowUp, chevronDownOutline, chevronUpOutline, closeCircle, closeCircleOutline } from 'ionicons/icons';
+import { HiveSelection } from './plan/HiveSelection';
+import { HiveSelectionContext } from '../../contexts/HiveSelectionContext';
 
 export const ApiaryDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [apiary, setApiary] = useState<any>({});
+  const [apiary, setApiary] = useState<Apiary>(emptyApiary());
   const [typeFilter, setTypeFilter] = useState<number | null>(null);
   const [motherFilter, setMotherFilter] = useState<boolean | null>(null);
   const [broodFilter, setBroodFilter] = useState<boolean | null>(null);
   const [superFilter, setSuperFilter] = useState<boolean | null>(null);
   const [modelFilter, setModelFilter] = useState<number | null>(null);
+  const [sharedFilter, setSharedFilter] = useState<boolean | null>(null);
   const [advices, setAdvices] = useState<ActionItem[]>([]);
+  const [selectedHivesCount, setSelectedHivesCount] = useState(0);
 
   const hiveTypes = Object.keys(HiveTypes);
   const hiveModels = Object.keys(HiveModels);
@@ -34,6 +38,7 @@ export const ApiaryDetail = () => {
     setBroodFilter(null);
     setSuperFilter(null);
     setModelFilter(null);
+    setSharedFilter(null);
   }
 
   useEffect(() => {
@@ -59,6 +64,10 @@ export const ApiaryDetail = () => {
       advices.push({ text: 'Създай задача за сваляне на магазините', action: () => { } });
     }
 
+    if (sharedFilter == true) {
+      advices.push({ text: 'Прекрати споделянето на всички избрани', action: () => { } });
+    }
+
     setAdvices(advices);
 
   }, [motherFilter, superFilter]);
@@ -75,91 +84,103 @@ export const ApiaryDetail = () => {
       </IonMenu> */}
 
       <Page>
-        <Drone advices={advices}></Drone>
+        <HiveSelectionContext.Provider value={{selectedHivesCount, setSelectedHivesCount}}>        
+          <Drone advices={advices} selectedHivesCount={selectedHivesCount}></Drone>
 
-        <IonGrid>
-          <IonRow>
-            <IonCol>
-              <h1><IonText style={{ userSelect: 'none' }}>{apiary.name}</IonText></h1>
-              {/* <IonMenuToggle>
-                <IonButton>Click to open the menu</IonButton>
-              </IonMenuToggle> */}
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol size="auto">
-              <div className="apis-filters-controls">
-                <IonButton
-                  size="small"
-                  fill='outline'
-                  style={{ float: 'left' }}
-                  onClick={clearFilters}
-                >
-                  <IonIcon
-                    title='Изчисти филтрите'
-                    src={closeCircleOutline}
+          <IonGrid>
+            <IonRow>
+              <IonCol>
+                <h1><IonText style={{ userSelect: 'none' }}>{apiary.name}</IonText></h1>
+                {/* <IonMenuToggle>
+                  <IonButton>Click to open the menu</IonButton>
+                </IonMenuToggle> */}
+              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonCol size="auto">
+                <div className="apis-filters-controls">
+                  <IonButton
+                    size="small"
+                    fill='outline'
+                    style={{ float: 'left' }}
+                    onClick={clearFilters}
                   >
-                  </IonIcon>
-                </IonButton>
-              </div>
+                    <IonIcon
+                      title='Изчисти филтрите'
+                      src={closeCircleOutline}
+                    >
+                    </IonIcon>
+                  </IonButton>
 
-              <IonAccordionGroup value={null} multiple={true} style={{ width: "250px" }}>
-                <ChipsFilter
-                  title='Вид'
-                  filterValue={typeFilter}
-                  setFilterValue={setTypeFilter}
-                  items={hiveTypes.map((key, i) => {
-                    return {
-                      key: HiveTypesLabels[key], value: HiveTypes[key]
-                    }
-                  })}
-                />
+                  <IonButton size="default" fill="clear">Избрани: {selectedHivesCount}</IonButton>
+                </div>
 
-                <ChipsFilter
-                  title='Майка'
-                  filterValue={motherFilter}
-                  setFilterValue={setMotherFilter}
-                  items={[{ key: 'Без майка', value: 0 }, { key: 'С майка', value: 1 }]}
-                />
+                <IonAccordionGroup value={null} multiple={true} style={{ width: "250px" }}>
+                  <ChipsFilter
+                    title='Вид'
+                    filterValue={typeFilter}
+                    setFilterValue={setTypeFilter}
+                    items={hiveTypes.map((key, i) => {
+                      return {
+                        key: HiveTypesLabels[key], value: HiveTypes[key]
+                      }
+                    })}
+                  />
 
-                <ChipsFilter
-                  title='Пило'
-                  filterValue={broodFilter}
-                  setFilterValue={setBroodFilter}
-                  items={[{ key: 'Без пило', value: 0 }, { key: 'С пило', value: 1 }]}
-                />
+                  <ChipsFilter
+                    title='Майка'
+                    filterValue={motherFilter}
+                    setFilterValue={setMotherFilter}
+                    items={[{ key: 'Без майка', value: 0 }, { key: 'С майка', value: 1 }]}
+                  />
 
-                <ChipsFilter
-                  title='Магазин'
-                  filterValue={superFilter}
-                  setFilterValue={setSuperFilter}
-                  items={[{ key: 'Без магазин', value: 0 }, { key: 'С магазин', value: 1 }]}
-                />
+                  <ChipsFilter
+                    title='Пило'
+                    filterValue={broodFilter}
+                    setFilterValue={setBroodFilter}
+                    items={[{ key: 'Без пило', value: 0 }, { key: 'С пило', value: 1 }]}
+                  />
 
-                <ChipsFilter
-                  title='Модел'
-                  filterValue={modelFilter}
-                  setFilterValue={setModelFilter}
-                  items={hiveModels.map((key, i) => {
-                    return { key: HiveModelsLabels[key], value: HiveModels[key] }
-                  })}
+                  <ChipsFilter
+                    title='Магазин'
+                    filterValue={superFilter}
+                    setFilterValue={setSuperFilter}
+                    items={[{ key: 'Без магазин', value: 0 }, { key: 'С магазин', value: 1 }]}
+                  />
+
+                  <ChipsFilter
+                    title='Модел'
+                    filterValue={modelFilter}
+                    setFilterValue={setModelFilter}
+                    items={hiveModels.map((key, i) => {
+                      return { key: HiveModelsLabels[key], value: HiveModels[key] }
+                    })}
+                  />
+
+                  <ChipsFilter
+                    title='Споделени'
+                    filterValue={sharedFilter}
+                    setFilterValue={setSharedFilter}
+                    items={[{ key: 'Да', value: 1 }]}
+                  />
+                </IonAccordionGroup>
+              </IonCol>
+              <IonCol>
+                <ApiaryPlan
+                  apiary={apiary}
+                  filters={[
+                    { prop: 'type', value: typeFilter },
+                    { prop: 'mother', value: motherFilter },
+                    { prop: 'brood', value: broodFilter },
+                    { prop: 'super', value: superFilter },
+                    { prop: 'model', value: modelFilter },
+                    { prop: 'shared', value: sharedFilter },
+                  ]}
                 />
-              </IonAccordionGroup>
-            </IonCol>
-            <IonCol>
-              <ApiaryPlan
-                apiary={apiary}
-                filters={[
-                  { prop: 'type', value: typeFilter },
-                  { prop: 'mother', value: motherFilter },
-                  { prop: 'brood', value: broodFilter },
-                  { prop: 'super', value: superFilter },
-                  { prop: 'model', value: modelFilter }
-                ]}
-              />
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </HiveSelectionContext.Provider>
       </Page>
     </>
   )
