@@ -1,5 +1,6 @@
 from datetime import timedelta
 from typing import Annotated
+from mangum import Mangum
 
 from fastapi import Body, Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,13 +26,13 @@ from apiculture.api.schemas import (
     UserCreateSchema,
     UserSchema,
 )
-from apiculture.dal.command import create_apiary, create_hive, update_hive
+from apiculture.dal.command import create_apiary, create_hive, update_hive, share_hive
 from apiculture.dal.query import (
     get_apiaries,
     get_apiary,
     get_hives,
     get_hives_shared_with_me,
-    get_my_shared_hives,
+    get_my_shared_hives, get_user_by_email,
 )
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
@@ -82,7 +83,7 @@ async def hives_get(request: Request, apiary_id: int, db: Session = Depends(get_
 
 
 @app.get("/hives/my-shared/", response_model=list[SharedHiveSchema])
-async def hives_get_my_shred(request: Request, db: Session = Depends(get_db)):
+async def hives_get_my_shared(request: Request, db: Session = Depends(get_db)):
     my_shared_hives_query = get_my_shared_hives(db, request.user)
     my_shared_hives = []
     for hive in my_shared_hives_query:
@@ -129,8 +130,23 @@ async def hive_update(
     return update_hive(db, request.user, hive_id, hive_data)
 
 
-# Authentication Paths #
+@app.post("/apiaries/{apiary_id}/hives/{hive_id}/share/")
+async def hive_share(
+    request: Request,
+    hive_id: int,
+    recipient_email: str,
+    db: Session = Depends(get_db),
+):
+    recipient = get_user_by_email(recipient_email)
+    if not recipient:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"User with email {recipient_email} does not exist.",
+        )
+    return share_hive(db, request.user, hive_id, recipient)
 
+
+# Authentication Paths #
 
 @app.post("/register/")
 async def register(user_data: UserCreateSchema, db: Session = Depends(get_db)):
@@ -194,3 +210,6 @@ async def logout():
     #       1. Delete user token
     #       2. Set token expire
     return {"message": "OK", "status": 200}
+
+
+handler = Mangum(app)

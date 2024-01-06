@@ -24,13 +24,20 @@ type BoundingBox = {
   height: number;
 }
 
+export type Highlight = {
+  prop: string,
+  colors: {
+    [key: number]: string
+  }
+}
 
 export type ApiaryPlanProps = {
   apiary: Apiary,
   filters: { prop: string, value: number | boolean | null }[],
+  highlight: Highlight | null
 }
 
-export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
+export const ApiaryPlan = ({ apiary, filters, highlight }: ApiaryPlanProps) => {
   const [selectedHive, setSelectedHive] = useState<Hive | undefined>();
   const [showModal, setShowModal] = useState(false);
   const [planMode, setPlanMode] = useState<'view' | 'edit'>('view');
@@ -250,8 +257,11 @@ export const ApiaryPlan = ({ apiary, filters }: ApiaryPlanProps) => {
 
   useEffect(() => {
     hiveSelection.select(filters);
+    if (highlight) hiveSelection.highlight(highlight);
+    else hiveSelection.clearHighlight();  
+
     setSelectedHivesCount(hiveSelection.selectedCount())
-  }, [apiary, filters])
+  }, [apiary, filters, highlight])
 
   return (
     <>

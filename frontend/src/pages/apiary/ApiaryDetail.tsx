@@ -1,16 +1,16 @@
-import { IonAccordionGroup, IonButton, IonCol, IonGrid, IonIcon, IonImg, IonItem, IonLabel, IonList, IonRow, IonText } from '@ionic/react';
-import { Context, useContext, useEffect, useState } from 'react';
+import { IonAccordion, IonAccordionGroup, IonButton, IonChip, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonRow, IonText } from '@ionic/react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import client from '../../api';
 
-import { ChipsFilter } from '../../components/inputs/ChipsFilter';
-import { Apiary, HiveModels, HiveModelsLabels, HiveTypes, HiveTypesLabels, emptyApiary } from '../../models';
-import Page from '../Page';
-import { ApiaryPlan } from './plan/ApiaryPlan';
+import { closeCircleOutline } from 'ionicons/icons';
 import { ActionItem, Drone } from '../../components/common/Drone';
-import { arrowDown, arrowDownCircle, arrowDownCircleOutline, arrowDownOutline, arrowDownSharp, arrowUp, chevronDownOutline, chevronUpOutline, closeCircle, closeCircleOutline } from 'ionicons/icons';
-import { HiveSelection } from './plan/HiveSelection';
+import { ChipsFilter } from '../../components/inputs/ChipsFilter';
 import { HiveSelectionContext } from '../../contexts/HiveSelectionContext';
+import { Apiary, HiveModels, HiveModelsLabels, HiveStrengths, HiveStrengthsLabels, HiveTypes, HiveTypesLabels, emptyApiary } from '../../models';
+import Page from '../Page';
+import { ApiaryPlan, Highlight } from './plan/ApiaryPlan';
+
 
 export const ApiaryDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,28 +18,43 @@ export const ApiaryDetail = () => {
   const [typeFilter, setTypeFilter] = useState<number | null>(null);
   const [motherFilter, setMotherFilter] = useState<boolean | null>(null);
   const [broodFilter, setBroodFilter] = useState<boolean | null>(null);
+  const [strengthFilter, setStrengthFilter] = useState<number | null>(null);
   const [superFilter, setSuperFilter] = useState<boolean | null>(null);
   const [modelFilter, setModelFilter] = useState<number | null>(null);
   const [sharedFilter, setSharedFilter] = useState<boolean | null>(null);
+  const [currentHighlight, setCurrentHighlight] = useState<Highlight | null>(null);
   const [advices, setAdvices] = useState<ActionItem[]>([]);
   const [selectedHivesCount, setSelectedHivesCount] = useState(0);
 
+  const highlightStrength = {
+    prop: 'strength',
+    colors: {
+      0: 'red',
+      1: 'orange',
+      2: 'green'
+    }
+  }
   const hiveTypes = Object.keys(HiveTypes);
   const hiveModels = Object.keys(HiveModels);
+  const hiveStrengths = Object.keys(HiveStrengths);
 
 
-  function toggleFilters() {
-
+  function toggleHighlight(highlight: Highlight) {
+    if (currentHighlight?.prop === highlight.prop) setCurrentHighlight(null);
+    else setCurrentHighlight(highlight);
   }
 
   function clearFilters() {
     setTypeFilter(null);
     setMotherFilter(null);
     setBroodFilter(null);
+    setStrengthFilter(null);
     setSuperFilter(null);
     setModelFilter(null);
     setSharedFilter(null);
+    setCurrentHighlight(null);
   }
+  
 
   useEffect(() => {
     client.getApiary(id)
@@ -142,6 +157,17 @@ export const ApiaryDetail = () => {
                   />
 
                   <ChipsFilter
+                    title='Сила'
+                    filterValue={strengthFilter}
+                    setFilterValue={setStrengthFilter}
+                    items={hiveStrengths.map((key, i) => {
+                      return {
+                        key: HiveStrengthsLabels[key], value: HiveStrengths[key]
+                      }
+                    })}
+                  />
+
+                  <ChipsFilter
                     title='Магазин'
                     filterValue={superFilter}
                     setFilterValue={setSuperFilter}
@@ -163,15 +189,32 @@ export const ApiaryDetail = () => {
                     setFilterValue={setSharedFilter}
                     items={[{ key: 'Да', value: 1 }]}
                   />
+
+
+                    <IonAccordion value='highlight'>
+                      <IonItem slot="header">
+                        <IonLabel color="primary">Оцвети според</IonLabel>
+                      </IonItem>
+                      <IonItem slot="content">
+                        <IonChip
+                          className={currentHighlight?.prop === 'strength' ? 'selected' : ''}
+                          onClick={() => toggleHighlight(highlightStrength)}
+                        >
+                          Сила
+                        </IonChip>
+                      </IonItem>
+                    </IonAccordion>
                 </IonAccordionGroup>
               </IonCol>
               <IonCol>
                 <ApiaryPlan
                   apiary={apiary}
+                  highlight={currentHighlight}
                   filters={[
                     { prop: 'type', value: typeFilter },
                     { prop: 'mother', value: motherFilter },
                     { prop: 'brood', value: broodFilter },
+                    { prop: 'strength', value: strengthFilter },
                     { prop: 'super', value: superFilter },
                     { prop: 'model', value: modelFilter },
                     { prop: 'shared', value: sharedFilter },

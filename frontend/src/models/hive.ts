@@ -7,7 +7,7 @@ export type Hive = {
   number: string;
   type: number;
   model: number;
-  status: string;
+  strength: number;
   mother: boolean;
   brood: boolean;
   super: boolean;
@@ -15,6 +15,8 @@ export type Hive = {
   x: number;
   y: number;
 }
+
+export type HiveObjectKey = keyof Hive; 
 
 export type SharedHive = {
   hive: Hive,
@@ -69,6 +71,24 @@ export const HiveModelsLabels: StringKeys = {
   LANGSTROTH: 'Лангстроут',
 }
 
+export const HiveStrengths: StringKeysNumberValue = {
+  WEAK: 0,
+  MEDIUM: 1,
+  STRONG: 2,
+}
+
+export const HiveStrengthsInverted: StringKeys = {
+  '0': 'WEAK',
+  '1': 'MEDIUM',
+  '2': 'STRONG',
+}
+
+export const HiveStrengthsLabels: StringKeys = {
+  WEAK: 'Слаб',
+  MEDIUM: 'Среден',
+  STRONG: 'Силен',
+}
+
 
 export const emptyHive = (apiary: Apiary): Hive => {
   return {
@@ -80,7 +100,7 @@ export const emptyHive = (apiary: Apiary): Hive => {
     mother: false,
     brood: false,
     super: false,
-    status: '',
+    strength: HiveStrengths.MEDIUM,
     shared: false,
     x: 0,
     y: 0

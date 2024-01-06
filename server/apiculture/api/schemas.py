@@ -49,7 +49,7 @@ class HiveBaseSchema(BaseModel):
     apiary_id: int
     model: int | None = None
     type: int | None = None
-    status: str | None = None
+    strength: int | None = None
     mother: bool | None = True
     brood: bool | None = False
     super: bool | None = False
@@ -64,7 +64,7 @@ class HiveUpdateSchema(BaseModel):
     number: Optional[str] = None
     model: Optional[int] = None
     type: Optional[int] = None
-    status: Optional[str] = None
+    strength: Optional[int] = None
     mother: Optional[bool] = True
     brood: Optional[bool] = False
     super: Optional[bool] = False
@@ -81,14 +81,14 @@ class HiveSchema(HiveBaseSchema):
     updated_datetime: datetime.datetime | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class HivePublicSchema(BaseModel):
     number: str
     model: int | None = None
     type: int | None = None
-    status: str | None = None
+    strength: int | None = None
     mother: bool | None = True
     brood: bool | None = False
     super: bool | None = False
@@ -117,4 +117,4 @@ class ApiarySchema(ApiaryBaseSchema):
     updated_datetime: datetime.datetime | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

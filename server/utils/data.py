@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 
 from apiculture.database import SessionLocal, engine
 from apiculture.models.core import Apiary, Hive, User, Base, SharedHive
-from apiculture.models.enum import HiveModels, HiveTypes
+from apiculture.models.enum import HiveModels, HiveTypes, HiveStrengths
 
 MAX_APIARIES_COUNT = 10
 MAX_HIVES_COUNT = 3000
@@ -68,6 +68,10 @@ def random_brood():
     return bool(randint(0, 5))
 
 
+def random_strength():
+    return randint(0, len(HiveStrengths) - 1)
+
+
 def random_coordinate(minimum=0, maximum=100):
     return randint(minimum, maximum)
 
@@ -96,6 +100,7 @@ def create_hive(owner_id, apiary_id, number, x, y):
     hive.super = random_super()
     hive.mother = random_mother()
     hive.brood = random_brood()
+    hive.strength = random_strength()
     hive.x = x
     hive.y = y
     return hive

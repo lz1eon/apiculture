@@ -23,3 +23,9 @@ class HiveTypes(CommonEnum):
     BEE_FAMILY = 0
     NUCLEUS_COLONY = 1
     SWARM = 2
+
+
+class HiveStrengths(CommonEnum):
+    WEAK = 0
+    MEDIUM = 1
+    STRONG = 2

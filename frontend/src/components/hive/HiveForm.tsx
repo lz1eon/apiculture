@@ -1,10 +1,19 @@
-import { InputCustomEvent, IonButton, IonInput, IonItem } from '@ionic/react';
+import { IonButton, IonInput, IonItem } from '@ionic/react';
 
 import { useState } from 'react';
 import client from '../../api';
-import { Hive, HiveModels, HiveModelsLabels, HiveTypes, HiveTypesLabels } from '../../models';
-import { ApiSelect } from '../inputs/ApiSelect';
 import { useGeneralInfo } from '../../hooks/useGeneralInfo';
+import { 
+  Hive,
+  HiveModels,
+  HiveModelsLabels,
+  HiveStrengths,
+  HiveStrengthsLabels,
+  HiveTypes,
+  HiveTypesLabels 
+} from '../../models';
+
+import { ApiSelect } from '../inputs/ApiSelect';
 
 type HiveFormProps = {
   hive: Hive,
@@ -20,7 +29,7 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
     apiary_id: hive.apiary_id,
     type: hive.type,
     model: hive.model,
-    status: hive.status
+    strength: hive.strength
   });
   const { apiaries } = useGeneralInfo();
   const apiaryName = apiaries.find((a) => a.id === hive.apiary_id)!.name;
@@ -40,7 +49,7 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
           setMode('view');
           hive.type = inputs.type;
           hive.model = inputs.model;
-          hive.status = inputs.status;
+          hive.strength = inputs.strength;
           onUpdateSuccess({...hive});
         })
         .catch((error) => {
@@ -57,7 +66,6 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
   }
 
   const handleChange = (event: any) => {
-    console.log(event.target.name, event.target.value)
     setInputs({
       ...inputs,
       [event.target.name]: event.target.value
@@ -65,7 +73,7 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
   }
 
   const handleShareHive = (event: any) => {
-    client.shareHive(hive.apiary_id, hive.id)
+    // client.shareHive(hive.apiary_id, hive.id)
   }
 
   return (
@@ -112,16 +120,18 @@ export const HiveForm = ({ hive, openMode, onCreateSuccess, onUpdateSuccess}: Hi
           labelPlacement='stacked'
           disabled={mode === 'view'}
           onIonChange={handleChange}
-        />
+          />
       </IonItem>
       <IonItem>
-        <IonInput
-          name="status"
-          value={inputs.status}          
+        <ApiSelect
+          name="strength"
+          value={inputs.strength}          
+          type={HiveStrengths}
+          option_labels={HiveStrengthsLabels}
           label='Сила'
           labelPlacement="stacked"
           aria-label='Сила'
-          onIonInput={handleChange}
+          onIonChange={handleChange}
           disabled={mode === 'view'}
         />
       </IonItem>

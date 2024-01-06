@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from apiculture.models.enum import ApiaryTypes, HiveModels, HiveTypes
+from apiculture.models.enum import ApiaryTypes, HiveModels, HiveTypes, HiveStrengths
 
 
 class Base(DeclarativeBase):
@@ -66,7 +66,7 @@ class Hive(Base):
     number: Mapped[str]
     model: Mapped[Optional[int]] = mapped_column(default=HiveModels.DADAN_BLAT.value)
     type: Mapped[Optional[int]] = mapped_column(default=HiveTypes.BEE_FAMILY.value)
-    status: Mapped[Optional[str]]
+    strength: Mapped[Optional[str]] = mapped_column(default=HiveStrengths.MEDIUM.value)
     super: Mapped[Optional[bool]] = mapped_column(nullable=True)
     mother: Mapped[bool] = mapped_column(default=True)
     brood: Mapped[bool] = mapped_column(default=False, nullable=True)

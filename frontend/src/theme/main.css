@@ -82,6 +82,9 @@ img.logo {
   height: auto;
 } */
 
+ion-chip {
+  user-select: none;
+}
 
 ion-chip.selected {
   background-color: var(--ion-color-warning);

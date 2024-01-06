@@ -35,6 +35,7 @@ const HiveImage = ({ hive, fill, onContextMenu }: Props) => {
       id={`group-${hive.id}`}
       hive-id={hive.id}
       apiary-id={hive.apiary_id}
+      hive-strength={hive.strength}
       className="hive" 
       fill={fill}
       onContextMenu={onContextMenu}
