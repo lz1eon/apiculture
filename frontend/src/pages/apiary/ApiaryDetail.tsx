@@ -54,7 +54,7 @@ export const ApiaryDetail = () => {
     setSharedFilter(null);
     setCurrentHighlight(null);
   }
-  
+
 
   useEffect(() => {
     client.getApiary(id)
@@ -99,7 +99,7 @@ export const ApiaryDetail = () => {
       </IonMenu> */}
 
       <Page>
-        <HiveSelectionContext.Provider value={{selectedHivesCount, setSelectedHivesCount}}>        
+        <HiveSelectionContext.Provider value={{ selectedHivesCount, setSelectedHivesCount }}>
           <Drone advices={advices} selectedHivesCount={selectedHivesCount}></Drone>
 
           <IonGrid>
@@ -131,6 +131,25 @@ export const ApiaryDetail = () => {
                 </div>
 
                 <IonAccordionGroup value={null} multiple={true} style={{ width: "250px" }}>
+
+                  <IonAccordion value='highlight'>
+                    <IonItem slot="header">
+                      {currentHighlight?.prop === 'strength' ? 
+                        <IonLabel color="primary"><strong>Оцвети според</strong> Сила</IonLabel>
+                        :
+                        <IonLabel color="primary">Оцвети според</IonLabel>
+                      }
+                    </IonItem>
+                    <IonItem slot="content">
+                      <IonChip
+                        className={currentHighlight?.prop === 'strength' ? 'selected' : ''}
+                        onClick={() => toggleHighlight(highlightStrength)}
+                      >
+                        Сила
+                      </IonChip>
+                    </IonItem>
+                  </IonAccordion>
+
                   <ChipsFilter
                     title='Вид'
                     filterValue={typeFilter}
@@ -189,21 +208,6 @@ export const ApiaryDetail = () => {
                     setFilterValue={setSharedFilter}
                     items={[{ key: 'Да', value: 1 }]}
                   />
-
-
-                    <IonAccordion value='highlight'>
-                      <IonItem slot="header">
-                        <IonLabel color="primary">Оцвети според</IonLabel>
-                      </IonItem>
-                      <IonItem slot="content">
-                        <IonChip
-                          className={currentHighlight?.prop === 'strength' ? 'selected' : ''}
-                          onClick={() => toggleHighlight(highlightStrength)}
-                        >
-                          Сила
-                        </IonChip>
-                      </IonItem>
-                    </IonAccordion>
                 </IonAccordionGroup>
               </IonCol>
               <IonCol>
