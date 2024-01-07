@@ -37,7 +37,8 @@ class UserInDBSchema(UserSchema):
 class TokenUserSchema(BaseModel):
     access_token: str
     token_type: str
-    user: UserSchema
+    refresh_token: Optional[str]
+    user: Optional[UserSchema]
 
 
 class TokenDataSchema(BaseModel):

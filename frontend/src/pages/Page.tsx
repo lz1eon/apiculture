@@ -9,7 +9,7 @@ type Props = {
 const Page = ({children}: Props) => {
   return (
     <IonPage>
-      <IonContent>
+      <IonContent id='main-content'>
         <MainContainer>
           {children}
         </MainContainer>

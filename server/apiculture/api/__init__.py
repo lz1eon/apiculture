@@ -1,8 +1,10 @@
-from datetime import timedelta
-from typing import Annotated
+from datetime import datetime, timedelta, UTC
+from typing import Annotated, Union
+
+from jose import JWTError, jwt
 from mangum import Mangum
 
-from fastapi import Body, Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_auth_middleware import AuthMiddleware
@@ -13,7 +15,7 @@ from apiculture.api.auth import (
     create_access_token,
     handle_auth_error,
     register_user,
-    verify_authorization_header,
+    verify_authorization_header, create_refresh_token, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES,
 )
 from apiculture.api.schemas import (
     ApiaryCreateSchema,
@@ -22,10 +24,11 @@ from apiculture.api.schemas import (
     HiveSchema,
     HiveUpdateSchema,
     SharedHiveSchema,
-    TokenUserSchema,
     UserCreateSchema,
     UserSchema,
+    TokenUserSchema,
 )
+from apiculture.config import settings
 from apiculture.dal.command import create_apiary, create_hive, update_hive, share_hive
 from apiculture.dal.query import (
     get_apiaries,
@@ -37,9 +40,6 @@ from apiculture.dal.query import (
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 120
-
-
 Base.metadata.create_all(bind=engine)
 
 
@@ -48,7 +48,7 @@ app.add_middleware(
     AuthMiddleware,
     verify_header=verify_authorization_header,
     auth_error_handler=handle_auth_error,
-    excluded_urls=["/register/", "/login/"],
+    excluded_urls=["/register/", "/login/", "/refresh-token/"],
 )
 
 app.add_middleware(
@@ -148,22 +148,27 @@ async def hive_share(
 
 # Authentication Paths #
 
-@app.post("/register/")
+@app.post("/register/", response_model=TokenUserSchema)
 async def register(user_data: UserCreateSchema, db: Session = Depends(get_db)):
     user = register_user(user_data, db)
 
     # TODO: Temporarily log the user in without email validation
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
     user_data = UserSchema(
         id=user.id,
         email=user.email,
         first_name=user.first_name,
         last_name=user.last_name,
     )
-    return {"access_token": access_token, "token_type": "bearer", "user": user_data}
+
+    access_token = create_access_token(user.email)
+    refresh_token = create_refresh_token(user.email)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": user_data
+    }
 
 
 @app.post("/login/", response_model=TokenUserSchema)
@@ -183,10 +188,6 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
 
     user_data = UserSchema(
         id=user.id,
@@ -194,7 +195,61 @@ async def login_for_access_token(
         first_name=user.first_name,
         last_name=user.last_name,
     )
-    return {"access_token": access_token, "token_type": "bearer", "user": user_data}
+
+    access_token = create_access_token(user.email)
+    refresh_token = create_refresh_token(user.email)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": user_data
+    }
+
+
+@app.post("/refresh-token/", response_model=TokenUserSchema, response_model_exclude_unset=True)
+def refresh_access_token(request: Request, db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        # Extract token from header
+        scheme, _, token = request.headers["authorization"].partition(" ")
+        if scheme.lower() != "bearer":
+            raise credentials_exception
+
+        # Decode token to get username
+        payload = jwt.decode(token, settings.JWT_REFRESH_TOKEN_SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        refresh_token_expiry: datetime = datetime.fromtimestamp(payload.get("exp"), UTC)
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    # We user email as username
+    user = get_user_by_email(db, username)
+    if user is None:
+        raise credentials_exception
+
+    access_token_expiry = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(user.email)
+    token_data = {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user
+    }
+    # If the refresh token is about to expire,
+    # generate new refresh token also.
+    if refresh_token_expiry <= access_token_expiry:
+        refresh_token = create_refresh_token(user.email)
+        token_data.update({"refresh_token": refresh_token})
+
+    return token_data
+
 
 
 @app.post("/logout/")

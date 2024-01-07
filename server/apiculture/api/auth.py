@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import List, Tuple
 
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-from jose import ExpiredSignatureError, JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from passlib.context import CryptContext
 
 from apiculture.api.schemas import TokenDataSchema
@@ -15,7 +15,8 @@ from apiculture.database import get_db
 from apiculture.models import User
 
 ALGORITHM = "HS256"
-
+ACCESS_TOKEN_EXPIRE_MINUTES = (2 * 60) + 1  # add 1 minute, so it doesn't overlap with refresh token expire
+REFRESH_TOKEN_EXPIRE_MINUTES = 24 * 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -70,21 +71,39 @@ def register_user(user_data, db):
     return create_user(db, user_data)
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(user_email: str, expires_delta: timedelta = None) -> str:
     """
     Create an access token to return to successfully logged user.
 
-    :param data:
+    :param user_email:
     :param expires_delta:
     :return: encoded JWT
     """
-    to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expires_delta = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+        expires_delta = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    to_encode = {"sub": user_email, "exp": expires_delta}
+    encoded_jwt = jwt.encode(to_encode, settings.JWT_ACCESS_TOKEN_SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def create_refresh_token(user_email: str, expires_delta: timedelta = None) -> str:
+    """
+    Create a refresh token to return to successfully logged user.
+
+    :param user_email:
+    :param expires_delta:
+    :return: encoded JWT
+    """
+    if expires_delta is not None:
+        expires_delta = datetime.now(UTC) + expires_delta
+    else:
+        expires_delta = datetime.now(UTC) + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+
+    to_encode = {"sub": user_email, "exp": expires_delta}
+    encoded_jwt = jwt.encode(to_encode, settings.JWT_REFRESH_TOKEN_SECRET_KEY, ALGORITHM)
     return encoded_jwt
 
 
@@ -96,8 +115,9 @@ def handle_auth_error(request, auth_error):
     :param auth_error: starlette.AuthenticationError that occurred
     :return:
     """
+    print("AuthError: ", auth_error)
     return JSONResponse(
-        {"error": "Token expired or invalid"}, status_code=status.HTTP_401_UNAUTHORIZED
+        {"error": "Token expired."}, status_code=status.HTTP_401_UNAUTHORIZED
     )
 
 
@@ -121,11 +141,17 @@ def verify_authorization_header(headers) -> Tuple[List[str], User]:
             raise credentials_exception
 
         # Decode token to get username
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.JWT_ACCESS_TOKEN_SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenDataSchema(username=username)
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     except JWTError:
         raise credentials_exception
 

@@ -315,7 +315,7 @@ export const ApiaryPlan = ({ apiary, filters, highlight }: ApiaryPlanProps) => {
         >
           <IonIcon slot="icon-only" icon={contractOutline}></IonIcon>
         </IonButton>
-        <IonSpinner style={{ display: !zoomReady ? 'block' : 'none' }}></IonSpinner>
+        
         <svg
           id="apiary-plan"
           viewBox="0 0 100 50"

@@ -65,7 +65,8 @@ const LoginForm = () => {
       .then((response) => {
         if (response.data.access_token !== '' && response.data.access_token !== undefined) {
           const user = response.data.user;
-          user.authToken = response.data.access_token;
+          user.accessToken = response.data.access_token;
+          user.refreshToken = response.data.refresh_token;
           setIsAuthReady(true);
           setLoggedIn(true);
           loginUser(user);

@@ -313,3 +313,6 @@ cython_debug/
 
 # Vercel app CLI
 .vercel
+
+.serverless
+/server/node_modules
