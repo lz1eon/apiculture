@@ -316,3 +316,7 @@ cython_debug/
 
 .serverless
 /server/node_modules
+
+# Needed for AWS Lambda
+psycopg2/
+psycopg2_binary.libs/

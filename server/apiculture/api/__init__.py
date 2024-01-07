@@ -53,14 +53,14 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8100"],
+    allow_origins=["http://localhost:3000", "http://localhost:8100", "https://apiarium.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app.get("/apiaries/", response_model=list[schemas.ApiarySchema])
+@app.get("/apiaries/", response_model=list[ApiarySchema])
 async def apiaries_get(request: Request, db: Session = Depends(get_db)):
     return get_apiaries(db, request.user)
 
@@ -267,4 +267,4 @@ async def logout():
     return {"message": "OK", "status": 200}
 
 
-handler = Mangum(app)
+app_handler = Mangum(app)

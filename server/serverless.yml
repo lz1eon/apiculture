@@ -8,7 +8,7 @@ provider:
 
 functions:
   api:
-    handler: apiculture.api.app.handler
+    handler: apiculture.api.app_handler
     events:
       - httpApi: '*'
 
