@@ -6,7 +6,7 @@ import { useRef } from "react";
         
 
 const AnonymousToolbar = () => {
-  const menuPalette = useRef(null);
+  const menuPalette = useRef<Menu>(null);
 
   function changeTheme(theme: string) {
     console.log(theme)
@@ -31,7 +31,7 @@ const AnonymousToolbar = () => {
 
   const togglePaletteMenu = (event: React.MouseEvent<HTMLElement>) => {
     const node = menuPalette.current;
-    if (node) node.toggle(event)
+    if (node) node.toggle(event);
   }
 
   return (

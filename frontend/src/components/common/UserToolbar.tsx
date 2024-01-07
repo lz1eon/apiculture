@@ -7,7 +7,7 @@ import { Menu } from "primereact/menu";
 
 const UserToolbar = () => {
   const { logoutUser } = useAuth();
-  const menuPalette = useRef(null);
+  const menuPalette = useRef<Menu>(null);
 
   const handleLogout = () => {
     logoutUser();

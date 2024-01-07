@@ -6,7 +6,7 @@ interface ModalDialogProps {
   isOpen: boolean;
   title: string;
   children: React.ReactNode;
-  noCloseButton: boolean;
+  noCloseButton?: boolean;
   onClose: () => void;
 }
 

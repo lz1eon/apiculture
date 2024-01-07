@@ -29,6 +29,10 @@ export const ApiaryForm = ({ apiary, onFormSuccess }: ApiaryFormProps) => {
     apiary.name = String(event.target.value);
   }
 
+  const handleChangeType = (event: InputCustomEvent) => {
+    apiary.type = Number(event.target.value);
+  }
+
   return (
     <form className='ion-padding' onSubmit={handleSubmit}>
       <IonItem>
@@ -60,6 +64,7 @@ export const ApiaryForm = ({ apiary, onFormSuccess }: ApiaryFormProps) => {
           option_labels={ApiaryTypesLabels}
           label="Вид"
           labelPlacement='stacked'
+          onIonChange={handleChangeType}
         />
       </IonItem>
         <IonButton className="ion-margin-top" type="submit" onClick={handleSubmit}>

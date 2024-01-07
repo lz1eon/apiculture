@@ -205,7 +205,7 @@ export const ApiaryPlan = ({ apiary, filters, highlight }: ApiaryPlanProps) => {
   }
 
   function zoomToHivesBBox() {
-    const svgElement = d3.select(PLAN_SELECTOR);
+    const svgElement = d3.select<SVGSVGElement, unknown>(PLAN_SELECTOR);
     if (!svgElement || !svgElement.node()) {
       return
     }
@@ -222,12 +222,13 @@ export const ApiaryPlan = ({ apiary, filters, highlight }: ApiaryPlanProps) => {
     const x = (bbox.x + bbox.width) / 2;
     const y = (bbox.y + bbox.height) / 2;
 
-    const { width, height } = svgElement.node().viewBox.baseVal;
+    const { width, height } = (svgElement.node()! as SVGSVGElement).viewBox.baseVal;
     const scale = Math.max(0.1, Math.min(20, 0.9 / Math.max(dx / width, dy / height)));
     const translate = [width / 2 - scale * x, height / 2 - scale * y];
 
     if (scale && translate) {
-      svgElement.transition()
+      svgElement
+        .transition()
         .on('end', () => { setZoomReady(true) })
         .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
     }
