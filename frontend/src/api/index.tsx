@@ -1,7 +1,7 @@
 import { IonButton, IonCol, IonGrid, IonRow, IonText } from "@ionic/react";
 import axios from "axios";
 import ReactDOM from "react-dom";
-import { MainContainer, ModalDialog } from "../components";
+import { ModalDialog } from "../components";
 
 // axios.defaults.baseURL = import.meta.env.VITE_API_BASE;
 axios.defaults.baseURL = "http://localhost:8000";
@@ -55,6 +55,7 @@ api.interceptors.response.use(
             <ModalDialog
               isOpen={true}
               title={'Изтекла сесия'}
+              noCloseButton={true}
               onClose={() => { window.location.href = '/login'; }}
             >
               <IonGrid>

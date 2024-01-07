@@ -3,13 +3,14 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonModal } from
 import { OverlayEventDetail } from '@ionic/core';
 
 interface ModalDialogProps {
-  onClose: () => void;
   isOpen: boolean;
   title: string;
   children: React.ReactNode;
+  noCloseButton: boolean;
+  onClose: () => void;
 }
 
-export const ModalDialog: React.FC<ModalDialogProps> = ({ onClose, isOpen, title, children }) => {
+export const ModalDialog: React.FC<ModalDialogProps> = ({ isOpen, title, noCloseButton = false, children, onClose }) => {
   const modal = useRef<HTMLIonModalElement>(null);
   
   function onDidDismiss(ev: CustomEvent<OverlayEventDetail>) {
@@ -26,6 +27,6 @@ export const ModalDialog: React.FC<ModalDialogProps> = ({ onClose, isOpen, title
     <IonContent>
       {children}
     </IonContent>
-    <IonButton onClick={onClose}>Затвори</IonButton>
+    { !noCloseButton && <IonButton onClick={onClose}>Затвори</IonButton>}
   </IonModal>
 )};
