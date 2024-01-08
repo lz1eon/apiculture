@@ -30,6 +30,9 @@ mypy = "^1.7.1"
 [tool.isort]
 profile = "black"
 
+#[tool.black]
+#profile = "black"
+
 
 [build-system]
 requires = ["poetry-core"]

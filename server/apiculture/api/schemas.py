@@ -1,9 +1,7 @@
 import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
-
-from apiculture.models import Hive, User
+from pydantic import BaseModel
 
 
 class UserSchema(BaseModel):
@@ -11,6 +9,7 @@ class UserSchema(BaseModel):
     email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
+    admin: bool = False
 
 
 class UserCreateSchema(BaseModel):
@@ -22,12 +21,14 @@ class UserCreateSchema(BaseModel):
     email: str
     first_name: str
     last_name: str
+    admin: bool
 
 
 class UserShareSchema(BaseModel):
     email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
+    admin: bool | None = False
 
 
 class UserInDBSchema(UserSchema):

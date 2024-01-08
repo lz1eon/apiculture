@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import List, Tuple
 
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt, ExpiredSignatureError
+from jose import ExpiredSignatureError, JWTError, jwt
 from passlib.context import CryptContext
 
 from apiculture.api.schemas import TokenDataSchema
@@ -15,7 +15,9 @@ from apiculture.database import get_db
 from apiculture.models import User
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = (2 * 60) + 1  # add 1 minute, so it doesn't overlap with refresh token expire
+ACCESS_TOKEN_EXPIRE_MINUTES = (
+    2 * 60
+) + 1  # add 1 minute, so it doesn't overlap with refresh token expire
 REFRESH_TOKEN_EXPIRE_MINUTES = 24 * 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -82,10 +84,14 @@ def create_access_token(user_email: str, expires_delta: timedelta = None) -> str
     if expires_delta:
         expires_delta = datetime.now(UTC) + expires_delta
     else:
-        expires_delta = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta = datetime.now(UTC) + timedelta(
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+        )
 
     to_encode = {"sub": user_email, "exp": expires_delta}
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_ACCESS_TOKEN_SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.JWT_ACCESS_TOKEN_SECRET_KEY, algorithm=ALGORITHM
+    )
     return encoded_jwt
 
 
@@ -100,10 +106,14 @@ def create_refresh_token(user_email: str, expires_delta: timedelta = None) -> st
     if expires_delta is not None:
         expires_delta = datetime.now(UTC) + expires_delta
     else:
-        expires_delta = datetime.now(UTC) + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+        expires_delta = datetime.now(UTC) + timedelta(
+            minutes=REFRESH_TOKEN_EXPIRE_MINUTES
+        )
 
     to_encode = {"sub": user_email, "exp": expires_delta}
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_REFRESH_TOKEN_SECRET_KEY, ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.JWT_REFRESH_TOKEN_SECRET_KEY, ALGORITHM
+    )
     return encoded_jwt
 
 
@@ -141,7 +151,9 @@ def verify_authorization_header(headers) -> Tuple[List[str], User]:
             raise credentials_exception
 
         # Decode token to get username
-        payload = jwt.decode(token, settings.JWT_ACCESS_TOKEN_SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token, settings.JWT_ACCESS_TOKEN_SECRET_KEY, algorithms=[ALGORITHM]
+        )
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception

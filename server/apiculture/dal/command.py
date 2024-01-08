@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from apiculture.api import schemas
 from apiculture.dal.errors import OwnershipMismatch
 from apiculture.database import engine
-from apiculture.models.core import Apiary, Hive, User, SharedHive
+from apiculture.models.core import Apiary, Hive, SharedHive, User
 
 
 def create_user(db: Session, user: schemas.UserCreateSchema):
@@ -73,7 +73,9 @@ def update_hive(db: Session, user, hive_id, hive_update: schemas.HiveUpdateSchem
 
 
 def share_hive(db: Session, user, hive_id, recipient):
-    shared_hive = SharedHive(hive_id=hive_id, owner_id=user.id, recipient_id=recipient.id)
+    shared_hive = SharedHive(
+        hive_id=hive_id, owner_id=user.id, recipient_id=recipient.id
+    )
     db.add(shared_hive)
     db.commit()
     db.refresh(shared_hive)

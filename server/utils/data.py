@@ -83,7 +83,9 @@ def share_some_hives(hives, owner, recipients, percent=10):
         to_share = not bool(randint(0, int(100 / percent)))
         if to_share and recipients:
             random_recipient = recipients[randint(0, len(recipients)) - 1]
-            new_share = SharedHive(hive_id=hive.id, owner_id=owner.id, recipient_id=random_recipient.id)
+            new_share = SharedHive(
+                hive_id=hive.id, owner_id=owner.id, recipient_id=random_recipient.id
+            )
             new_shares.append(new_share)
 
     db.add_all(new_shares)
@@ -126,17 +128,24 @@ def create_apiary(db, user_id, number, name):
     new_apiary = Apiary(number=number, name=name, owner_id=user_id)
     db.add(new_apiary)
     db.commit()
-    apiary = db.query(Apiary).where(Apiary.owner_id == user_id).where(Apiary.number == number).first()
+    apiary = (
+        db.query(Apiary)
+        .where(Apiary.owner_id == user_id)
+        .where(Apiary.number == number)
+        .first()
+    )
     return apiary
 
 
 def create_data(db, user, apiaries=None, hives=None):
-    apiaries = apiaries or ['Водоема']
+    apiaries = apiaries or ["Водоема"]
     hives = hives or [20]
     users = list(db.query(User).where(User.id != user.id))
 
     if len(apiaries) != len(hives):
-        raise ValueError('len() of "apiaries" argument must be the same as the len() of "hives" argument.')
+        raise ValueError(
+            'len() of "apiaries" argument must be the same as the len() of "hives" argument.'
+        )
 
     generate_apiary_number = apiary_number_generator(len(apiaries))
 
@@ -150,7 +159,7 @@ def create_data(db, user, apiaries=None, hives=None):
         print(f'Created {hives[i]} hives for apiary "{apiary_name}"')
 
 
-def create_user(db, email, password, first_name="", last_name=""):
+def create_user(db, email, password, first_name="", last_name="", admin=False):
     # Hash user password
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     hashed_password = pwd_context.hash(password)
@@ -161,6 +170,7 @@ def create_user(db, email, password, first_name="", last_name=""):
         password=hashed_password,
         first_name=first_name,
         last_name=last_name,
+        admin=admin,
     )
     db.add(new_user)
     db.commit()
@@ -173,16 +183,40 @@ if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
 
     # User 1
-    create_user(db, "viki@gmail.com", "viki", "Виктор", "Стефанов")
+    create_user(db, "viki@gmail.com", "viki", "Виктор", "Стефанов", admin=True)
     user = db.query(User).filter(User.email == "viki@gmail.com").first()
     create_data(db, user, apiaries=["Лозето", "Парапунов"], hives=[5, 33])
 
     # User 2
-    create_user(db, "stefanov.alexandre@gmail.com", "alex", "Александър", "Стефанов")
+    create_user(
+        db, "stefanov.alexandre@gmail.com", "alex", "Александър", "Стефанов", admin=True
+    )
     user = db.query(User).filter(User.email == "stefanov.alexandre@gmail.com").first()
-    create_data(db, user, apiaries=["Манастиро", "Водоема", "Ридо"], hives=[57, 10, 105])
+    create_data(
+        db, user, apiaries=["Манастиро", "Водоема", "Ридо"], hives=[57, 10, 105]
+    )
 
     # User 3
-    create_user(db, "joro@gmail.com", "joro", "Георги", "Стефанов")
+    create_user(db, "joro@gmail.com", "joro", "Георги", "Стефанов", admin=True)
     user = db.query(User).filter(User.email == "joro@gmail.com").first()
     create_data(db, user, apiaries=["Чифлико", "Родопа"], hives=[7, 49])
+
+    # User 4
+    create_user(db, "stoyan@gmail.com", "nedin", "Стоян", "Недин")
+    user = db.query(User).filter(User.email == "stoyan@gmail.com").first()
+    create_data(db, user, apiaries=["Медовина", "Сладост"], hives=[15, 70])
+
+    # User 5
+    create_user(db, "rosen@gmail.com", "rosen", "Росен", "Ангелов")
+    user = db.query(User).filter(User.email == "rosen@gmail.com").first()
+    create_data(db, user, apiaries=["Изобилие", "Водоема"], hives=[13, 55])
+
+    # User 6
+    create_user(db, "elina@gmail.com", "elina", "Елина", "Халачева")
+    user = db.query(User).filter(User.email == "elina@gmail.com").first()
+    create_data(db, user, apiaries=["Изобилие", "Медовина"], hives=[15, 150])
+
+    # User 7
+    create_user(db, "raya@gmail.com", "raya", "Рая", "Ангелова")
+    user = db.query(User).filter(User.email == "raya@gmail.com").first()
+    create_data(db, user, apiaries=["Изобилие", "Медовина"], hives=[8, 80])

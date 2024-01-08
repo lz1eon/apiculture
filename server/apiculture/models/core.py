@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from apiculture.models.enum import ApiaryTypes, HiveModels, HiveTypes, HiveStrengths
+from apiculture.models.enum import ApiaryTypes, HiveModels, HiveStrengths, HiveTypes
 
 
 class Base(DeclarativeBase):
@@ -25,6 +25,7 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String(255))
     email: Mapped[str]
     password: Mapped[str]
+    admin: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     __table_args__ = (UniqueConstraint("email"),)
 

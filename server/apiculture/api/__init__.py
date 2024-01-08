@@ -1,21 +1,23 @@
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Union
-
-from jose import JWTError, jwt
-from mangum import Mangum
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_auth_middleware import AuthMiddleware
+from jose import JWTError, jwt
+from mangum import Mangum
 from sqlalchemy.orm import Session
 
 from apiculture.api.auth import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    ALGORITHM,
     authenticate_user,
     create_access_token,
+    create_refresh_token,
     handle_auth_error,
     register_user,
-    verify_authorization_header, create_refresh_token, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES,
+    verify_authorization_header,
 )
 from apiculture.api.schemas import (
     ApiaryCreateSchema,
@@ -24,18 +26,19 @@ from apiculture.api.schemas import (
     HiveSchema,
     HiveUpdateSchema,
     SharedHiveSchema,
+    TokenUserSchema,
     UserCreateSchema,
     UserSchema,
-    TokenUserSchema,
 )
 from apiculture.config import settings
-from apiculture.dal.command import create_apiary, create_hive, update_hive, share_hive
+from apiculture.dal.command import create_apiary, create_hive, share_hive, update_hive
 from apiculture.dal.query import (
     get_apiaries,
     get_apiary,
     get_hives,
     get_hives_shared_with_me,
-    get_my_shared_hives, get_user_by_email,
+    get_my_shared_hives,
+    get_user_by_email,
 )
 from apiculture.database import engine, get_db
 from apiculture.models.core import Base
@@ -53,7 +56,11 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8100", "https://apiarium.vercel.app"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8100",
+        "https://apiarium.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -148,6 +155,7 @@ async def hive_share(
 
 # Authentication Paths #
 
+
 @app.post("/register/", response_model=TokenUserSchema)
 async def register(user_data: UserCreateSchema, db: Session = Depends(get_db)):
     user = register_user(user_data, db)
@@ -167,7 +175,7 @@ async def register(user_data: UserCreateSchema, db: Session = Depends(get_db)):
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
-        "user": user_data
+        "user": user_data,
     }
 
 
@@ -194,6 +202,7 @@ async def login_for_access_token(
         email=user.email,
         first_name=user.first_name,
         last_name=user.last_name,
+        admin=user.admin,
     )
 
     access_token = create_access_token(user.email)
@@ -203,11 +212,13 @@ async def login_for_access_token(
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
-        "user": user_data
+        "user": user_data,
     }
 
 
-@app.post("/refresh-token/", response_model=TokenUserSchema, response_model_exclude_unset=True)
+@app.post(
+    "/refresh-token/", response_model=TokenUserSchema, response_model_exclude_unset=True
+)
 def refresh_access_token(request: Request, db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -222,7 +233,9 @@ def refresh_access_token(request: Request, db: Session = Depends(get_db)):
             raise credentials_exception
 
         # Decode token to get username
-        payload = jwt.decode(token, settings.JWT_REFRESH_TOKEN_SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token, settings.JWT_REFRESH_TOKEN_SECRET_KEY, algorithms=[ALGORITHM]
+        )
         username: str = payload.get("sub")
         refresh_token_expiry: datetime = datetime.fromtimestamp(payload.get("exp"), UTC)
         if username is None:
@@ -235,13 +248,11 @@ def refresh_access_token(request: Request, db: Session = Depends(get_db)):
     if user is None:
         raise credentials_exception
 
-    access_token_expiry = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expiry = datetime.now(UTC) + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     access_token = create_access_token(user.email)
-    token_data = {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user": user
-    }
+    token_data = {"access_token": access_token, "token_type": "bearer", "user": user}
     # If the refresh token is about to expire,
     # generate new refresh token also.
     if refresh_token_expiry <= access_token_expiry:
@@ -249,7 +260,6 @@ def refresh_access_token(request: Request, db: Session = Depends(get_db)):
         token_data.update({"refresh_token": refresh_token})
 
     return token_data
-
 
 
 @app.post("/logout/")
