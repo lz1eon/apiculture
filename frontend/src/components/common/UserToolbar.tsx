@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { Menu } from "primereact/menu";
 
 const UserToolbar = () => {
-  const { logoutUser } = useAuth();
+  const { user, logoutUser } = useAuth();
   const menuPalette = useRef<Menu>(null);
 
   const handleLogout = () => {
@@ -49,10 +49,12 @@ const UserToolbar = () => {
         <IonButtons slot="end">
           <IonButton routerLink="/shared">Споделени</IonButton>
         </IonButtons>
-        <IonButtons slot="end">
+        { user?.admin &&
+          <IonButtons slot="end">
           <IonButton routerLink="/admin">Админ</IonButton>
         </IonButtons>
-        <IonButtons slot="end">
+        }
+        {/* <IonButtons slot="end">
           <IonButton
             id="palette-button"
             aria-controls="palette-menu"
@@ -61,7 +63,7 @@ const UserToolbar = () => {
           >
             <IonIcon slot="icon-only" icon={colorPalette}></IonIcon>
           </IonButton>
-        </IonButtons>
+        </IonButtons> */}
         <IonButtons slot="end">
           <IonButton onClick={handleLogout}>Изход</IonButton>
         </IonButtons>

@@ -1,15 +1,41 @@
-import { IonAccordion, IonAccordionGroup, IonButton, IonChip, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonRow, IonText } from '@ionic/react';
-import { SyntheticEvent, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import {
+  IonAccordion,
+  IonAccordionGroup,
+  IonButton,
+  IonChip,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonRow,
+  IonSelect,
+  IonSelectOption
+} from '@ionic/react';
+
+import { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import client from '../../api';
 
 import { closeCircleOutline } from 'ionicons/icons';
 import { ActionItem, Drone } from '../../components/common/Drone';
 import { ChipsFilter } from '../../components/inputs/ChipsFilter';
 import { HiveSelectionContext } from '../../contexts/HiveSelectionContext';
-import { Apiary, HiveModels, HiveModelsLabels, HiveStrengths, HiveStrengthsLabels, HiveTypes, HiveTypesLabels, emptyApiary } from '../../models';
+import {
+  Apiary,
+  HiveModels,
+  HiveModelsLabels,
+  HiveStrengths,
+  HiveStrengthsLabels,
+  HiveTypes,
+  HiveTypesLabels,
+  emptyApiary
+} from '../../models';
+
 import Page from '../Page';
 import { ApiaryPlan, Highlight } from './plan/ApiaryPlan';
+import { useGeneralInfo } from '../../hooks/useGeneralInfo';
+import { IonSelectCustomEvent } from '@ionic/core';
 
 
 export const ApiaryDetail = () => {
@@ -25,6 +51,8 @@ export const ApiaryDetail = () => {
   const [currentHighlight, setCurrentHighlight] = useState<Highlight | null>(null);
   const [advices, setAdvices] = useState<ActionItem[]>([]);
   const [selectedHivesCount, setSelectedHivesCount] = useState(0);
+  const { apiaries } = useGeneralInfo();
+  const history = useHistory();
 
   const highlightStrength = {
     prop: 'strength',
@@ -44,6 +72,12 @@ export const ApiaryDetail = () => {
     else setCurrentHighlight(highlight);
   }
 
+  function onChangeApiary(event: IonSelectCustomEvent<number>) {
+    const apiaryId = event.target.value;
+    const newApiary = apiaries.find((apiary) => apiary.id === apiaryId);
+    if (newApiary !== undefined) setApiary(newApiary);
+  }
+
   function clearFilters() {
     setTypeFilter(null);
     setMotherFilter(null);
@@ -54,7 +88,6 @@ export const ApiaryDetail = () => {
     setSharedFilter(null);
     setCurrentHighlight(null);
   }
-
 
   useEffect(() => {
     client.getApiary(id)
@@ -104,12 +137,32 @@ export const ApiaryDetail = () => {
 
           <IonGrid>
             <IonRow>
+              <IonCol></IonCol>
+              <IonCol></IonCol>
               <IonCol>
-                <h1><IonText style={{ userSelect: 'none' }}>{apiary.name}</IonText></h1>
+                <IonSelect 
+                  value={apiary.id} 
+                  interface='popover'
+                  style={{fontSize: '30px'}}
+                  onIonChange={onChangeApiary}
+                >
+                  {apiaries.map((apiary, i) =>
+                    <IonSelectOption
+                      key={i}
+                      value={apiary.id}                      
+                    >
+                      {apiary.name}
+                    </IonSelectOption>
+                  )}
+                </IonSelect>
+
+                {/* <h1><IonText style={{ userSelect: 'none' }}>{apiary.name}</IonText></h1> */}
+
                 {/* <IonMenuToggle>
                   <IonButton>Click to open the menu</IonButton>
                 </IonMenuToggle> */}
               </IonCol>
+              <IonCol></IonCol>
             </IonRow>
             <IonRow>
               <IonCol size="auto">
@@ -134,7 +187,7 @@ export const ApiaryDetail = () => {
 
                   <IonAccordion value='highlight'>
                     <IonItem slot="header">
-                      {currentHighlight?.prop === 'strength' ? 
+                      {currentHighlight?.prop === 'strength' ?
                         <IonLabel><strong>Оцвети според</strong> Сила</IonLabel>
                         :
                         <IonLabel>Оцвети според</IonLabel>

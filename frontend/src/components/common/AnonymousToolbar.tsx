@@ -41,7 +41,7 @@ const AnonymousToolbar = () => {
         <IonButtons slot="start">
           <IonButton routerLink="/">Начало</IonButton>
         </IonButtons>
-        <IonButtons slot="end">
+        {/* <IonButtons slot="end">
           <IonButton
             id="palette-button"
             aria-controls="palette-menu"
@@ -50,7 +50,7 @@ const AnonymousToolbar = () => {
           >
             <IonIcon slot="icon-only" icon={colorPalette}></IonIcon>
           </IonButton>
-        </IonButtons>
+        </IonButtons> */}
         <IonButtons slot="end">
           <IonButton routerLink="/contacts">Контакти</IonButton>
         </IonButtons>

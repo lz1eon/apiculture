@@ -30,9 +30,9 @@ export const ChipsFilter = ({ title, filterValue, setFilterValue, items }: Chips
       <IonAccordion value={title}>
         <IonItem slot="header">
           {filterValue !== null ?
-            <IonLabel color="primary"><strong>{title}: </strong> {selectedValue}</IonLabel>
+            <IonLabel><strong>{title}: </strong> {selectedValue}</IonLabel>
             :
-            <IonLabel color="primary">{title}</IonLabel>
+            <IonLabel>{title}</IonLabel>
           }
         </IonItem>
         <IonItem slot='content'>
