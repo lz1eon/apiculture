@@ -3,8 +3,9 @@ import axios from "axios";
 import ReactDOM from "react-dom";
 import { ModalDialog } from "../components";
 
-// axios.defaults.baseURL = import.meta.env.VITE_API_BASE;
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE;
+console.log(import.meta.env)
+// axios.defaults.baseURL = process.env.API_BASE;
 const api = axios.create();
 
 // Add Authorization header on every request
