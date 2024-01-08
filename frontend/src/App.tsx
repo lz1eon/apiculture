@@ -1,10 +1,8 @@
 import {
   IonApp,
   IonContent,
-  IonPage,
   IonRouterOutlet,
-  isPlatform,
-  setupIonicReact,
+  setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
@@ -35,27 +33,23 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 
 
 import {
-  About,
   ApiaryDetail,
   ApiaryList,
   Contacts,
   Home,
-  Login,
-  NotFound,
-  Pricing,
-  Register
+  Login
 } from './pages';
 
 import { useEffect, useState } from 'react';
+import client from './api';
 import {
   Header,
   PrivateRoutes
 } from './components';
 import { AuthContext } from './contexts/AuthContext';
-import { Apiary, User } from './models';
 import { GeneralInfoContext } from './contexts/GeneralInfoContext';
+import { Apiary, User } from './models';
 import { Charts } from './pages/charts/Charts';
-import client from './api';
 import { Shared } from './pages/shared/Shared';
 
 
@@ -84,7 +78,7 @@ const App: React.FC = () => {
                 <IonApp>
                   <Header />
                   <IonContent>
-                    <Route exact path="/" render={() => user ? <Redirect to='/apiaries' /> : <Home />} />
+                    <Route exact path="/" component={Home} />
                     <Route exact path="/contacts" component={Contacts} />
                     <Route exact path="/login" component={Login} />
 

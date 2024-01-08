@@ -135,9 +135,9 @@ export const ApiaryDetail = () => {
                   <IonAccordion value='highlight'>
                     <IonItem slot="header">
                       {currentHighlight?.prop === 'strength' ? 
-                        <IonLabel color="primary"><strong>Оцвети според</strong> Сила</IonLabel>
+                        <IonLabel><strong>Оцвети според</strong> Сила</IonLabel>
                         :
-                        <IonLabel color="primary">Оцвети според</IonLabel>
+                        <IonLabel>Оцвети според</IonLabel>
                       }
                     </IonItem>
                     <IonItem slot="content">
