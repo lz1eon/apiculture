@@ -46,6 +46,10 @@ export const Home = () => {
                             <IonIcon src={checkmark} color='success' />
                             Изпълняване на действие върху избраните кошери едновременно
                           </IonItem>
+                          <IonItem>
+                            <IonIcon src={checkmark} color='success' />
+                            Редактиране на схемата на пчелина
+                          </IonItem>
                         </IonList>
                       </IonCol>
                     </IonRow>
@@ -66,15 +70,19 @@ export const Home = () => {
                         <IonList lines='none'>
                           <IonItem>
                             <IonIcon src={checkmark} color='success' />
-                            Обзорен поглед върху пчелина
+                            Сподели данните за кошера с приятел 
                           </IonItem>
                           <IonItem>
                             <IonIcon src={checkmark} color='success' />
-                            Бързо избиране на кошери по различни показатели
+                            Добавяй коментар по споделените кошери
                           </IonItem>
                           <IonItem>
                             <IonIcon src={checkmark} color='success' />
-                            Изпълняване на действие върху избраните кошери едновременно
+                            Спри споделянето по всяко време
+                          </IonItem>
+                          <IonItem>
+                            <IonIcon src={checkmark} color='success' />
+                            Анонимно споделяне с хора извън Пчелинът
                           </IonItem>
                         </IonList>
                       </IonCol>
