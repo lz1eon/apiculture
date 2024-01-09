@@ -46,9 +46,9 @@ const UserToolbar = () => {
         <IonButtons slot="start">
           <IonButton routerLink="/apiaries">Пчелини</IonButton>
         </IonButtons>
-        <IonButtons slot="end">
+        {/* <IonButtons slot="end">
           <IonButton>{user?.email}</IonButton>
-        </IonButtons>
+        </IonButtons> */}
         <IonButtons slot="end">
           <IonButton routerLink="/shared">Споделени</IonButton>
         </IonButtons>

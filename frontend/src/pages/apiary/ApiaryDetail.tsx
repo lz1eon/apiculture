@@ -133,34 +133,26 @@ export const ApiaryDetail = () => {
 
       <Page>
         <HiveSelectionContext.Provider value={{ selectedHivesCount, setSelectedHivesCount }}>
-          <Drone advices={advices} selectedHivesCount={selectedHivesCount}></Drone>
-
           <IonGrid>
             <IonRow>
               <IonCol></IonCol>
               <IonCol></IonCol>
               <IonCol>
-                <IonSelect 
-                  value={apiary.id} 
+                <IonSelect
+                  value={apiary.id}
                   interface='popover'
-                  style={{fontSize: '30px'}}
+                  style={{ fontSize: '25px' }}
                   onIonChange={onChangeApiary}
                 >
                   {apiaries.map((apiary, i) =>
                     <IonSelectOption
                       key={i}
-                      value={apiary.id}                      
+                      value={apiary.id}
                     >
                       {apiary.name}
                     </IonSelectOption>
                   )}
                 </IonSelect>
-
-                {/* <h1><IonText style={{ userSelect: 'none' }}>{apiary.name}</IonText></h1> */}
-
-                {/* <IonMenuToggle>
-                  <IonButton>Click to open the menu</IonButton>
-                </IonMenuToggle> */}
               </IonCol>
               <IonCol></IonCol>
             </IonRow>
@@ -264,6 +256,7 @@ export const ApiaryDetail = () => {
                 </IonAccordionGroup>
               </IonCol>
               <IonCol>
+                <Drone advices={advices} selectedHivesCount={selectedHivesCount} />
                 <ApiaryPlan
                   apiary={apiary}
                   highlight={currentHighlight}
