@@ -329,6 +329,7 @@ if __name__ == "__main__":
         "rosen",
         "Росен",
         "Росенов",
+        admin=True
     )
     user = db.query(User).filter(User.email == "rosen@gmail.com").first()
     create_data(db, user, apiaries=["Изобилие", "Водоема"], hives=[13, 55])
