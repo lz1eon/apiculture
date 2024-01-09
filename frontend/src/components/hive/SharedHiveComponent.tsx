@@ -13,7 +13,7 @@ import {
   IonLabel,
   IonPopover,
   IonRow,
-  IonText 
+  IonText
 } from "@ionic/react";
 import TimeAgo from "react-timeago";
 import beemother from '../../assets/images/beemother.png';
@@ -42,10 +42,6 @@ export const SharedHiveComponent = ({ sharedHive }: SharedHiveComponentProps) =>
     console.log('open')
   }
 
-  function showRecipients(event: any) {
-
-  }
-
   return (
     <IonCard className="hive-card">
       <IonCardHeader>
@@ -56,12 +52,36 @@ export const SharedHiveComponent = ({ sharedHive }: SharedHiveComponentProps) =>
               recipients.length === 1 ?
                 (<b>{recipients[0].first_name} {recipients[0].last_name}</b>)
                 :
-                (<><b>{recipients.length}</b> <IonIcon src={person} onClick={showRecipients} /></>)
+                (<>
+                  <IonButton
+                    id={`recipients-popover-button-${sharedHive.hive.number}`}
+                    color="dark"
+                    fill="clear"
+                    size='small'
+                  >
+                    <b>{recipients.length}</b> <IonIcon src={person} />
+                  </IonButton>
+                  <IonPopover
+                    trigger={`recipients-popover-button-${sharedHive.hive.number}`}
+                    triggerAction="click"
+                  >
+                    {
+                      recipients.map((recipient, i) => {
+                        return (
+                          <IonContent key={i} className="ion-padding">
+                            <div>
+                              <IonText color="medium">{recipient.first_name} {recipient.last_name}</IonText>
+                            </div>
+                          </IonContent>
+                        )
+                      })
+                    }
+                  </IonPopover>
+                </>)
             }
           </IonCardSubtitle>
           :
           <IonCardSubtitle>Споделил: <b>{owner.first_name} {owner.last_name}</b></IonCardSubtitle>
-
         }
       </IonCardHeader>
       <IonCardContent>
@@ -145,7 +165,7 @@ export const SharedHiveComponent = ({ sharedHive }: SharedHiveComponentProps) =>
                       <IonContent key={i} className="ion-padding">
                         <div>
                           <IonText color="medium">{comment.commentator.first_name} </IonText>
-                          <IonText color="medium" style={{fontSize: '0.9em'}}>
+                          <IonText color="medium" style={{ fontSize: '0.9em' }}>
                             (<TimeAgo date={comment.created_datetime} />)
                           </IonText>
                         </div>

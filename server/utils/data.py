@@ -146,30 +146,33 @@ def share_some_hives(owner, percent=10):
     all_user_hives = db.query(Hive).where(Hive.owner_id == owner.id)
     recipients = list(db.query(User).where(User.id.in_(owner.connections)))
 
+    # Share some hives with user's connections
     for hive in all_user_hives:
         to_share = not bool(randint(0, int(100 / percent)))
         if to_share and recipients:
             num_share = randint(1, len(recipients))  # share with multiple users
+            already_shared_with = []
             for _ in range(num_share):
                 random_recipient = recipients[randint(0, len(recipients)) - 1]
-                shared_hive = SharedHive(
-                    hive_id=hive.id,
-                    owner_id=owner.id,
-                    recipient_id=random_recipient.id,
-                    active=True,
-                )
-                shared_hives.append(shared_hive)
+                if random_recipient.id not in already_shared_with:
+                    already_shared_with.append(random_recipient.id)
+                    shared_hive = SharedHive(
+                        hive_id=hive.id,
+                        owner_id=owner.id,
+                        recipient_id=random_recipient.id,
+                        active=True,
+                    )
+                    shared_hives.append(shared_hive)
     db.add_all(shared_hives)
     db.commit()
 
-    for shared_hive in shared_hives:
-        to_add_comment = bool(randint(0, 4))  # add comment to 1/4 of the shared hives
-        if to_add_comment and recipients:
-            num_comments = randint(1, 7) # add 1 to 7 comments
-            for _ in range(num_comments + 1):
-                random_recipient = recipients[randint(0, len(recipients)) - 1]
-                text = COMMENTS[randint(0, len(COMMENTS)) - 1]
-                add_comment(db, shared_hive.hive_id, text, random_recipient.id, owner.id)
+    # Add some comments to the shared hives
+    shared_hives_by_recipients = db.query(SharedHive).where(SharedHive.owner_id == owner.id)
+    for shared_hive in shared_hives_by_recipients:
+        to_add_comment = bool(randint(0, 1))
+        if to_add_comment:
+            text = COMMENTS[randint(0, len(COMMENTS)) - 1]
+            add_comment(db, shared_hive.hive_id, text, shared_hive.recipient_id, owner.id)
 
 
 def create_hive(owner_id, apiary_id, number, x, y):

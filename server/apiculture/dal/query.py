@@ -90,23 +90,19 @@ def get_my_shared_hives(db: Session, user: User):
         shared_hive_items[hive.id].recipients.append(recipient)
 
     comments = (
-        db.query(SharedHiveComment, SharedHive User)
+        db.query(SharedHiveComment, SharedHive, User)
         .where(SharedHiveComment.shared_hive_id.in_(shared_hive_ids))
         .where(SharedHiveComment.commentator_id == User.id)
         .order_by(SharedHiveComment.created_datetime.asc())
     )
 
-    for hive_id, shared_hive_item in shared_hive_items:
+    # distribute comments to hives
+    for comment, shared_hive, commentator in comments:
+        if shared_hive.id == comment.shared_hive_id:
+            comment.commentator = UserShareSchema(**commentator.to_dict())
+            shared_hive_items[shared_hive.hive_id].comments.append(comment)
 
-        # distribute comments to hives
-        for comment, commentator in comments:
-            if shared_hive.id == comment.shared_hive_id:
-                comment.commentator = UserShareSchema(**commentator.to_dict())
-                shared_hive_item.comments.append(comment)
-
-        shared_hive_items.append(shared_hive_item)
-
-    return shared_hive_items
+    return shared_hive_items.values()
 
 
 def get_hives_shared_with_me(db: Session, user: User):

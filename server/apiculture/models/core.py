@@ -34,6 +34,7 @@ class Base(DeclarativeBase):
 
 class User(Base):
     __tablename__ = "user"
+    __table_args__ = (UniqueConstraint("email"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     first_name: Mapped[str] = mapped_column(String(255))
@@ -45,8 +46,6 @@ class User(Base):
         MutableList.as_mutable(JSONB), server_default="[]"
     )
 
-    __table_args__ = (UniqueConstraint("email"),)
-
     def __str__(self):
         return f"User: {self.first_name} {self.last_name} ({self.email})"
 
@@ -56,6 +55,10 @@ class User(Base):
 
 class Apiary(Base):
     __tablename__ = "apiary"
+    __table_args__ = (
+        UniqueConstraint("owner_id", "number"),
+        UniqueConstraint("owner_id", "name"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
@@ -63,11 +66,6 @@ class Apiary(Base):
     number: Mapped[str] = mapped_column(nullable=True)
     type: Mapped[Optional[int]] = mapped_column(default=ApiaryTypes.IMMOBILE.value)
     hives: Mapped[Optional[List["Hive"]]] = relationship()
-
-    __table_args__ = (
-        UniqueConstraint("owner_id", "number"),
-        UniqueConstraint("owner_id", "name"),
-    )
 
     def __str__(self):
         return f"Apiary: {self.name} ({self.number})"
@@ -78,6 +76,7 @@ class Apiary(Base):
 
 class Hive(Base):
     __tablename__ = "hive"
+    __table_args__ = (UniqueConstraint("apiary_id", "number"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
@@ -93,8 +92,6 @@ class Hive(Base):
     x: Mapped[Optional[float]] = mapped_column(default=0.0)
     y: Mapped[Optional[float]] = mapped_column(default=0.0)
 
-    __table_args__ = (UniqueConstraint("apiary_id", "number"),)
-
     def __str__(self):
         return f"Hive: {self.number}"
 
@@ -104,6 +101,7 @@ class Hive(Base):
 
 class SharedHive(Base):
     __tablename__ = "shared_hive"
+    __table_args__ = (UniqueConstraint("hive_id", "recipient_id"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     hive_id: Mapped[int] = mapped_column(ForeignKey("hive.id"))
@@ -121,6 +119,7 @@ class SharedHive(Base):
 
 class SharedHiveComment(Base):
     __tablename__ = "shared_hive_comment"
+    __table_args__ = (UniqueConstraint("shared_hive_id", "commentator_id"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     shared_hive_id: Mapped[int] = mapped_column(ForeignKey("shared_hive.id"))
