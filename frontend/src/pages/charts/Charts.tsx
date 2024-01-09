@@ -74,11 +74,22 @@ export const Charts = () => {
   const [inputs, setInputs] = useState({ thresholds: '' });
   const thresholdsRef = createRef<HTMLIonInputElement>();
 
+  const initialGroups = [
+    {name: '10', count: 0, part: 10, price: 0},
+    {name: '20', count: 0, part: 1, price: 4},
+    {name: '50', count: 0, part: 3, price: 8},
+    {name: '100', count: 0, part: 3, price: 10},
+    {name: '200', count: 0, part: 4, price: 15},
+    {name: '300', count: 0, part: 5, price: 25},
+    {name: '650', count: 0, part: 6, price: 40},
+  ];
+
   // Current model
   const [currentModel, setCurrentModel] = useState<PriceModel>({
     name: '',
     thresholds: [...initialThresholds],
-    groups: [emptyGroup(), ...initialThresholds.map(() => emptyGroup())],
+    // groups: [emptyGroup(), ...initialThresholds.map(() => emptyGroup())],
+    groups: [...initialGroups],
     totalIncome: 0,
     totalPeople: 0,
   });
@@ -303,7 +314,7 @@ export const Charts = () => {
                         className='input'
                         type="text"
                         name="thresholds"
-                        label='Групиране'
+                        label='Групиране по брой кошери'
                         labelPlacement='stacked'
                         onIonInput={handleThresholdsChange} />
                       <IonButton size="small" type="submit" onClick={recalulateHistogram}>Обнови групите</IonButton>
@@ -315,7 +326,7 @@ export const Charts = () => {
                       type="text"
                       value={formatNumber(currentModel.totalPeople, ' ')}
                       readonly={true}
-                      label='Общо пчелини'
+                      label='Общо пчелари'
                       labelPlacement='floating' />
                   </IonCol>
                   <IonCol>
@@ -341,7 +352,7 @@ export const Charts = () => {
                                 value={group.part}
                                 ticks={true}
                                 snaps={true}
-                                label={`Група ${group.name} (${group.part * 10})%`}
+                                label={`до ${group.name} кошера (${group.part * 10}%)`}
                                 labelPlacement='stacked'
                                 id={`${i}`}
                                 onIonChange={handleRangeChange}
@@ -357,7 +368,7 @@ export const Charts = () => {
                                   type="text"
                                   name={`apiary-count-${group.name}`}
                                   value={formatNumber(group.count * (group.part / 10), ' ')}
-                                  label='Пчелини'
+                                  label='Пчелари'
                                   labelPlacement='stacked'
                                   disabled={true}
                                 />
@@ -401,7 +412,7 @@ export const Charts = () => {
                             type="text"
                             value={formatNumber(currentModel.totalPeople, ' ')}
                             readonly={true}
-                            label='Общо пчелини'
+                            label='Общо пчелари'
                             labelPlacement='floating' />
                         </IonCol>
                         <IonCol>
