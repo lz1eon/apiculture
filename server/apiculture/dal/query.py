@@ -1,6 +1,13 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from apiculture.models.core import Apiary, Hive, SharedHive, User
+from apiculture.api.schemas import (
+    SharedHiveSchema,
+    UserShareSchema,
+    HiveSchema,
+    HivePublicSchema,
+)
+from apiculture.models.core import Apiary, Hive, SharedHive, User, SharedHiveComment
 
 PAGE_SIZE = 100
 
@@ -60,37 +67,85 @@ def get_hives(
 
 def get_my_shared_hives(db: Session, user: User):
     # TODO: optimize loops and the whole function
-    shared_hives = []
+    shared_hive_items = {}
 
-    hives = list(
-        db.query(Hive, SharedHive)
+    shared_hives_query = list(
+        db.query(Hive, SharedHive.id, User)
         .where(Hive.owner_id == user.id)
+        .where(SharedHive.active.is_(True))
         .where(Hive.id == SharedHive.hive_id)
-        .order_by(SharedHive.recipient_id)
+        .where(SharedHive.recipient_id == User.id)
+        .order_by(SharedHive.recipient_id, Hive.number)
     )
 
-    recipients_ids = [shared_hive.recipient_id for _, shared_hive in hives]
-    recipients = db.query(User).where(User.id.in_(recipients_ids))
+    shared_hive_ids = set()
+    for hive, shared_hive_id, recipient in shared_hives_query:
+        shared_hive_ids.add(shared_hive_id)
+        shared_hive_items.setdefault(hive.id, SharedHiveSchema(
+            hive=HivePublicSchema(**hive.to_dict()),
+            owner=UserShareSchema(**user.to_dict()),
+            recipients=[],
+            comments=[],
+        ))
+        shared_hive_items[hive.id].recipients.append(recipient)
 
-    for hive, shared_hive in hives:
-        hive.recipients = []
-        for recipient in recipients:
-            if shared_hive.recipient_id == recipient.id:
-                hive.recipients.append(recipient)
-        shared_hives.append(hive)
+    comments = (
+        db.query(SharedHiveComment, SharedHive User)
+        .where(SharedHiveComment.shared_hive_id.in_(shared_hive_ids))
+        .where(SharedHiveComment.commentator_id == User.id)
+        .order_by(SharedHiveComment.created_datetime.asc())
+    )
 
-    return shared_hives
+    for hive_id, shared_hive_item in shared_hive_items:
+
+        # distribute comments to hives
+        for comment, commentator in comments:
+            if shared_hive.id == comment.shared_hive_id:
+                comment.commentator = UserShareSchema(**commentator.to_dict())
+                shared_hive_item.comments.append(comment)
+
+        shared_hive_items.append(shared_hive_item)
+
+    return shared_hive_items
 
 
 def get_hives_shared_with_me(db: Session, user: User):
-    hives = (
+    shared_hive_items = []
+
+    shared_hives_query = (
         db.query(Hive, User, SharedHive)
+        .where(SharedHive.active.is_(True))
         .where(Hive.id == SharedHive.hive_id)
         .where(SharedHive.recipient_id == user.id)
         .where(User.id == SharedHive.owner_id)
-        .order_by(SharedHive.recipient_id)
+        .order_by(SharedHive.recipient_id, Hive.number)
     )
-    return hives
+
+    shared_hive_ids = [shared_hive.id for _, _, shared_hive in shared_hives_query]
+    comments = (
+        db.query(SharedHiveComment, User)
+        .where(SharedHiveComment.shared_hive_id.in_(shared_hive_ids))
+        .where(SharedHiveComment.commentator_id == User.id)
+        .order_by(SharedHiveComment.created_datetime.asc())
+    )
+
+    for hive, owner, shared_hive in shared_hives_query:
+        shared_hive_item = SharedHiveSchema(
+            hive=HivePublicSchema(**hive.to_dict()),
+            owner=UserShareSchema(**owner.to_dict()),
+            recipients=[UserShareSchema(**user.to_dict())],
+            comments=[]
+        )
+
+        # distribute comments to hives
+        for comment, commentator in comments:
+            if shared_hive.id == comment.shared_hive_id:
+                comment.commentator = UserShareSchema(**commentator.to_dict())
+                shared_hive_item.comments.append(comment)
+
+        shared_hive_items.append(shared_hive_item)
+
+    return shared_hive_items
 
 
 def get_all_hives_count(db: Session):

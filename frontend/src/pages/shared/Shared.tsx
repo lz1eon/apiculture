@@ -2,7 +2,7 @@ import { IonCol, IonGrid, IonLabel, IonRow, IonText } from "@ionic/react"
 import { TabView, TabPanel } from 'primereact/tabview';
 import Page from '../Page';
 import { Hive, SharedHive } from "../../models";
-import { HiveComponent } from "../../components";
+import { SharedHiveComponent } from "../../components";
 import { useEffect, useState } from "react";
 import client from "../../api";
 
@@ -39,7 +39,7 @@ export const Shared = () => {
                     <IonRow>
                       {mySharedHives.length > 0 ?
                         mySharedHives.map((myShared, i) => {
-                          return <IonCol key={i} size="4"><HiveComponent sharedHive={myShared} /></IonCol>
+                          return <IonCol key={i} size="4"><SharedHiveComponent sharedHive={myShared} /></IonCol>
                         })
                         :
                         <IonCol><IonLabel>Не сте споделил кошери с никого.</IonLabel></IonCol>
@@ -55,7 +55,7 @@ export const Shared = () => {
                     <IonRow>
                       {sharedWithMe.length > 0 ?
                         sharedWithMe.map((sharedHive, i) => {
-                          return <IonCol key={i} size="4"><HiveComponent sharedHive={sharedHive} /></IonCol>
+                          return <IonCol key={i} size="4"><SharedHiveComponent sharedHive={sharedHive} /></IonCol>
                         })
                         :
                         <IonCol><IonLabel>Никой не е споделил кошери с Вас.</IonLabel></IonCol>

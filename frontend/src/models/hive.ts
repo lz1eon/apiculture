@@ -18,10 +18,18 @@ export type Hive = {
 
 export type HiveObjectKey = keyof Hive; 
 
+
+type SharedHiveComment = {
+  commentator: User,
+  text: string,
+  created_datetime: string
+}
+
 export type SharedHive = {
   hive: Hive,
   owner: User,
   recipients: User[]
+  comments: SharedHiveComment[]
 }
 
 interface StringKeys {

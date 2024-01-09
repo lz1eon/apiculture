@@ -2,12 +2,61 @@ import math
 from random import randint
 from passlib.context import CryptContext
 
+
 from apiculture.database import SessionLocal, engine
-from apiculture.models.core import Apiary, Hive, User, Base, SharedHive
+from apiculture.models.core import (
+    Apiary,
+    Hive,
+    User,
+    Base,
+    SharedHive,
+    SharedHiveComment,
+)
 from apiculture.models.enum import HiveModels, HiveTypes, HiveStrengths
 
 MAX_APIARIES_COUNT = 10
 MAX_HIVES_COUNT = 3000
+
+
+COMMENTS = [
+    'Пилото е малко',
+    'Кошерът е твърде слаб за поставяне на магазини',
+    'Още е рано за поставяне на магазини',
+    'Майката е за смяна',
+    'От коя година е майката?',
+    'Колко запаси мед има кошерът?',
+    'Късно си започнал да ги подхранваш',
+    'Според мен скоро ще се рои.',
+    'Кога е излюпено последото пило?',
+    'Имало ли е болести по кошера последния месец?',
+    'Има ли заложени маточници?',
+    'Слагай им повече храна',
+    'С колко рамки е кошерът?',
+    'Каква е пашата наоколо?',
+]
+
+def connect_users(db, first_id, second_id):
+    assert first_id != second_id
+
+    first = db.query(User).where(User.id == first_id).first()
+    second = db.query(User).where(User.id == second_id).first()
+
+    if second_id not in first.connections:
+        first.connections.append(second_id)
+        db.add(first)
+
+    if first_id not in second.connections:
+        second.connections.append(first_id)
+        db.add(second)
+
+    db.commit()
+
+
+def connect_user(db, user, connections=None):
+    # TODO: optimize
+    connections = connections or []
+    for connection in connections:
+        connect_users(db, user.id, connection.id)
 
 
 def apiary_number_generator(count=MAX_APIARIES_COUNT):
@@ -20,7 +69,7 @@ def hive_number_generator(count=MAX_HIVES_COUNT):
     for number in range(1, count + 1):
         if number >= 10:
             prefix = "0"
-        elif number >= 100:
+        if number >= 100:
             prefix = ""
         yield f"{prefix}{number}"
 
@@ -76,20 +125,51 @@ def random_coordinate(minimum=0, maximum=100):
     return randint(minimum, maximum)
 
 
-def share_some_hives(hives, owner, recipients, percent=10):
-    new_shares = []
+def add_comment(db, hive_id, text, commentator_id, owner_id):
+    shared_hive, _ = (
+        db.query(SharedHive, Hive)
+        .where(Hive.id == hive_id)
+        .where(Hive.owner_id == owner_id)
+        .where(SharedHive.hive_id == Hive.id)
+        .first()
+    )
 
-    for hive in hives:
+    comment = SharedHiveComment(
+        shared_hive_id=shared_hive.id, commentator_id=commentator_id, text=text
+    )
+    db.add(comment)
+    db.commit()
+
+
+def share_some_hives(owner, percent=10):
+    shared_hives = []
+    all_user_hives = db.query(Hive).where(Hive.owner_id == owner.id)
+    recipients = list(db.query(User).where(User.id.in_(owner.connections)))
+
+    for hive in all_user_hives:
         to_share = not bool(randint(0, int(100 / percent)))
         if to_share and recipients:
-            random_recipient = recipients[randint(0, len(recipients)) - 1]
-            new_share = SharedHive(
-                hive_id=hive.id, owner_id=owner.id, recipient_id=random_recipient.id
-            )
-            new_shares.append(new_share)
-
-    db.add_all(new_shares)
+            num_share = randint(1, len(recipients))  # share with multiple users
+            for _ in range(num_share):
+                random_recipient = recipients[randint(0, len(recipients)) - 1]
+                shared_hive = SharedHive(
+                    hive_id=hive.id,
+                    owner_id=owner.id,
+                    recipient_id=random_recipient.id,
+                    active=True,
+                )
+                shared_hives.append(shared_hive)
+    db.add_all(shared_hives)
     db.commit()
+
+    for shared_hive in shared_hives:
+        to_add_comment = bool(randint(0, 4))  # add comment to 1/4 of the shared hives
+        if to_add_comment and recipients:
+            num_comments = randint(1, 7) # add 1 to 7 comments
+            for _ in range(num_comments + 1):
+                random_recipient = recipients[randint(0, len(recipients)) - 1]
+                text = COMMENTS[randint(0, len(COMMENTS)) - 1]
+                add_comment(db, shared_hive.hive_id, text, random_recipient.id, owner.id)
 
 
 def create_hive(owner_id, apiary_id, number, x, y):
@@ -138,10 +218,6 @@ def create_apiary(db, user_id, number, name):
 
 
 def create_data(db, user, apiaries=None, hives=None):
-    apiaries = apiaries or ["Водоема"]
-    hives = hives or [20]
-    users = list(db.query(User).where(User.id != user.id))
-
     if len(apiaries) != len(hives):
         raise ValueError(
             'len() of "apiaries" argument must be the same as the len() of "hives" argument.'
@@ -151,12 +227,10 @@ def create_data(db, user, apiaries=None, hives=None):
 
     for i, apiary_name in enumerate(apiaries):
         apiary_number = next(generate_apiary_number)
-        apiary = create_apiary(db, user.id, apiary_number, apiary_name)
-        new_hives = create_hives(db, user.id, apiary.id, hives[i])
-        share_some_hives(new_hives, owner=user, recipients=users)
-
-        print(f'Apiary "{apiary_name}" created.')
-        print(f'Created {hives[i]} hives for apiary "{apiary_name}"')
+        created_apiary = create_apiary(db, user.id, apiary_number, apiary_name)
+        created_hives = list(create_hives(db, user.id, created_apiary.id, hives[i]))
+        print(f'Apiary "{created_apiary.name}" created.')
+        print(f'Created {len(created_hives)} hives for apiary "{created_apiary.name}"')
 
 
 def create_user(db, email, password, first_name="", last_name="", admin=False):
@@ -174,7 +248,9 @@ def create_user(db, email, password, first_name="", last_name="", admin=False):
     )
     db.add(new_user)
     db.commit()
+
     print(f"User {email} created.")
+    return new_user
 
 
 if __name__ == "__main__":
@@ -183,40 +259,115 @@ if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
 
     # User 1
-    create_user(db, "viki@gmail.com", "viki", "Виктор", "Стефанов", admin=True)
+    viki = create_user(
+        db,
+        "viki@gmail.com",
+        "viki",
+        "Виктор",
+        "Стефанов",
+        admin=True,
+    )
     user = db.query(User).filter(User.email == "viki@gmail.com").first()
     create_data(db, user, apiaries=["Лозето", "Парапунов"], hives=[5, 33])
 
     # User 2
-    create_user(
-        db, "stefanov.alexandre@gmail.com", "alex", "Александър", "Стефанов", admin=True
+    alex = create_user(
+        db,
+        "alex@gmail.com",
+        "alex",
+        "Александър",
+        "Стефанов",
+        admin=True,
     )
-    user = db.query(User).filter(User.email == "stefanov.alexandre@gmail.com").first()
+    user = db.query(User).filter(User.email == "alex@gmail.com").first()
     create_data(
         db, user, apiaries=["Манастиро", "Водоема", "Ридо"], hives=[57, 10, 105]
     )
 
     # User 3
-    create_user(db, "joro@gmail.com", "joro", "Георги", "Стефанов", admin=True)
+    joro = create_user(
+        db,
+        "joro@gmail.com",
+        "joro",
+        "Георги",
+        "Стефанов",
+        admin=True,
+    )
     user = db.query(User).filter(User.email == "joro@gmail.com").first()
     create_data(db, user, apiaries=["Чифлико", "Родопа"], hives=[7, 49])
 
     # User 4
-    create_user(db, "stoyan@gmail.com", "nedin", "Стоян", "Недин")
+    juli = create_user(
+        db,
+        "juli@gmail.com",
+        "juli",
+        "Жулиета",
+        "Стефанова",
+        admin=True,
+    )
+    user = db.query(User).filter(User.email == "juli@gmail.com").first()
+    create_data(db, user, apiaries=["Лозето", "Родопа"], hives=[12, 61])
+
+    # User 5
+    stoyan = create_user(
+        db,
+        "stoyan@gmail.com",
+        "stoyan",
+        "Стоян",
+        "Стоянов",
+    )
     user = db.query(User).filter(User.email == "stoyan@gmail.com").first()
     create_data(db, user, apiaries=["Медовина", "Сладост"], hives=[15, 70])
 
-    # User 5
-    create_user(db, "rosen@gmail.com", "rosen", "Росен", "Ангелов")
+    # User 6
+    rosen = create_user(
+        db,
+        "rosen@gmail.com",
+        "rosen",
+        "Росен",
+        "Росенов",
+    )
     user = db.query(User).filter(User.email == "rosen@gmail.com").first()
     create_data(db, user, apiaries=["Изобилие", "Водоема"], hives=[13, 55])
 
-    # User 6
-    create_user(db, "elina@gmail.com", "elina", "Елина", "Халачева")
+    # User 7
+    elina = create_user(
+        db,
+        "elina@gmail.com",
+        "elina",
+        "Елина",
+        "Елинова",
+    )
     user = db.query(User).filter(User.email == "elina@gmail.com").first()
     create_data(db, user, apiaries=["Изобилие", "Медовина"], hives=[15, 150])
 
-    # User 7
-    create_user(db, "raya@gmail.com", "raya", "Рая", "Ангелова")
+    # User 8
+    raya = create_user(
+        db,
+        "raya@gmail.com",
+        "raya",
+        "Рая",
+        "Раева",
+    )
     user = db.query(User).filter(User.email == "raya@gmail.com").first()
     create_data(db, user, apiaries=["Изобилие", "Медовина"], hives=[8, 80])
+
+    # Connect users only when all of them are already created
+    connect_user(db, alex, connections=[viki, joro, juli, rosen, stoyan, elina, raya])
+    connect_user(db, viki, connections=[alex, joro, juli, rosen, stoyan])
+    connect_user(db, joro, connections=[alex, viki, juli, rosen, stoyan])
+    connect_user(db, juli, connections=[alex, viki, joro, rosen, stoyan])
+    connect_user(db, stoyan, connections=[alex, viki, joro, raya])
+    connect_user(db, rosen, connections=[alex, viki, joro, juli, elina, raya])
+    connect_user(db, elina, connections=[alex, raya, rosen])
+    connect_user(db, raya, connections=[alex, rosen, stoyan, elina])
+
+    # Share hives at the end when all users are created.
+    share_some_hives(alex)
+    share_some_hives(viki)
+    share_some_hives(joro)
+    share_some_hives(juli)
+    share_some_hives(stoyan)
+    share_some_hives(rosen)
+    share_some_hives(elina)
+    share_some_hives(raya)

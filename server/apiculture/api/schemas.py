@@ -10,6 +10,7 @@ class UserSchema(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     admin: bool = False
+    connections: list = []
 
 
 class UserCreateSchema(BaseModel):
@@ -96,10 +97,23 @@ class HivePublicSchema(BaseModel):
     super: bool | None = False
 
 
+class SharedHiveComment(BaseModel):
+    text: str
+    commentator: UserShareSchema
+    created_datetime: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
 class SharedHiveSchema(BaseModel):
+    hive: HivePublicSchema
     owner: UserShareSchema
     recipients: list[UserShareSchema]
-    hive: HivePublicSchema
+    comments: list[SharedHiveComment] = []
+
+    class Config:
+        from_attributes = True
 
 
 class ApiaryBaseSchema(BaseModel):

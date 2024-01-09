@@ -1,4 +1,21 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonGrid, IonIcon, IonImg, IonRow, IonText } from "@ionic/react";
+import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonIcon,
+  IonImg,
+  IonLabel,
+  IonPopover,
+  IonRow,
+  IonText 
+} from "@ionic/react";
+import TimeAgo from "react-timeago";
 import beemother from '../../assets/images/beemother.png';
 import brood from '../../assets/images/brood.jpg';
 import frame from '../../assets/images/frame.jpg';
@@ -11,13 +28,13 @@ import {
   SharedHive
 } from "../../models";
 import { useAuth } from "../../hooks/useAuth";
-import { person } from "ionicons/icons";
+import { chatbox, person } from "ionicons/icons";
 
-type HiveComponentProps = {
+type SharedHiveComponentProps = {
   sharedHive: SharedHive;
 };
 
-export const HiveComponent = ({ sharedHive }: HiveComponentProps) => {
+export const SharedHiveComponent = ({ sharedHive }: SharedHiveComponentProps) => {
   const { hive, owner, recipients } = sharedHive;
   const { user } = useAuth();
 
@@ -30,16 +47,16 @@ export const HiveComponent = ({ sharedHive }: HiveComponentProps) => {
   }
 
   return (
-    <IonCard className="hive-card" onClick={openHive}>
+    <IonCard className="hive-card">
       <IonCardHeader>
         <IonCardTitle>Кошер {hive.number}</IonCardTitle>
         {user?.email === owner.email ?
           <IonCardSubtitle>
-            Споделен със { 
-              recipients.length === 1 ? 
-              (<b>{recipients[0].first_name} {recipients[0].last_name}</b>)
-              :
-              (<><b>{recipients.length}</b> <IonIcon src={person} onClick={showRecipients} /></>)
+            Споделен със {
+              recipients.length === 1 ?
+                (<b>{recipients[0].first_name} {recipients[0].last_name}</b>)
+                :
+                (<><b>{recipients.length}</b> <IonIcon src={person} onClick={showRecipients} /></>)
             }
           </IonCardSubtitle>
           :
@@ -107,6 +124,39 @@ export const HiveComponent = ({ sharedHive }: HiveComponentProps) => {
             :
             <></>
           }
+          <IonRow>
+            <IonCol size="9"></IonCol>
+            <IonCol size="3">
+              <IonButton
+                id={`comment-popover-button-${sharedHive.hive.number}`}
+                color="dark"
+                fill="clear"
+                size='default'
+              >
+                <IonIcon src={chatbox} size="large"></IonIcon> {sharedHive.comments.length}
+              </IonButton>
+              <IonPopover
+                trigger={`comment-popover-button-${sharedHive.hive.number}`}
+                triggerAction="click"
+              >
+                {
+                  sharedHive.comments.map((comment, i) => {
+                    return (
+                      <IonContent key={i} className="ion-padding">
+                        <div>
+                          <IonText color="medium">{comment.commentator.first_name} </IonText>
+                          <IonText color="medium" style={{fontSize: '0.9em'}}>
+                            (<TimeAgo date={comment.created_datetime} />)
+                          </IonText>
+                        </div>
+                        <IonText>{comment.text}</IonText>
+                      </IonContent>
+                    )
+                  })
+                }
+              </IonPopover>
+            </IonCol>
+          </IonRow>
         </IonGrid>
       </IonCardContent>
     </IonCard>

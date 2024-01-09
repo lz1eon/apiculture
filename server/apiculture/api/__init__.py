@@ -60,6 +60,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:8100",
         "https://apiarium.vercel.app",
+        "https://apiarium.pro",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -91,34 +92,16 @@ async def hives_get(request: Request, apiary_id: int, db: Session = Depends(get_
 
 @app.get("/hives/my-shared/", response_model=list[SharedHiveSchema])
 async def hives_get_my_shared(request: Request, db: Session = Depends(get_db)):
-    my_shared_hives_query = get_my_shared_hives(db, request.user)
-    my_shared_hives = []
-    for hive in my_shared_hives_query:
-        shared_hive = SharedHiveSchema(
-            hive=hive.to_dict(),
-            owner=request.user.to_dict(),
-            recipients=[r.to_dict() for r in hive.recipients],
-        )
-        my_shared_hives.append(shared_hive)
-    return my_shared_hives
+    return get_my_shared_hives(db, request.user)
 
 
 @app.get("/hives/shared-with-me/", response_model=list[SharedHiveSchema])
 async def hives_get_shared_with_me(request: Request, db: Session = Depends(get_db)):
-    shared_hives_query = get_hives_shared_with_me(db, request.user)
-    shared_hives = []
-    for hive, owner, _ in shared_hives_query:
-        shared_hive = SharedHiveSchema(
-            hive=hive.to_dict(),
-            owner=owner.to_dict(),
-            recipients=[request.user.to_dict()],
-        )
-        shared_hives.append(shared_hive)
-    return shared_hives
+    return get_hives_shared_with_me(db, request.user)
 
 
 @app.post("/apiaries/{apiary_id}/hives/", response_model=HiveSchema)
-async def hives_create(
+async def hive_create(
     request: Request,
     apiary_id: int,
     hive: HiveCreateSchema,

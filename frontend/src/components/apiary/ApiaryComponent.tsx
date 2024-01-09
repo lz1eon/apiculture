@@ -17,7 +17,7 @@ export const ApiaryComponent = ({apiary}: ApiaryComponentProps) => {
         </IonCardHeader>
         <IonCardContent>          
           <p><IonText color="text.secondary">{apiary.hives.length} кошера</IonText></p>          
-          <p><IonText>Последна проверка: 08.09.20023</IonText></p>
+          <p><IonText>Последна проверка: 08.09.2023</IonText></p>
         </IonCardContent>
       </IonCard>
     );

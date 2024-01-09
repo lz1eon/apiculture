@@ -35,7 +35,7 @@ import {
 import Page from '../Page';
 import { ApiaryPlan, Highlight } from './plan/ApiaryPlan';
 import { useGeneralInfo } from '../../hooks/useGeneralInfo';
-import { IonSelectCustomEvent } from '@ionic/core';
+import { IonSelectCustomEvent, SelectChangeEventDetail } from '@ionic/core';
 
 
 export const ApiaryDetail = () => {
@@ -72,7 +72,7 @@ export const ApiaryDetail = () => {
     else setCurrentHighlight(highlight);
   }
 
-  function onChangeApiary(event: IonSelectCustomEvent<number>) {
+  function onChangeApiary(event: IonSelectCustomEvent<SelectChangeEventDetail<number>>) {
     const apiaryId = event.target.value;
     const newApiary = apiaries.find((apiary) => apiary.id === apiaryId);
     if (newApiary !== undefined) setApiary(newApiary);

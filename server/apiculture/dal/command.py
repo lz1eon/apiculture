@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 
 from apiculture.api import schemas
 from apiculture.dal.errors import OwnershipMismatch
-from apiculture.database import engine
 from apiculture.models.core import Apiary, Hive, SharedHive, User
 
 
@@ -18,6 +17,26 @@ def create_user(db: Session, user: schemas.UserCreateSchema):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def connect_users(db: Session, first_id, second_id):
+    first, second = db.query(User).where(User.id.in_([first_id, second_id]))
+    if second_id not in first.connections:
+        first.connections.append(second_id)
+        db.add(first)
+
+    if first_id not in second.connections:
+        second.connections.append(first_id)
+        db.add(second)
+
+    db.commit()
+
+
+def connect_user(db: Session, first_id, connections=None):
+    # TODO: optimize
+    connections = connections or []
+    for connection in connections:
+        connect_users(db, first_id, connection.id)
 
 
 def create_apiary(db: Session, user, apiary: schemas.ApiaryCreateSchema):
