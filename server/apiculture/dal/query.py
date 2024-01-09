@@ -75,7 +75,7 @@ def get_my_shared_hives(db: Session, user: User):
         .where(SharedHive.active.is_(True))
         .where(Hive.id == SharedHive.hive_id)
         .where(SharedHive.recipient_id == User.id)
-        .order_by(SharedHive.recipient_id, Hive.number)
+        .order_by(Hive.number)
     )
 
     shared_hive_ids = set()
@@ -117,7 +117,7 @@ def get_hives_shared_with_me(db: Session, user: User):
         .order_by(SharedHive.recipient_id, Hive.number)
     )
 
-    shared_hive_ids = [shared_hive.id for _, _, shared_hive in shared_hives_query]
+    shared_hive_ids = set(shared_hive.id for _, _, shared_hive in shared_hives_query)
     comments = (
         db.query(SharedHiveComment, User)
         .where(SharedHiveComment.shared_hive_id.in_(shared_hive_ids))

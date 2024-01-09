@@ -311,6 +311,8 @@ cython_debug/
 
 .secrets.toml
 
+node_modules/
+
 # Vercel app CLI
 .vercel
 
